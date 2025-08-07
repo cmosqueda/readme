@@ -31,7 +31,7 @@ function App() {
               <div className="w-fit bg-gray-700 px-2 border border-white/30 rounded-sm">
                 <p className="text-sm monosans-text">A tech enthusiast and art hobbyist</p>
               </div>
-              <ul className="list-disc list-inside px-5 text-sm">
+              <ul className="list-disc px-5 text-sm">
                 <li>Studying BSIT at USTP-CDO</li>
                 <li>I draw, write, and consume pop culture content in my idle time</li>
                 <li>I like FNaF, Harry Potter, and Kpop</li>
