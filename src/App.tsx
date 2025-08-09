@@ -8,7 +8,7 @@ function App() {
     <>
       <div className="w-full h-full flex flex-wrap gap-8 py-10 justify-center bg-gradient-to-b from-gray-950 to-indigo-950 bg-fixed min-h-screen">
         {/* readme layout section */}
-        <div className="w-11/12 sm:w-9/12 flex flex-col gap-5 p-5 rounded-sm text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
+        <div className="w-11/12 sm:w-9/12 flex flex-col gap-5 p-5 rounded-sm text-white backdrop-blur-md border border-white/20 shadow-lg">
           <a
             href="https://github.com/cmosqueda/cmosqueda"
             target="_blank"
@@ -72,7 +72,7 @@ function App() {
         {/* github contributions */}
         <div className="w-11/12 sm:w-9/12 text-white flex flex-col gap-4 ">
           <p>@cmosqueda on GitHub</p>
-          <div className="border border-white/25 w-full overflow-auto p-5 rounded-sm bg-white/10 backdrop-blur-md  shadow-lg">
+          <div className="border border-white/25 w-full overflow-auto p-5 rounded-sm backdrop-blur-md  shadow-lg">
             <GitHubCalendar username="cmosqueda" colorScheme="dark" showWeekdayLabels></GitHubCalendar>
           </div>
         </div>

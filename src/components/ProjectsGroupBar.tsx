@@ -16,7 +16,7 @@ export default function ProjectsGroupBar() {
         {projects.map((project) => (
           <div
             key={project.name}
-            className="flex flex-col justify-between gap-2 border border-white/25 p-2 rounded-sm bg-white/10 backdrop-blur-md shadow-lg"
+            className="flex flex-col justify-between gap-2 border border-white/25 p-2 rounded-sm backdrop-blur-md shadow-lg"
           >
             <a href={project.url} target="_blank" className="w-fit hover:underline">
               {project.name}
