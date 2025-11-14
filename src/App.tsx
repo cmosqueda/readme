@@ -1,9 +1,10 @@
 import GitHubCalendar from "react-github-calendar";
 import ContactsGroupBadges from "./components/ContactsGroupBadges";
-import StacksGroupBadges from "./components/StacksGroupBadges";
+// import StacksGroupBadges from "./components/StacksGroupBadges";
 import TechWritingGroupBar from "./components/TechWritingGroupBar";
-import DevProjectsGroupBar from "./components/DevProjectsGroupBar";
+// import DevProjectsGroupBar from "./components/DevProjectsGroupBar";
 import MusicPlayButton from "./components/MusicBox";
+import MoreAboutMeGroup from "./components/MoreAboutMeGroup";
 
 function App() {
   return (
@@ -28,26 +29,48 @@ function App() {
           ></img>
 
           {/* about text and gif */}
-          <div className="flex flex-col items-center sm:flex-row  justify-between">
+          <div className="flex flex-col items-center sm:flex-row justify-between">
             {/* text - about */}
             <div className="flex flex-col gap-3">
               <p className="font-bold text-3xl">👋 Hi, I'm Tyne!</p>
+
               <hr className="opacity-20" />
+
               <div className="w-fit bg-gray-800 px-2 border border-white/30 rounded-sm">
                 <p className="text-sm monosans-text">A tech enthusiast and art hobbyist</p>
               </div>
-              <ul className="list-disc px-5 text-sm">
-                <li>Studying BSIT at USTP-CDO</li>
-                <li>I draw, write, and consume pop culture content in my idle time</li>
-                <li>I like FNaF, Harry Potter, and Kpop</li>
-              </ul>
+
+              <div className="space-y-2 text-sm">
+                <p>
+                  🎓 Currently studying <b>BSIT at USTP–CDO</b>.
+                </p>
+                <p>🎨 I draw, write, and enjoy pop culture in my free time.</p>
+
+                <div className="flex gap-2 flex-wrap">
+                  <p>🌟 Interests:</p>
+                  {/* Interests tags */}
+                  <div className="flex flex-wrap gap-1">
+                    {["FNaF", "Harry Potter", "K-Pop"].map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs italic monosans-text px-2 bg-gray-800 border border-white/30 rounded-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Toggle Button */}
+                <MoreAboutMeGroup></MoreAboutMeGroup>
+              </div>
             </div>
 
-            {/* gif */}
+            {/* GIF */}
             <img
               src="https://static.wikia.nocookie.net/freddy-fazbears-pizzeria-simulator/images/3/37/HelpyCRACK.gif"
               className="w-fit"
-            ></img>
+            />
           </div>
 
           {/* contacts */}
@@ -59,20 +82,21 @@ function App() {
           </div>
 
           {/* stacks badges */}
-          <div className="flex flex-col gap-2">
-            <p className="font-bold text-xl">👩‍💻 Stacks</p>
-            {/* badges */}
-            <StacksGroupBadges></StacksGroupBadges>
-          </div>
+
+          {/* <div className="flex flex-col gap-2"> */}
+          {/* <p className="font-bold text-xl">👩‍💻 Stacks</p> */}
+          {/* badges */}
+          {/* <StacksGroupBadges></StacksGroupBadges> */}
+          {/* </div> */}
         </div>
 
         {/* development */}
-        <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white ">
-          <p className="font-bold">Development</p>
+        {/* <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white "> */}
+        {/* <p className="font-bold">Development</p> */}
 
-          {/* projects component */}
-          <DevProjectsGroupBar></DevProjectsGroupBar>
-        </div>
+        {/* projects component */}
+        {/* <DevProjectsGroupBar></DevProjectsGroupBar> */}
+        {/* </div> */}
 
         {/* tech writing projects section*/}
         <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white ">
