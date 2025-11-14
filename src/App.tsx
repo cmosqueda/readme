@@ -1,11 +1,16 @@
 import GitHubCalendar from "react-github-calendar";
 import ContactsGroupBadges from "./components/ContactsGroupBadges";
-import ProjectsGroupBar from "./components/ProjectsGroupBar";
 import StacksGroupBadges from "./components/StacksGroupBadges";
+import TechWritingGroupBar from "./components/TechWritingGroupBar";
+import DevProjectsGroupBar from "./components/DevProjectsGroupBar";
+import MusicPlayButton from "./components/MusicBox";
 
 function App() {
   return (
     <>
+      {/* floating play music box */}
+      <MusicPlayButton></MusicPlayButton>
+
       <div className="w-full h-full flex flex-wrap gap-8 py-10 justify-center bg-gradient-to-b from-gray-950 to-indigo-950 bg-fixed min-h-screen">
         {/* readme layout section */}
         <div className="w-11/12 sm:w-9/12 flex flex-col gap-5 p-5 rounded-sm text-white backdrop-blur-md border border-white/20 shadow-lg">
@@ -18,7 +23,7 @@ function App() {
           </a>
           {/* header img */}
           <img
-            src="https://i.pinimg.com/originals/87/ff/80/87ff8095ec6f77e2c84e9564654ed615.gif"
+            src="https://i.pinimg.com/originals/99/26/2e/99262e25536f78f148fd164572b657cd.gif"
             className="h-[300px] object-cover"
           ></img>
 
@@ -61,12 +66,20 @@ function App() {
           </div>
         </div>
 
-        {/* projects section*/}
+        {/* development */}
         <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white ">
-          <p className="font-bold">Projects</p>
+          <p className="font-bold">Development</p>
+
+          {/* projects component */}
+          <DevProjectsGroupBar></DevProjectsGroupBar>
+        </div>
+
+        {/* tech writing projects section*/}
+        <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white ">
+          <p className="font-bold">Technical Writing</p>
 
           {/* projects components*/}
-          <ProjectsGroupBar></ProjectsGroupBar>
+          <TechWritingGroupBar></TechWritingGroupBar>
         </div>
 
         {/* github contributions */}
