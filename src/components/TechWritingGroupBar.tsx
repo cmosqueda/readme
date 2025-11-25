@@ -1,4 +1,5 @@
 import quickeaseUserManual from "../assets/proj_logos/quickease v2_cover page_user manual.png";
+import radioCassetteUserManual from "../assets/proj_logos/radio cassette_cover page_user manual.png";
 
 const projects = [
   // { name: "portfolio", url: "https://github.com/cmosqueda/portfolio", stacks: ["vite", "react"], proj_bg: "" },
@@ -13,8 +14,14 @@ const projects = [
   {
     name: "QuickEase 2.0 User Manual",
     url: "/readme/docu/quickease 2.0_user manual-compressed.pdf",
-    stacks: ["user manual"],
+    stacks: ["user manual", "booklet"],
     proj_bg: quickeaseUserManual,
+  },
+  {
+    name: "Radio Cassette User Manual",
+    url: "/readme/docu/trifold_user manual_radio cassette.pdf",
+    stacks: ["user manual", " trifold", "brochure"],
+    proj_bg: radioCassetteUserManual,
   },
 ];
 
