@@ -1,7 +1,7 @@
 import GitHubCalendar from "react-github-calendar";
 import ContactsGroupBadges from "./components/ContactsGroupBadges";
 // import StacksGroupBadges from "./components/StacksGroupBadges";
-import TechWritingGroupBar from "./components/TechWritingGroupBar";
+import WorksGroupBar from "./components/WorksGroupBar";
 // import DevProjectsGroupBar from "./components/DevProjectsGroupBar";
 import MusicPlayButton from "./components/MusicBox";
 import MoreAboutMeGroup from "./components/MoreAboutMeGroup";
@@ -69,7 +69,7 @@ function App() {
             {/* GIF */}
             <img
               src="https://static.wikia.nocookie.net/freddy-fazbears-pizzeria-simulator/images/3/37/HelpyCRACK.gif"
-              className="w-fit"
+              className="w-72"
             />
           </div>
 
@@ -100,10 +100,10 @@ function App() {
 
         {/* tech writing projects section*/}
         <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white ">
-          <p className="font-bold">Technical Writing</p>
+          <p className="font-bold">Works</p>
 
           {/* projects components*/}
-          <TechWritingGroupBar></TechWritingGroupBar>
+          <WorksGroupBar></WorksGroupBar>
         </div>
 
         {/* github contributions */}
