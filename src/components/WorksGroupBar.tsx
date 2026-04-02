@@ -34,27 +34,35 @@ const projects = [
 
 export default function WorksGroupBar() {
   return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-2  gap-3">
-        {projects.map((project) => (
-          <div className="flex flex-row gap-2 border border-white/25 p-2 rounded-sm backdrop-blur-md shadow-lg">
-            <img src={project.proj_bg} alt={project.proj_bg} className="h-36 rounded-sm object-contain" />
-            <div key={project.name} className="flex flex-col justify-between">
-              <a href={project.url} target="_blank" className="w-fit hover:underline">
-                {project.name}
-              </a>
-              <div className=" flex flex-wrap flex-row gap-1">
-                {project.stacks.map((stack) => (
-                  <span key={stack} className="p-1 border border-white/25 rounded-lg">
-                    <p className="text-xs">{stack}</p>
-                  </span>
-                ))}
-              </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {projects.map((project) => (
+        <a
+          key={project.name}
+          href={project.url}
+          target="_blank"
+          className="group relative overflow-hidden rounded-lg border border-white/20 shadow-lg"
+        >
+          {/* Image */}
+          <img
+            src={project.proj_bg}
+            alt={project.name}
+            className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-3">
+            <h3 className="text-sm font-semibold">{project.name}</h3>
+
+            <div className="flex flex-wrap gap-1 mt-1">
+              {project.stacks.map((stack) => (
+                <span key={stack} className="text-[10px] px-2 py-0.5 border border-white/30 rounded-md">
+                  {stack}
+                </span>
+              ))}
             </div>
           </div>
-        ))}
-        {/*  */}
-      </div>
-    </>
+        </a>
+      ))}
+    </div>
   );
 }

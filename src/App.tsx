@@ -1,4 +1,4 @@
-import GitHubCalendar from "react-github-calendar";
+// import GitHubCalendar from "react-github-calendar";
 import ContactsGroupBadges from "./components/ContactsGroupBadges";
 // import StacksGroupBadges from "./components/StacksGroupBadges";
 import WorksGroupBar from "./components/WorksGroupBar";
@@ -107,12 +107,12 @@ function App() {
         </div>
 
         {/* github contributions */}
-        <div className="w-11/12 sm:w-9/12 text-white flex flex-col gap-4 ">
+        {/* <div className="w-11/12 sm:w-9/12 text-white flex flex-col gap-4 ">
           <p>@cmosqueda on GitHub</p>
           <div className="border border-white/25 w-full overflow-auto p-5 rounded-sm backdrop-blur-md  shadow-lg">
             <GitHubCalendar username="cmosqueda" colorScheme="dark" showWeekdayLabels></GitHubCalendar>
           </div>
-        </div>
+        </div> */}
 
         {/* murag footer */}
         <p className="w-11/12 sm:w-9/12 text-center text-xs text-white">
