@@ -12,14 +12,13 @@ const sections = ["profile", "featured", "workflow", "experience", "contact"];
 function App() {
   const [active, setActive] = useState("profile");
 
-  const refs: Record<string, React.RefObject<HTMLDivElement>> = {
+  const refs: Record<string, React.RefObject<HTMLDivElement | null>> = {
     profile: useRef<HTMLDivElement>(null),
     featured: useRef<HTMLDivElement>(null),
     workflow: useRef<HTMLDivElement>(null),
     experience: useRef<HTMLDivElement>(null),
     contact: useRef<HTMLDivElement>(null),
   };
-
   const scrollTo = (key: string) => {
     refs[key]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
