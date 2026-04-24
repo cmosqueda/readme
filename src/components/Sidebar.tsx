@@ -37,7 +37,7 @@ export default function Sidebar() {
 
           {/* CV BUTTON COMPONENT */}
           <a
-            href="/public/docu/Christine-Mosqueda-CV-updated.pdf"
+            href="/Christine-Mosqueda-CV-updated.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="
