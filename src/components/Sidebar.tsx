@@ -1,4 +1,5 @@
 import { Database, FileCode, CheckCircle, ShieldCheck, Download, ExternalLink } from "lucide-react";
+import profilePic from "../assets/mosqueda_photo.png";
 
 export default function Sidebar() {
   const summaryTags = [
@@ -17,10 +18,11 @@ export default function Sidebar() {
         <div className="relative group mx-auto">
           <div className="absolute -inset-1 bg-gradient-to-b from-emerald-500/20 to-transparent rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
           <div className="relative w-32 h-32 rounded-full border-2 border-white/5 bg-gray-900 flex items-center justify-center overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-tr from-gray-800 to-gray-900 flex items-center justify-center text-white/10 italic text-xs">
+            {/* <div className="w-full h-full bg-gradient-to-tr from-gray-800 to-gray-900 flex items-center justify-center text-white/10 italic text-xs">
               IMG_SCAN
-            </div>
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500/30 shadow-[0_0_15px_emerald-500] animate-[scan_3s_ease-in-out_infinite]" />
+            </div> */}
+            <img src={profilePic} alt="Profile" />
+            {/* <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500/30 shadow-[0_0_15px_emerald-500] animate-[scan_3s_ease-in-out_infinite]" /> */}
           </div>
         </div>
 
@@ -35,7 +37,7 @@ export default function Sidebar() {
 
           {/* CV BUTTON COMPONENT */}
           <a
-            href="/readme/Christine Mosqueda_CV_updated.pdf"
+            href="/readme/public/docu/Christine-Mosqueda-CV-updated.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="

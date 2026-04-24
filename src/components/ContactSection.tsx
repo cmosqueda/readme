@@ -2,7 +2,7 @@ import { Mail, Globe, Github, Send, Terminal, MapPin } from "lucide-react";
 import { contactLinks } from "../data/contact";
 
 export default function ContactSection() {
-  const icons: any = {
+  const icons: Record<string, React.ReactNode> = {
     Email: <Mail size={14} />,
     LinkedIn: <Globe size={14} />,
     GitHub: <Github size={14} />,
