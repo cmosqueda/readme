@@ -27,9 +27,8 @@ export default function ProfileSection() {
 
           <div className="border-l-2 border-emerald-500/30 pl-6 flex flex-col gap-4">
             <p className="text-base sm:text-lg text-white/80 max-w-2xl leading-relaxed">
-              Specializing in the <span className="text-white font-semibold">systematic validation</span> of
-              applications to ensure reliability. I bridge the gap between complex requirements and high-integrity
-              software.
+              Specializes in the <span className="text-white font-semibold">systematic validation</span> of applications
+              to ensure reliability. I bridge the gap between complex requirements and high-integrity software.
             </p>
 
             <p className="text-sm text-white/50 max-w-xl font-mono">
