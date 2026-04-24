@@ -71,7 +71,7 @@ export default function ExperienceSection() {
         {/* RECENT STATUS FOOTER */}
         <div className="mt-16 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-transparent border border-white/5">
           <p className="text-xs text-white/60 italic leading-relaxed">
-            Active Internship: Currently practicing as layout artist and QA intern at at CK Children’s Publishing.
+            Active Internship: Currently practicing as a layout artist and QA intern at at CK Children’s Publishing.
           </p>
         </div>
       </div>
