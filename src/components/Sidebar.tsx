@@ -59,7 +59,7 @@ export default function Sidebar() {
 
         {/* SYSTEM TAGS */}
         <div className="space-y-4">
-          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Capabilities</p>
+          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Skills</p>
           <div className="flex flex-wrap gap-2">
             {summaryTags.map((tag) => (
               <div
