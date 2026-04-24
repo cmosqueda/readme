@@ -6,8 +6,8 @@ export const experiences = [
     period: "Feb 2026 — Present",
     location: "Cagayan de Oro, PH",
     description:
-      "Contributing to quality control and technical layout processes, focusing on precision and adherence to publishing standards during the internship program.",
-    highlights: ["Technical Reporting", "Asset Validation", "Layout QA"],
+      "Contributing to the technical layout design and processes, focusing on precision and adherence to publishing standards. In parallel, I also worked on QA testing of an edtech mobile app.",
+    highlights: ["Technical Reporting", "Layout Design", "Mobile App QA Testing"],
   },
   {
     id: "02",
