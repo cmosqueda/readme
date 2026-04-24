@@ -1,125 +1,93 @@
-// import GitHubCalendar from "react-github-calendar";
-import ContactsGroupBadges from "./components/ContactsGroupBadges";
-// import StacksGroupBadges from "./components/StacksGroupBadges";
-import WorksGroupBar from "./components/WorksGroupBar";
-// import DevProjectsGroupBar from "./components/DevProjectsGroupBar";
-import MusicPlayButton from "./components/MusicBox";
-import MoreAboutMeGroup from "./components/MoreAboutMeGroup";
+import { useRef, useState, useEffect } from "react";
+import Sidebar from "./components/Sidebar";
+import NavigationBar from "./components/NavigationBar";
+import ProfileSection from "./components/ProfileSection";
+import FeaturedSection from "./components/FeaturedSection";
+import WorkflowSection from "./components/WorkflowSection";
+import ExperienceSection from "./components/ExperienceSection";
+import ContactSection from "./components/ContactSection";
+
+const sections = ["profile", "featured", "workflow", "experience", "contact"];
 
 function App() {
+  const [active, setActive] = useState("profile");
+
+  const refs: Record<string, React.RefObject<HTMLDivElement>> = {
+    profile: useRef<HTMLDivElement>(null),
+    featured: useRef<HTMLDivElement>(null),
+    workflow: useRef<HTMLDivElement>(null),
+    experience: useRef<HTMLDivElement>(null),
+    contact: useRef<HTMLDivElement>(null),
+  };
+
+  const scrollTo = (key: string) => {
+    refs[key]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: "-40% 0px -50% 0px", // controls when section becomes "active"
+        threshold: 0,
+      },
+    );
+
+    sections.forEach((key) => {
+      const el = refs[key]?.current;
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <>
-      {/* floating play music box */}
-      <MusicPlayButton></MusicPlayButton>
+    <div className="flex h-screen bg-gray-950 text-white">
+      <Sidebar></Sidebar>
 
-      <div className="w-full h-full flex flex-wrap gap-8 py-10 justify-center bg-gradient-to-b from-gray-950 to-indigo-950 bg-fixed min-h-screen">
-        {/* readme layout section */}
-        <div className="w-11/12 sm:w-9/12 flex flex-col gap-5 p-5 rounded-sm text-white backdrop-blur-md border border-white/20 shadow-lg">
-          <a
-            href="https://github.com/cmosqueda/cmosqueda"
-            target="_blank"
-            className="text-xs opacity-70 hover:opacity-100 w-fit monosans-text"
-          >
-            cmosqueda/README.md
-          </a>
-          {/* header img */}
-          <img
-            src="https://i.pinimg.com/originals/99/26/2e/99262e25536f78f148fd164572b657cd.gif"
-            className="h-[300px] object-cover"
-          ></img>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <NavigationBar onNavigate={scrollTo} active={active} />
 
-          {/* about text and gif */}
-          <div className="flex flex-col items-center sm:flex-row justify-between">
-            {/* text - about */}
-            <div className="flex flex-col gap-3">
-              <p className="font-bold text-3xl">👋 Hi, I'm Tyne!</p>
+        <main className="flex-1 overflow-y-auto px-6 py-10 space-y-20 scrollbar-hide">
+          {/* ABOUT */}
+          <section id="profile" ref={refs.profile} className="mt-5">
+            {/* <h2>Profile</h2> */}
+            <ProfileSection></ProfileSection>
+          </section>
 
-              <hr className="opacity-20" />
+          {/* FEATURED */}
+          <section id="featured" ref={refs.featured}>
+            {/* <h2>Featured</h2> */}
+            <FeaturedSection></FeaturedSection>
+          </section>
 
-              <div className="w-fit bg-gray-800 px-2 border border-white/30 rounded-sm">
-                <p className="text-sm monosans-text">A tech enthusiast and art hobbyist</p>
-              </div>
+          {/* WORKFLOW */}
+          <section id="workflow" ref={refs.workflow}>
+            {/* <h2>Workflow</h2> */}
+            <WorkflowSection></WorkflowSection>
+          </section>
 
-              <div className="space-y-2 text-sm">
-                <p>
-                  🎓 Currently studying <b>BSIT at USTP–CDO</b>.
-                </p>
-                <p>🎨 I draw, write, and enjoy pop culture in my free time.</p>
+          {/* EXPERIENCE */}
+          <section id="experience" ref={refs.experience}>
+            {/* <h2>Experience</h2> */}
+            <ExperienceSection></ExperienceSection>
+          </section>
 
-                <div className="flex gap-2 flex-wrap">
-                  <p>🌟 Interests:</p>
-                  {/* Interests tags */}
-                  <div className="flex flex-wrap gap-1">
-                    {["FNaF", "Harry Potter", "K-Pop"].map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs italic monosans-text px-2 bg-gray-800 border border-white/30 rounded-sm"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Toggle Button */}
-                <MoreAboutMeGroup></MoreAboutMeGroup>
-              </div>
-            </div>
-
-            {/* GIF */}
-            <img
-              src="https://static.wikia.nocookie.net/freddy-fazbears-pizzeria-simulator/images/3/37/HelpyCRACK.gif"
-              className="w-72"
-            />
-          </div>
-
-          {/* contacts */}
-          <div className="flex flex-col gap-2">
-            <p className="font-bold text-xl">🗨️ Let's Talk!</p>
-
-            {/* contacts badges */}
-            <ContactsGroupBadges></ContactsGroupBadges>
-          </div>
-
-          {/* stacks badges */}
-
-          {/* <div className="flex flex-col gap-2"> */}
-          {/* <p className="font-bold text-xl">👩‍💻 Stacks</p> */}
-          {/* badges */}
-          {/* <StacksGroupBadges></StacksGroupBadges> */}
-          {/* </div> */}
-        </div>
-
-        {/* development */}
-        {/* <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white "> */}
-        {/* <p className="font-bold">Development</p> */}
-
-        {/* projects component */}
-        {/* <DevProjectsGroupBar></DevProjectsGroupBar> */}
-        {/* </div> */}
-
-        {/* tech writing projects section*/}
-        <div className="w-11/12 sm:w-9/12 flex flex-col gap-4 text-white ">
-          <p className="font-bold">Works</p>
-
-          {/* projects components*/}
-          <WorksGroupBar></WorksGroupBar>
-        </div>
-
-        {/* github contributions */}
-        {/* <div className="w-11/12 sm:w-9/12 text-white flex flex-col gap-4 ">
-          <p>@cmosqueda on GitHub</p>
-          <div className="border border-white/25 w-full overflow-auto p-5 rounded-sm backdrop-blur-md  shadow-lg">
-            <GitHubCalendar username="cmosqueda" colorScheme="dark" showWeekdayLabels></GitHubCalendar>
-          </div>
-        </div> */}
-
-        {/* murag footer */}
-        <p className="w-11/12 sm:w-9/12 text-center text-xs text-white">
-          &copy; {new Date().getFullYear()}. site by tyne.
-        </p>
+          {/* CONTACT */}
+          <section id="contact" ref={refs.contact}>
+            {/* <h2>Contact</h2> */}
+            <ContactSection></ContactSection>
+          </section>
+        </main>
       </div>
-    </>
+    </div>
   );
 }
 
