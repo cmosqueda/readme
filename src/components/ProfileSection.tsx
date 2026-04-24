@@ -22,18 +22,18 @@ export default function ProfileSection() {
         {/* ========================= */}
         <div className="flex flex-col gap-6">
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono">
-            QA Practitioner <span className="text-emerald-500">&</span> Quality Engineer
+            Quality Assurance <span className="text-emerald-500">Analyst</span>
           </h1>
 
           <div className="border-l-2 border-emerald-500/30 pl-6 flex flex-col gap-4">
             <p className="text-base sm:text-lg text-white/80 max-w-2xl leading-relaxed">
-              Specializing in the <span className="text-white font-semibold">systematic deconstruction</span> of
+              Specializing in the <span className="text-white font-semibold">systematic validation</span> of
               applications to ensure reliability. I bridge the gap between complex requirements and high-integrity
               software.
             </p>
 
             <p className="text-sm text-white/50 max-w-xl font-mono">
-              // Focus: API Validation, Regression Testing, & User-Centric Quality Metrics.
+              // Focus: Regression Testing, API Testing, Human-in-the-Loop Testing, & User-Centric Quality Metrics.
             </p>
           </div>
         </div>
@@ -61,7 +61,7 @@ export default function ProfileSection() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <SpecCard icon={<Terminal size={18} />} label="Environment" value="Manual & Automated Testing" />
           <SpecCard icon={<Microscope size={18} />} label="Methodology" value="Black-Box • Regression • Exploratory" />
-          <SpecCard icon={<CheckCircle2 size={18} />} label="Tooling" value="Postman • Jest • Notion" />
+          <SpecCard icon={<CheckCircle2 size={18} />} label="Tooling" value="Postman • Jest • Notion • Playwright" />
         </div>
       </div>
     </section>

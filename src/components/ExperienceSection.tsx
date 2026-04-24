@@ -8,7 +8,7 @@ export default function ExperienceSection() {
         {/* HEADER */}
         <div className="flex items-center gap-3 mb-12">
           <Briefcase className="text-emerald-500" size={20} />
-          <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Professional_Logs</h2>
+          <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Experience</h2>
         </div>
 
         {/* TIMELINE LIST */}

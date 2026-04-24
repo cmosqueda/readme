@@ -7,7 +7,7 @@ export default function FeaturedSection() {
       <div className="w-full max-w-4xl">
         <div className="flex items-center gap-3 mb-10">
           <Layers className="text-emerald-500" size={20} />
-          <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Featured_Works</h2>
+          <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Featured</h2>
         </div>
 
         {/* Dynamic List Render */}
