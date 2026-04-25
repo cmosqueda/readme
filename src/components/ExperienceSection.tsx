@@ -8,7 +8,7 @@ export default function ExperienceSection() {
         {/* HEADER */}
         <div className="flex items-center gap-3 mb-12">
           <Briefcase className="text-emerald-500" size={20} />
-          <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Experience</h2>
+          <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Experience_Timeline</h2>
         </div>
 
         {/* TIMELINE LIST */}
@@ -69,11 +69,11 @@ export default function ExperienceSection() {
         </div>
 
         {/* RECENT STATUS FOOTER */}
-        <div className="mt-16 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-transparent border border-white/5">
+        {/* <div className="mt-16 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-transparent border border-white/5">
           <p className="text-xs text-white/60 italic leading-relaxed">
-            Active Internship: Currently practicing as a layout artist and QA intern at at CK Children’s Publishing.
+            Active Internship: Currently practicing as a layout artist and QA intern at CK Children’s Publishing.
           </p>
-        </div>
+        </div> */}
       </div>
     </section>
   );

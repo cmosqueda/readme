@@ -11,7 +11,7 @@ export default function WorkflowSection() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <Terminal className="text-emerald-500" size={20} />
-            <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Workflow</h2>
+            <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Workflow_Approach</h2>
           </div>
         </div>
 

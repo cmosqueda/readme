@@ -9,14 +9,14 @@ export const contactLinks = [
   {
     id: "02",
     platform: "LinkedIn",
-    value: "https://www.linkedin.com/in/christine-mosqueda-ba202b333/", // Replace with your actual link
+    value: "Christine Mosqueda", // Replace with your actual link
     link: "https://www.linkedin.com/in/christine-mosqueda-ba202b333/",
     label: "Professional Network",
   },
   {
     id: "03",
     platform: "GitHub",
-    value: "github.com/cmosqueda", // Replace with your actual link
+    value: "cmosqueda", // Replace with your actual link
     link: "https://github.com/cmosqueda",
     label: "Version Control",
   },

@@ -17,7 +17,7 @@ export default function Sidebar() {
         {/* PROFILE SCANNER AREA */}
         <div className="relative group mx-auto">
           <div className="absolute -inset-1 bg-gradient-to-b from-emerald-500/20 to-transparent rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-          <div className="relative w-32 h-32 rounded-full border-2 border-white/5 bg-gray-900 flex items-center justify-center overflow-hidden">
+          <div className="relative w-36 h-36 rounded-full border-2 border-white/5 bg-gray-900 flex items-center justify-center overflow-hidden">
             {/* <div className="w-full h-full bg-gradient-to-tr from-gray-800 to-gray-900 flex items-center justify-center text-white/10 italic text-xs">
               IMG_SCAN
             </div> */}
