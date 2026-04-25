@@ -18,7 +18,7 @@ export default function FeaturedSection() {
               <Layers className="text-emerald-500" size={20} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">System_Portfolio</h2>
+              <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Featured_Works</h2>
               <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">
                 Verified Documentation Engine
               </p>
