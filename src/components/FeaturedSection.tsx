@@ -35,7 +35,7 @@ export default function FeaturedSection() {
 
       {/* OVERLAY / MODAL */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
           <div
             className="absolute inset-0 bg-gray-950/95 backdrop-blur-md transition-opacity animate-in fade-in duration-300"
             onClick={() => setSelectedProject(null)}
