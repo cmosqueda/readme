@@ -4,7 +4,7 @@ title: "QuickEase 2.0"
 category: "EdTech • AI Validation"
 role: "Lead QA & Researcher"
 status: "Stable"
-description: "A capstone project featuring an AI-powered study helper platform combined with gamification and a dedicated social environment for peer-learning and knowledge-sharing."
+description: "A capstone project featuring an AI-powered study helper platform combined with gamification and a dedicated social environment for peer learning and knowledge-sharing."
 tools: ["Gemini 2.5/2.0", "AHP", "Postman", "Jest"]
 workflow: ["ISO/IEC 25010", "SUS Testing", "AHP Framework"]
 stats:
