@@ -20,7 +20,7 @@ stats:
 
 # Quality Assurance Strategy
 
-QuickEase 2.0 is an AI-powered literacy platform utilizing **Document-Grounded Generation (DGG)**. My role involved architecting a multi-layered validation framework to ensure educational integrity and LLM reliability.
+QuickEase 2.0 is an AI-powered study helper platform utilizing **Document-Grounded Generation (DGG)**. My role involved architecting a multi-layered validation framework to ensure educational integrity and LLM reliability.
 
 ### Test Methodology
 
