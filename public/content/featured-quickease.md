@@ -24,7 +24,7 @@ QuickEase 2.0 is an AI-powered study helper platform utilizing **Document-Ground
 
 ### Test Methodology
 
-I implemented a hybrid testing approach to cover the full application lifecycle:
+I led the implementation of a hybrid testing approach to cover the full application lifecycle:
 
 - **Integration Testing:** Automated API validation using **Postman** and backend logic verification via **Jest**.
 - **Manual Rigor:** Iterative test case design derived from the Project Charter, utilizing GitHub-hosted Markdown documentation for collaborative tracking.
@@ -56,7 +56,7 @@ This verification enabled us to implement a cost-optimized switching logic witho
 
 # System Usability & Compliance
 
-Beyond the AI engine, I conducted comprehensive usability testing using the **System Usability Scale (SUS)**.
+Beyond the AI engine, our team conducted comprehensive usability testing using the **System Usability Scale (SUS)**.
 
 - **Result:** Achieved a score of **77.95**, categorizing the platform as "Acceptable/Good" under ISO/IEC 25010 standards.
 - **Outcome:** Identified and resolved 4 critical UX bottlenecks in the AI-response feedback loop.
