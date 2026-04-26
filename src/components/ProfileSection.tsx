@@ -2,7 +2,7 @@ import { ShieldCheck, Terminal, Microscope, CheckCircle2 } from "lucide-react";
 
 export default function ProfileSection() {
   return (
-    <section className="w-full flex justify-center py-12 px-4">
+    <section className="w-full flex justify-center py-12 px-4 mt-5">
       <div className="w-full max-w-4xl flex flex-col gap-8">
         {/* ========================= */}
         {/* STATUS HEADER (The "Live" Feel) */}
