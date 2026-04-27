@@ -22,7 +22,7 @@ export default function ProfileSection() {
         {/* ========================= */}
         <div className="flex flex-col gap-6">
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono">
-            Quality Assurance <span className="text-emerald-500">Analyst</span>
+            Junior QA <span className="text-emerald-500">Analyst</span>
           </h1>
 
           <div className="border-l-2 border-emerald-500/30 pl-6 flex flex-col gap-4">
