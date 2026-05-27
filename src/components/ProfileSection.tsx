@@ -2,12 +2,12 @@ import { ShieldCheck, Terminal, Microscope, CheckCircle2 } from "lucide-react";
 
 export default function ProfileSection() {
   return (
-    <section className="w-full flex justify-center py-12 px-4 mt-5">
+    <section className="w-full flex justify-center py-12 px-4 mt-10">
       <div className="w-full max-w-4xl flex flex-col gap-8">
         {/* ========================= */}
         {/* STATUS HEADER (The "Live" Feel) */}
         {/* ========================= */}
-        <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit">
+        {/* <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -15,13 +15,13 @@ export default function ProfileSection() {
           <span className="text-[10px] uppercase tracking-widest font-mono text-emerald-400">
             Open for Opportunities
           </span>
-        </div>
+        </div> */}
 
         {/* ========================= */}
         {/* HERO BLOCK */}
         {/* ========================= */}
         <div className="flex flex-col gap-6">
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono">
+          <h1 className="text-5xl text-center sm:text-left sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono">
             Junior QA <span className="text-emerald-500">Analyst</span>
           </h1>
 

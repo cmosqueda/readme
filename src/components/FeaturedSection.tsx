@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Layers, X, ShieldCheck, Zap, ArrowRight, ExternalLink } from "lucide-react";
-import useMarkdownProject, { type ProjectData } from "./MarkdownEngine";
+import useMarkdownProject, { type ProjectData } from "../hooks/MarkdownEngine";
 import ReactMarkdown from "react-markdown";
 
 const PROJECT_SLUGS = ["featured-quickease"];

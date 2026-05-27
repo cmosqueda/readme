@@ -4,6 +4,8 @@ type Props = {
 };
 
 export default function NavigationBar({ active }: Props) {
+  // add blogs section soon
+  // const navItems = ["profile", "featured", "workflow", "experience", "blogs", "contact"];
   const navItems = ["profile", "featured", "workflow", "experience", "contact"];
 
   const handleScroll = (id: string) => {

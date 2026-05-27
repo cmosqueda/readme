@@ -6,8 +6,10 @@ import FeaturedSection from "./components/FeaturedSection";
 import WorkflowSection from "./components/WorkflowSection";
 import ExperienceSection from "./components/ExperienceSection";
 import ContactSection from "./components/ContactSection";
+// import BlogSection from "./components/BlogSection";
 
-const sections = ["profile", "featured", "workflow", "experience", "contact"];
+// add blogs section soon in app and navigation bar
+const sections = ["profile", "featured", "workflow", "experience", "blogs", "contact"];
 
 function App() {
   const [active, setActive] = useState("profile");
@@ -60,6 +62,11 @@ function App() {
           <section id="experience">
             <ExperienceSection />
           </section>
+
+          {/* add blogs section soon */}
+          {/* <section id="blogs">
+            <BlogSection />
+          </section> */}
 
           <section id="contact">
             <ContactSection />
