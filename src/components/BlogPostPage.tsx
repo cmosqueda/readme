@@ -1,14 +1,44 @@
 // BlogPostPage.tsx
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, ArrowUp, Calendar, Clock } from "lucide-react";
 import useMarkdownFile from "../hooks/useMarkdownFile";
 import ReactMarkdown from "react-markdown";
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
+  const [readingProgress, setReadingProgress] = useState(0);
 
   // Feed the dynamic URL slug parameters directly to your generic hook
   const blog = useMarkdownFile("blogs", slug || "");
+
+  useEffect(() => {
+    const updateReadingProgress = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (scrollableHeight <= 0) {
+        setReadingProgress(0);
+        return;
+      }
+
+      const progress = (scrollTop / scrollableHeight) * 100;
+      setReadingProgress(Math.min(100, Math.max(0, progress)));
+    };
+
+    updateReadingProgress();
+    window.addEventListener("scroll", updateReadingProgress, { passive: true });
+    window.addEventListener("resize", updateReadingProgress);
+
+    return () => {
+      window.removeEventListener("scroll", updateReadingProgress);
+      window.removeEventListener("resize", updateReadingProgress);
+    };
+  }, []);
+
+  const handleBackToStart = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (!blog) {
     return (
@@ -22,7 +52,22 @@ export default function BlogPostPage() {
   }
 
   return (
-    <main className="w-full min-h-screen bg-gray-950 text-white/90 py-16 px-4 flex justify-center selection:bg-emerald-500/20">
+    <main className="relative w-full min-h-screen bg-gray-950 text-white/90 py-16 px-4 flex justify-center selection:bg-emerald-500/20">
+      {/* READING PROGRESS BAR */}
+      <div
+        className="fixed top-0 left-0 right-0 z-[80] h-1 bg-white/5"
+        role="progressbar"
+        aria-label="Reading progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(readingProgress)}
+      >
+        <div
+          className="h-full bg-emerald-500 transition-[width] duration-150 ease-out"
+          style={{ width: `${readingProgress}%` }}
+        />
+      </div>
+
       <div className="w-full max-w-3xl">
         {/* BACK TO HOME NAVIGATION */}
         <Link
@@ -52,7 +97,7 @@ export default function BlogPostPage() {
         </header>
 
         {/* EXTRACTED MARKDOWN TEXT MARKUP */}
-        <article className="prose prose-invert prose-emerald max-w-none">
+        <article className="prose prose-invert prose-emerald max-w-none pb-24">
           <ReactMarkdown
             components={{
               h1: ({ children }) => (
@@ -78,6 +123,23 @@ export default function BlogPostPage() {
           </ReactMarkdown>
         </article>
       </div>
+
+      {/* FLOATING BACK TO START BUTTON */}
+      <button
+        type="button"
+        onClick={handleBackToStart}
+        aria-label="Back to start"
+        className={`
+          fixed bottom-6 right-6 z-[70]
+          flex items-center gap-2 rounded-full border border-white/10 bg-gray-900/90 px-4 py-3
+          text-[10px] font-mono uppercase tracking-wider text-white/60 shadow-lg backdrop-blur
+          transition-all duration-300 hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400
+          ${readingProgress > 8 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}
+        `}
+      >
+        <ArrowUp size={14} />
+        <span className="hidden sm:inline">Back_To_Start</span>
+      </button>
     </main>
   );
 }
