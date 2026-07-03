@@ -1,12 +1,12 @@
-import { Database, FileCode, CheckCircle, ShieldCheck, Download, ExternalLink } from "lucide-react";
+import { Database, FileCode, CheckCircle, Presentation, Download, ExternalLink } from "lucide-react";
 import profilePic from "../assets/mosqueda_photo.png";
 
 export default function Sidebar() {
   const summaryTags = [
-    { label: "QA Testing", icon: <CheckCircle size={10} /> },
-    { label: "Reliability", icon: <ShieldCheck size={10} /> },
-    { label: "API Validation", icon: <Database size={10} /> },
-    { label: "AI Evaluation", icon: <FileCode size={10} /> },
+    { label: "Discovery", icon: <CheckCircle size={10} /> },
+    { label: "Demo Design", icon: <Presentation size={10} /> },
+    { label: "API Workflows", icon: <Database size={10} /> },
+    { label: "Solution Docs", icon: <FileCode size={10} /> },
   ];
 
   return (
@@ -18,11 +18,7 @@ export default function Sidebar() {
         <div className="relative group mx-auto">
           <div className="absolute -inset-1 bg-gradient-to-b from-emerald-500/20 to-transparent rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
           <div className="relative w-36 h-36 rounded-full border-2 border-white/5 bg-gray-900 flex items-center justify-center overflow-hidden">
-            {/* <div className="w-full h-full bg-gradient-to-tr from-gray-800 to-gray-900 flex items-center justify-center text-white/10 italic text-xs">
-              IMG_SCAN
-            </div> */}
             <img src={profilePic} alt="Profile" />
-            {/* <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500/30 shadow-[0_0_15px_emerald-500] animate-[scan_3s_ease-in-out_infinite]" /> */}
           </div>
         </div>
 
@@ -31,7 +27,7 @@ export default function Sidebar() {
           <div className="space-y-1">
             <h1 className="text-xl font-bold tracking-tight text-white/90">Tine Mosqueda</h1>
             <p className="text-xs text-white/40 leading-relaxed font-light">
-              Ensuring system integrity through structured validation and edge-case analysis.
+              Turning product workflows into clear technical solutions, demos, and implementation-ready documentation.
             </p>
           </div>
 
@@ -59,7 +55,7 @@ export default function Sidebar() {
 
         {/* SYSTEM TAGS */}
         <div className="space-y-4">
-          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Skills</p>
+          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Solutions Skills</p>
           <div className="flex flex-wrap gap-2">
             {summaryTags.map((tag) => (
               <div
@@ -77,17 +73,10 @@ export default function Sidebar() {
       {/* FOOTER STATS */}
       <div className="space-y-4">
         <div className="flex justify-between items-center px-1">
-          <p className="text-[10px] font-mono text-white/20 uppercase">Core_System.v2</p>
+          <p className="text-[10px] font-mono text-white/20 uppercase">Solution_System.v1</p>
           <p className="text-[10px] font-mono text-white/20">© {new Date().getFullYear()}</p>
         </div>
       </div>
-
-      <style>{`
-        @keyframes scan {
-          0%, 100% { top: 0%; }
-          50% { top: 100%; }
-        }
-      `}</style>
     </aside>
   );
 }

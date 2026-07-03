@@ -15,9 +15,9 @@ export default function ContactSection() {
         <div className="mb-10 space-y-4">
           <div className="flex items-center gap-2">
             <Terminal size={16} className="text-emerald-500" />
-            <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">Communication_Channels</h2>
+            <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">Contact_Points</h2>
           </div>
-          <h3 className="text-3xl font-bold text-white/90">Let’s elevate your next project together.</h3>
+          <h3 className="text-3xl font-bold text-white/90">Let’s translate your product into a clear customer-ready solution.</h3>
         </div>
 
         {/* CHIP INTERFACE */}

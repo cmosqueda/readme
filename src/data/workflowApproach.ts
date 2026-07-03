@@ -1,26 +1,26 @@
 export const workflowPrinciples = [
   {
     id: "01",
-    title: "The Balanced Protocol",
-    subtitle: "Pragmatic vs. Dogmatic",
+    title: "Discover Before Designing",
+    subtitle: "Customer Context First",
     description:
-      "Finding the sweet spot between rigid structure and chaotic flexibility. I avoid 'process for the sake of process' while maintaining enough rigor to prevent regressions.",
-    meta: "Team Synergy Focus",
+      "I start by understanding the user’s current workflow, constraints, stakeholders, and success criteria before recommending a product path or technical solution.",
+    meta: "Discovery Motion",
   },
   {
     id: "02",
-    title: "User-Centered Lens",
-    subtitle: "Real-World Simulation",
+    title: "Translate Problems into Solutions",
+    subtitle: "Business Need → Technical Fit",
     description:
-      "Testing beyond the documentation. I simulate real-world environments and involve actual users to gather experiential insights rather than working off assumptions.",
-    meta: "Experience Validation",
+      "I connect pain points to product capabilities, API behavior, user flows, and implementation requirements so the solution is clear to both technical and non-technical teams.",
+    meta: "Solution Mapping",
   },
   {
     id: "03",
-    title: "Evidence-Based QA",
-    subtitle: "Data & Research Driven",
+    title: "Prove Value with Evidence",
+    subtitle: "Demo • PoC • Documentation",
     description:
-      "Every 'Pass' or 'Fail' is backed by data. I combine environment simulations with data-driven artifacts to provide objective validation of product quality.",
-    meta: "Fact-Based Artifacts",
+      "I use demos, test scenarios, QA artifacts, and structured documentation to show how the proposed solution works, where it fits, and what risks need to be managed.",
+    meta: "Proof of Value",
   },
 ];

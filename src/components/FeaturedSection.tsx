@@ -18,9 +18,9 @@ export default function FeaturedSection() {
               <Layers className="text-emerald-500" size={20} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Featured_Works</h2>
+              <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Solution_Case_Studies</h2>
               <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">
-                Verified Documentation Engine
+                Discovery • Demo • Proof of Value
               </p>
             </div>
           </div>
@@ -50,7 +50,7 @@ export default function FeaturedSection() {
               <div className="flex items-center gap-4">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-mono uppercase text-emerald-500 tracking-[0.4em] mb-1">
-                    Live_Dossier
+                    Solution_Brief
                   </span>
                   <h3 className="text-xl font-bold text-white font-mono">{selectedProject.title}</h3>
                 </div>
@@ -116,7 +116,7 @@ export default function FeaturedSection() {
                   <div className="sticky top-0 space-y-6">
                     <div className="p-6 rounded-2xl bg-black/40 border border-white/5 space-y-6">
                       <h4 className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 border-b border-white/5 pb-2">
-                        Verification_Metrics
+                        Solution_Metrics
                       </h4>
                       {selectedProject.stats.map((stat) => (
                         <div key={stat.label} className="group/stat">
@@ -157,7 +157,7 @@ export default function FeaturedSection() {
                   <ShieldCheck size={16} className="text-emerald-500" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-mono text-white/20 uppercase">Assigned Architect</span>
+                  <span className="text-[9px] font-mono text-white/20 uppercase">Solution Role</span>
                   <span className="text-xs font-mono text-white/60">{selectedProject.role}</span>
                 </div>
               </div>
@@ -165,7 +165,7 @@ export default function FeaturedSection() {
                 onClick={() => setSelectedProject(null)}
                 className="w-full sm:w-auto px-8 py-3 bg-emerald-500 text-black text-xs font-bold font-mono rounded-xl hover:bg-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all uppercase tracking-widest"
               >
-                Terminate_View
+                Close_Brief
               </button>
             </div>
           </div>
@@ -228,7 +228,7 @@ function ProjectCard({ slug, onOpen }: { slug: string; onOpen: (p: ProjectData) 
           <div className="w-full md:w-auto flex flex-col gap-4">
             <div className="p-6 rounded-2xl bg-black/40 border border-white/5 flex flex-col gap-4 min-w-[200px] group-hover:border-emerald-500/30 transition-all duration-500">
               <div className="flex items-center justify-between">
-                <p className="text-[9px] font-mono text-white/20 uppercase">System Status</p>
+                <p className="text-[9px] font-mono text-white/20 uppercase">Case Status</p>
                 <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[8px] text-emerald-500 font-bold uppercase tracking-tighter">
                   Verified
                 </div>
@@ -236,7 +236,7 @@ function ProjectCard({ slug, onOpen }: { slug: string; onOpen: (p: ProjectData) 
               <p className="text-lg font-mono font-medium text-emerald-500/90">{project.status}</p>
 
               <div className="pt-4 border-t border-white/5 flex items-center justify-between text-white/40">
-                <span className="text-[9px] font-mono uppercase">Full Report</span>
+                <span className="text-[9px] font-mono uppercase">View Brief</span>
                 <ExternalLink
                   size={14}
                   className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"

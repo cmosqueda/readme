@@ -6,8 +6,8 @@ export const experiences = [
     period: "May 2026 — Present",
     location: "Cagayan de Oro, PH",
     description:
-      "Contributes to Creatives and Product Support on both marketing and product development, ensuring high-quality deliverables and customer satisfaction in a fast-paced environment.",
-    highlights: ["Creative Content Development", "Product Support", "Cross-Functional Collaboration"],
+      "Supports product-facing and customer-facing work by turning product workflows, feature behavior, and user needs into clear creative assets, support documentation, and implementation-ready references for internal and external stakeholders.",
+    highlights: ["Product Workflow Mapping", "Solution Documentation", "Cross-Functional Support"],
   },
   {
     id: "02",
@@ -16,8 +16,8 @@ export const experiences = [
     period: "Feb 2026 — April 2026",
     location: "Cagayan de Oro, PH",
     description:
-      "Contributed to the technical layout design and processes, focusing on precision and adherence to publishing standards. In parallel, I also worked on QA testing of an edtech mobile app.",
-    highlights: ["Layout Design", "Mobile App QA Testing", "Technical Reporting"],
+      "Combined technical publishing work with edtech QA, validating mobile app workflows, documenting issues, and translating observed user problems into actionable feedback for product and development teams.",
+    highlights: ["User Flow Validation", "Technical Reporting", "EdTech Product Feedback"],
   },
   {
     id: "03",
@@ -26,7 +26,7 @@ export const experiences = [
     period: "March 2025 — Jan 2026",
     location: "Cagayan de Oro, PH",
     description:
-      "Oversaw the end-to-end process of an AI-powered EdTech platform from planning to deployment and testing. Managed a team of 5 to ensure system reliability and usability under ISO/IEC 25010 standards.",
-    highlights: ["ISO/IEC 25010 Evaluation", "SUS Testing (77.95)", "Manual/API Testing"],
+      "Led the end-to-end delivery of an AI-powered EdTech platform, coordinating requirements, product direction, testing, documentation, and stakeholder-facing evaluation under ISO/IEC 25010 quality standards.",
+    highlights: ["Requirements Translation", "Product Demo Readiness", "ISO/IEC 25010 Evaluation"],
   },
 ];
