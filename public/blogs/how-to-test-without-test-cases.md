@@ -24,7 +24,7 @@ _But in reality, that does not always happen._
 
 Sometimes, you are asked to test a system with very limited context. No test cases. No proper handoff. No complete requirements. Sometimes, the only thing you have is the app itself and a vague instruction like: “Please test this.”
 
-In times like this, testing the app becomes exploratory.
+In times like this, testing the app becomes **exploratory.**
 
 And it's not that exploratory testing is bad. As a tester, yes, I'd say it is useful and sometimes inevitable—especially if you aren't given enough documents and artifacts to validate against. But it is definitely challenging, especially when testing and documenting everything is done manually.
 
