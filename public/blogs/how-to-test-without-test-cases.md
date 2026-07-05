@@ -2,7 +2,7 @@
 title: "How To Test Without Test Cases"
 date: "2026-07-03"
 category: "QA Methodology"
-readTime: "6 min read"
+readTime: "5 min read"
 summary: "A practical reflection on how to test when there are no test cases, poor handoffs, or incomplete documentation, and how exploratory testing can gradually become structured QA."
 tags:
   - "Exploratory Testing"

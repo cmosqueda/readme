@@ -1,10 +1,8 @@
 // BlogSection.tsx
 import { BookOpen, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom"; // Or your respective router package
+import { Link } from "react-router-dom";
 import useMarkdownFile from "../hooks/useMarkdownFile";
-
-// blog slugs
-const BLOG_SLUGS = ["how-to-test-without-test-cases"];
+import { BLOG_SLUGS } from "../data/blogPosts";
 
 export default function BlogSection() {
   return (
@@ -16,7 +14,7 @@ export default function BlogSection() {
             <BookOpen className="text-emerald-500" size={20} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Solution_Notes</h2>
+            <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Blogs & Articles</h2>
             <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">
               Discovery, Demos & Product Thinking
             </p>

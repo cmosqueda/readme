@@ -1,9 +1,10 @@
 // BlogPostPage.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, ArrowUp, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, ArrowUp, Calendar, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import useMarkdownFile from "../hooks/useMarkdownFile";
 import ReactMarkdown from "react-markdown";
+import { getBlogPosition } from "../data/blogPosts";
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -11,6 +12,14 @@ export default function BlogPostPage() {
 
   // Feed the dynamic URL slug parameters directly to your generic hook
   const blog = useMarkdownFile("blogs", slug || "");
+
+  const { previousSlug, nextSlug } = useMemo(() => getBlogPosition(slug), [slug]);
+
+  useEffect(() => {
+    // When moving between blog posts through Previous/Next, reset the reader position.
+    window.scrollTo({ top: 0, behavior: "auto" });
+    setReadingProgress(0);
+  }, [slug]);
 
   useEffect(() => {
     const updateReadingProgress = () => {
@@ -75,7 +84,7 @@ export default function BlogPostPage() {
           className="inline-flex items-center gap-2 text-xs font-mono text-white/40 hover:text-emerald-400 transition-colors mb-12 group"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-          RETURN_TO_HOME
+          RETURN_TO_PORTFOLIO
         </Link>
 
         {/* METADATA HEADER BLOCK */}
@@ -97,7 +106,7 @@ export default function BlogPostPage() {
         </header>
 
         {/* EXTRACTED MARKDOWN TEXT MARKUP */}
-        <article className="prose prose-invert prose-emerald max-w-none pb-24">
+        <article className="prose prose-invert prose-emerald max-w-none pb-16">
           <ReactMarkdown
             components={{
               h1: ({ children }) => (
@@ -122,6 +131,9 @@ export default function BlogPostPage() {
             {blog.content}
           </ReactMarkdown>
         </article>
+
+        {/* LINKED BLOG PAGING */}
+        <BlogPagination previousSlug={previousSlug} nextSlug={nextSlug} />
       </div>
 
       {/* FLOATING BACK TO START BUTTON */}
@@ -142,4 +154,67 @@ export default function BlogPostPage() {
       </button>
     </main>
   );
+}
+
+function BlogPagination({ previousSlug, nextSlug }: { previousSlug: string | null; nextSlug: string | null }) {
+  if (!previousSlug && !nextSlug) return null;
+
+  return (
+    <nav
+      aria-label="Blog post navigation"
+      className="grid grid-cols-1 gap-4 border-t border-white/5 pt-8 pb-24 md:grid-cols-2"
+    >
+      {previousSlug ? (
+        <BlogPaginationCard direction="previous" slug={previousSlug} />
+      ) : (
+        <div className="hidden md:block" aria-hidden="true" />
+      )}
+
+      {nextSlug ? (
+        <BlogPaginationCard direction="next" slug={nextSlug} />
+      ) : (
+        <div className="hidden md:block" aria-hidden="true" />
+      )}
+    </nav>
+  );
+}
+
+function BlogPaginationCard({ direction, slug }: { direction: "previous" | "next"; slug: string }) {
+  const blog = useMarkdownFile("blogs", slug);
+  const isPrevious = direction === "previous";
+
+  return (
+    <Link
+      to={`/blogs/${slug}`}
+      className={`
+        group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all duration-300
+        hover:border-emerald-500/30 hover:bg-emerald-500/[0.03]
+        ${isPrevious ? "text-left" : "text-left md:text-right"}
+      `}
+    >
+      <div
+        className={`flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-white/35 ${isPrevious ? "justify-start" : "justify-start md:justify-end"}`}
+      >
+        {isPrevious && <ChevronLeft size={13} className="transition-transform group-hover:-translate-x-0.5" />}
+        <span>{isPrevious ? "Previous Note" : "Next Note"}</span>
+        {!isPrevious && <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
+      </div>
+
+      <h2 className="mt-3 text-base font-bold text-white/85 transition-colors group-hover:text-emerald-400">
+        {blog?.title || formatSlugTitle(slug)}
+      </h2>
+
+      <p className="mt-2 text-xs leading-relaxed text-white/40 line-clamp-2">
+        {blog?.summary || "Open the next related solution note."}
+      </p>
+    </Link>
+  );
+}
+
+function formatSlugTitle(slug: string) {
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }

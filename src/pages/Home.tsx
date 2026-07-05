@@ -4,12 +4,14 @@ import Sidebar from "../components/Sidebar";
 import NavigationBar from "../components/NavigationBar";
 import ProfileSection from "../components/ProfileSection";
 import FeaturedSection from "../components/FeaturedSection";
-import WorkflowSection from "../components/WorkflowSection";
+// import WorkflowSection from "../components/WorkflowSection";
 import ExperienceSection from "../components/ExperienceSection";
 import ContactSection from "../components/ContactSection";
 import BlogSection from "../components/BlogSection";
 
-const sections = ["profile", "featured", "workflow", "experience", "blogs", "contact"];
+// removed workflow
+// const sections = ["profile", "featured", "workflow", "experience", "blogs", "contact"];
+const sections = ["profile", "featured", "experience", "blogs", "contact"];
 
 export default function Home() {
   const [active, setActive] = useState("profile");
@@ -54,9 +56,9 @@ export default function Home() {
             <FeaturedSection />
           </section>
 
-          <section id="workflow">
+          {/* <section id="workflow">
             <WorkflowSection />
-          </section>
+          </section> */}
 
           <section id="experience">
             <ExperienceSection />

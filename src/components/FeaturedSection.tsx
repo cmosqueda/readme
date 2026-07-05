@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layers, X, ShieldCheck, Zap, ArrowRight, ExternalLink } from "lucide-react";
 import useMarkdownProject, { type ProjectData } from "../hooks/MarkdownEngine";
 import ReactMarkdown from "react-markdown";
@@ -7,6 +7,24 @@ const PROJECT_SLUGS = ["featured-quickease"];
 
 export default function FeaturedSection() {
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+
+  useEffect(() => {
+    if (!selectedProject) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedProject(null);
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [selectedProject]);
 
   return (
     <section className="w-full flex justify-center py-12 px-4 relative">
@@ -18,7 +36,7 @@ export default function FeaturedSection() {
               <Layers className="text-emerald-500" size={20} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Solution_Case_Studies</h2>
+              <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Featured</h2>
               <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">
                 Discovery • Demo • Proof of Value
               </p>
@@ -33,145 +51,150 @@ export default function FeaturedSection() {
         </div>
       </div>
 
-      {/* OVERLAY / MODAL */}
-      {selectedProject && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
-          <div
-            className="absolute inset-0 bg-gray-950/95 backdrop-blur-md transition-opacity animate-in fade-in duration-300"
-            onClick={() => setSelectedProject(null)}
-          />
-
-          <div className="relative w-full max-w-4xl max-h-[90vh] bg-gray-900 border border-white/10 rounded-2xl overflow-hidden shadow-[0_0_50px_-12px_rgba(16,185,129,0.2)] flex flex-col animate-in zoom-in-95 duration-300">
-            {/* PROGRESS SCAN LINE */}
-            {/* <div className="absolute top-0 left-0 w-full h-[1px] bg-emerald-500/50 shadow-[0_0_15px_#10b981] animate-[scan_4s_linear_infinite]" /> */}
-
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/[0.02]">
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-mono uppercase text-emerald-500 tracking-[0.4em] mb-1">
-                    Solution_Brief
-                  </span>
-                  <h3 className="text-xl font-bold text-white font-mono">{selectedProject.title}</h3>
-                </div>
-              </div>
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="p-2 bg-white/5 hover:bg-red-500/20 hover:text-red-400 rounded-lg transition-all text-white/40 border border-white/5"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="overflow-y-auto p-8 md:p-12 scrollbar-thin scrollbar-thumb-emerald-500/20 scrollbar-track-transparent">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                {/* Main Content Area */}
-                <div className="lg:col-span-8 space-y-8">
-                  <div className="flex items-center gap-3">
-                    <Zap size={16} className="text-emerald-500" />
-                    <span className="text-xs font-mono text-emerald-500/80 uppercase tracking-widest font-bold">
-                      {selectedProject.category}
-                    </span>
-                  </div>
-
-                  <div className="prose prose-invert prose-emerald max-w-none">
-                    <ReactMarkdown
-                      components={{
-                        h1: ({ children }) => (
-                          <h1 className="text-3xl font-bold text-white mb-8 mt-3 border-b border-white/10 pb-4 font-mono">
-                            {children}
-                          </h1>
-                        ),
-                        h3: ({ children }) => (
-                          <h3 className="text-xl font-bold text-emerald-400/90 mt-10 mb-4 flex items-center gap-2">
-                            <ArrowRight size={18} /> {children}
-                          </h3>
-                        ),
-                        p: ({ children }) => <p className="text-white/60 leading-relaxed text-base mb-6">{children}</p>,
-                        ul: ({ children }) => <ul className="space-y-4 mb-8 text-white/60">{children}</ul>,
-                        li: ({ children }) => (
-                          <li className="flex gap-3 items-start">
-                            <span className="text-emerald-500 mt-1">▹</span>
-                            <span>{children}</span>
-                          </li>
-                        ),
-                        strong: ({ children }) => (
-                          <span className="text-emerald-400 font-bold px-1 bg-emerald-500/5 rounded">{children}</span>
-                        ),
-                        blockquote: ({ children }) => (
-                          <div className="border-l-2 border-emerald-500 bg-emerald-500/5 p-6 my-8 rounded-r-xl italic text-emerald-100/80 shadow-inner">
-                            {children}
-                          </div>
-                        ),
-                      }}
-                    >
-                      {selectedProject.content}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-
-                {/* Sidebar Stats Area */}
-                <div className="lg:col-span-4 space-y-6">
-                  <div className="sticky top-0 space-y-6">
-                    <div className="p-6 rounded-2xl bg-black/40 border border-white/5 space-y-6">
-                      <h4 className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 border-b border-white/5 pb-2">
-                        Solution_Metrics
-                      </h4>
-                      {selectedProject.stats.map((stat) => (
-                        <div key={stat.label} className="group/stat">
-                          <p className="text-[10px] font-mono text-white/40 uppercase mb-1 group-hover/stat:text-emerald-500/60 transition-colors">
-                            {stat.label}
-                          </p>
-                          <p className="text-xl font-bold text-white group-hover/stat:scale-105 transition-transform origin-left">
-                            {stat.value}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 space-y-4">
-                      <h4 className="text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-500/60">
-                        Tech_Stack
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedProject.tools.map((tool) => (
-                          <span
-                            key={tool}
-                            className="text-[9px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded border border-emerald-400/20 uppercase"
-                          >
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-6 bg-white/[0.02] border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-full">
-                  <ShieldCheck size={16} className="text-emerald-500" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[9px] font-mono text-white/20 uppercase">Solution Role</span>
-                  <span className="text-xs font-mono text-white/60">{selectedProject.role}</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="w-full sm:w-auto px-8 py-3 bg-emerald-500 text-black text-xs font-bold font-mono rounded-xl hover:bg-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all uppercase tracking-widest"
-              >
-                Close_Brief
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* FULL VIEW PROJECT DETAIL */}
+      {selectedProject && <ProjectFullView project={selectedProject} onClose={() => setSelectedProject(null)} />}
     </section>
+  );
+}
+
+function ProjectFullView({ project, onClose }: { project: ProjectData; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[100] bg-gray-950 text-white overflow-y-auto selection:bg-emerald-500/20">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-20 border-b border-white/10 bg-gray-950/90 backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <div className="min-w-0">
+            <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-emerald-500/70">Solution_Brief</p>
+            <h2 className="mt-1 truncate text-base font-bold text-white sm:text-xl md:text-2xl">{project.title}</h2>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="shrink-0 rounded-full border border-white/10 bg-white/[0.03] p-3 text-white/50 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300"
+            aria-label="Close project brief"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      </div>
+
+      {/* Hero Summary */}
+      <div className="border-b border-white/5 bg-white/[0.015]">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 md:py-14 lg:grid-cols-12 lg:px-8">
+          <div className="lg:col-span-8">
+            <div className="mb-5 flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-400">
+                <Zap size={12} />
+                {project.category}
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-white/40">
+                {project.status}
+              </span>
+            </div>
+
+            <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
+              {project.title}
+            </h1>
+            <p className="mt-6 max-w-3xl text-sm leading-relaxed text-white/55 sm:text-base">{project.description}</p>
+          </div>
+
+          <aside className="lg:col-span-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
+              <p className="mb-4 text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">Solution Role</p>
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-emerald-500/10 p-2 text-emerald-400">
+                  <ShieldCheck size={16} />
+                </div>
+                <p className="text-sm leading-relaxed text-white/70">{project.role}</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      {/* Full Content */}
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 md:py-14 lg:grid-cols-12 lg:px-8">
+        <main className="lg:col-span-8">
+          <div className="prose prose-invert prose-emerald max-w-none">
+            <ReactMarkdown
+              components={{
+                h1: ({ children }) => (
+                  <h1 className="mb-8 mt-0 border-b border-white/10 pb-4 font-mono text-3xl font-bold text-white">
+                    {children}
+                  </h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 className="mb-4 mt-10 font-mono text-2xl font-bold text-white/90">{children}</h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="mb-4 mt-10 flex items-center gap-2 text-xl font-bold text-emerald-400/90">
+                    <ArrowRight size={18} /> {children}
+                  </h3>
+                ),
+                p: ({ children }) => <p className="mb-6 text-base leading-relaxed text-white/60">{children}</p>,
+                ul: ({ children }) => <ul className="mb-8 space-y-4 text-white/60">{children}</ul>,
+                li: ({ children }) => (
+                  <li className="flex items-start gap-3">
+                    <span className="mt-1 text-emerald-500">▹</span>
+                    <span>{children}</span>
+                  </li>
+                ),
+                strong: ({ children }) => (
+                  <span className="rounded bg-emerald-500/5 px-1 font-bold text-emerald-400">{children}</span>
+                ),
+                blockquote: ({ children }) => (
+                  <div className="my-8 rounded-r-xl border-l-2 border-emerald-500 bg-emerald-500/5 p-6 italic text-emerald-100/80">
+                    {children}
+                  </div>
+                ),
+              }}
+            >
+              {project.content}
+            </ReactMarkdown>
+          </div>
+        </main>
+
+        {/* Right Summary Column */}
+        <aside className="lg:col-span-4">
+          <div className="space-y-6 lg:sticky lg:top-24">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+              <h4 className="border-b border-white/5 pb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
+                Solution_Metrics
+              </h4>
+              <div className="mt-6 space-y-5">
+                {project.stats.map((stat) => (
+                  <div key={stat.label}>
+                    <p className="mb-1 text-[10px] font-mono uppercase text-white/35">{stat.label}</p>
+                    <p className="text-xl font-bold text-white">{stat.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-6">
+              <h4 className="mb-4 text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-500/60">Tech_Stack</h4>
+              <div className="flex flex-wrap gap-2">
+                {project.tools.map((tool) => (
+                  <span
+                    key={tool}
+                    className="rounded border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[9px] font-mono uppercase text-emerald-300"
+                  >
+                    {tool}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-6 py-3 text-xs font-bold uppercase tracking-widest text-white/60 transition hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-300"
+            >
+              Back_To_Portfolio
+            </button>
+          </div>
+        </aside>
+      </div>
+    </div>
   );
 }
 
@@ -184,64 +207,52 @@ function ProjectCard({ slug, onOpen }: { slug: string; onOpen: (p: ProjectData) 
   return (
     <button
       onClick={() => onOpen(project)}
-      className="text-left w-full group relative bg-white/[0.01] border border-white/5 rounded-3xl overflow-hidden hover:border-emerald-500/40 hover:bg-emerald-500/[0.02] transition-all duration-700 outline-none"
+      className="text-left w-full group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-emerald-500/35 hover:bg-emerald-500/[0.03] transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
     >
-      {/* GLOW EFFECT */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-all duration-700" />
-
-      <div className="p-8 md:p-10 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-10">
-          <div className="flex-1 space-y-6">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <p className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.4em] font-bold">
-                  {project.category}
-                </p>
-              </div>
-              <h3 className="text-3xl md:text-4xl font-bold text-white group-hover:text-emerald-400 transition-colors duration-500">
-                {project.title}
-              </h3>
+      <div className="p-6 md:p-8 relative z-10">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0 flex-1 space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.25em] font-bold">
+                {project.category}
+              </span>
+              <span className="hidden h-1 w-1 rounded-full bg-white/20 sm:block" />
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">{project.status}</span>
             </div>
 
-            <p className="text-base text-white/30 leading-relaxed max-w-xl group-hover:text-white/50 transition-colors duration-500 italic">
-              {project.description}
-            </p>
+            <div>
+              <h3 className="text-2xl font-bold text-white transition-colors duration-300 group-hover:text-emerald-400 sm:text-3xl">
+                {project.title}
+              </h3>
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/45 transition-colors duration-300 group-hover:text-white/60">
+                {project.description}
+              </p>
+            </div>
 
-            <div className="flex flex-wrap gap-2 pt-2">
+            <div className="flex flex-wrap gap-2 pt-1">
               {project.workflow.slice(0, 3).map((step) => (
                 <span
                   key={step}
-                  className="text-[9px] font-mono text-white/40 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 group-hover:border-emerald-500/20 group-hover:text-white/60 transition-all"
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[9px] font-mono text-white/45"
                 >
                   {step}
                 </span>
               ))}
-              {project.workflow.length > 3 && (
-                <span className="text-[9px] font-mono text-white/20 px-2 py-1.5">
-                  +{project.workflow.length - 3} MORE
-                </span>
-              )}
             </div>
           </div>
 
-          <div className="w-full md:w-auto flex flex-col gap-4">
-            <div className="p-6 rounded-2xl bg-black/40 border border-white/5 flex flex-col gap-4 min-w-[200px] group-hover:border-emerald-500/30 transition-all duration-500">
-              <div className="flex items-center justify-between">
-                <p className="text-[9px] font-mono text-white/20 uppercase">Case Status</p>
-                <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[8px] text-emerald-500 font-bold uppercase tracking-tighter">
-                  Verified
-                </div>
-              </div>
-              <p className="text-lg font-mono font-medium text-emerald-500/90">{project.status}</p>
-
-              <div className="pt-4 border-t border-white/5 flex items-center justify-between text-white/40">
-                <span className="text-[9px] font-mono uppercase">View Brief</span>
+          <div className="w-full md:w-auto md:min-w-[180px]">
+            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <p className="text-[9px] font-mono uppercase text-white/25">Open Full View</p>
                 <ExternalLink
                   size={14}
-                  className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
+                  className="text-emerald-500/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
               </div>
+              <p className="text-xs leading-relaxed text-white/45">
+                View the complete solution brief, metrics, and implementation notes.
+              </p>
             </div>
           </div>
         </div>
