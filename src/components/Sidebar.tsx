@@ -1,12 +1,12 @@
-import { Database, FileCode, CheckCircle, Presentation, Download, ExternalLink } from "lucide-react";
+import { Database, FileCode, CheckCircle, Cpu, Download, ExternalLink } from "lucide-react";
 import profilePic from "../assets/mosqueda_photo.png";
 
 export default function Sidebar() {
   const summaryTags = [
-    { label: "Discovery", icon: <CheckCircle size={10} /> },
-    { label: "Demo Design", icon: <Presentation size={10} /> },
-    { label: "API Workflows", icon: <Database size={10} /> },
-    { label: "Solution Docs", icon: <FileCode size={10} /> },
+    { label: "Quality Eng.", icon: <CheckCircle size={10} /> },
+    { label: "AI Automation", icon: <Cpu size={10} /> },
+    { label: "System Mapping", icon: <Database size={10} /> },
+    { label: "Technical Docs", icon: <FileCode size={10} /> },
   ];
 
   return (
@@ -26,9 +26,7 @@ export default function Sidebar() {
         <div className="flex flex-col gap-5">
           <div className="space-y-1">
             <h1 className="text-xl font-bold tracking-tight text-white/90">Tine Mosqueda</h1>
-            <p className="text-xs text-white/40 leading-relaxed font-light">
-              Turning product workflows into clear technical solutions, demos, and implementation-ready documentation.
-            </p>
+            <p className="text-xs text-white/40 leading-relaxed font-light">Engineering resilient product systems.</p>
           </div>
 
           {/* CV BUTTON COMPONENT */}
@@ -55,7 +53,7 @@ export default function Sidebar() {
 
         {/* SYSTEM TAGS */}
         <div className="space-y-4">
-          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Solutions Skills</p>
+          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Core Tracks</p>
           <div className="flex flex-wrap gap-2">
             {summaryTags.map((tag) => (
               <div
@@ -73,7 +71,7 @@ export default function Sidebar() {
       {/* FOOTER STATS */}
       <div className="space-y-4">
         <div className="flex justify-between items-center px-1">
-          <p className="text-[10px] font-mono text-white/20 uppercase">Solution_System.v1</p>
+          <p className="text-[10px] font-mono text-white/20 uppercase">Systems_Core.v2</p>
           <p className="text-[10px] font-mono text-white/20">© {new Date().getFullYear()}</p>
         </div>
       </div>

@@ -8,19 +8,25 @@ export default function ProfileSection() {
         {/* HERO BLOCK */}
         {/* ========================= */}
         <div className="flex flex-col gap-6">
-          <h1 className="text-5xl text-center sm:text-left sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono">
-            Solutions <span className="text-emerald-500">Engineer</span>
-          </h1>
+          <div className="flex flex-col gap-2">
+            {/* <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.3em] text-center sm:text-left">
+              Corporate_Assignment // Promoted
+            </span> */}
+            <h1 className="text-4xl text-center sm:text-left sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono leading-none">
+              Product Systems <span className="text-emerald-500">Analyst</span>
+            </h1>
+          </div>
 
           <div className="border-l-2 border-emerald-500/30 pl-6 flex flex-col gap-4">
             <p className="text-base sm:text-lg text-white/80 max-w-2xl leading-relaxed">
-              I translate customer workflows, product requirements, and technical constraints into clear solution
-              designs, demos, and implementation-ready documentation.
+              I architect product operations at the intersection of quality engineering, AI-driven automation, and
+              system documentation. By balancing between heuristic and deterministic approaches, I ensure platforms are
+              structurally resilient, scalable, and built on verifiable engineering blueprints.
             </p>
 
             <p className="text-sm text-white/50 max-w-xl font-mono">
-              // Focus: Technical Discovery, Product Demos, API Workflows, Proof-of-Concept Support, and Customer-Ready
-              Documentation.
+              // Focus: AI Automation & Architecture, High-Integrity Testing, System Mapping, and Production-Ready
+              Blueprints.
             </p>
           </div>
         </div>
@@ -32,11 +38,11 @@ export default function ProfileSection() {
           <div className="flex items-start gap-4">
             <Compass className="text-emerald-500 w-6 h-6 shrink-0 mt-1" />
             <div>
-              <h3 className="text-white font-medium mb-2">Solutions Philosophy</h3>
+              <h3 className="text-white font-medium mb-2">Systems Philosophy</h3>
               <p className="text-sm text-white/60 leading-relaxed">
-                A strong solution starts with discovery. I focus on understanding the user’s current process,
-                identifying operational pain points, mapping them to product capabilities, and communicating the value
-                in a way both technical and non-technical stakeholders can trust.
+                Reliability is an architectural constraint. I identify operational bottlenecks within complex systems,
+                design human-in-the-loop AI automations to optimize them, and translate the entire lifecycle into
+                technical documentation that engineering teams can seamlessly implement.
               </p>
             </div>
           </div>
@@ -46,16 +52,20 @@ export default function ProfileSection() {
         {/* TECHNICAL SPEC GRID */}
         {/* ========================= */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <SpecCard icon={<Terminal size={18} />} label="Technical Base" value="QA • APIs • Product Workflows" />
+          <SpecCard
+            icon={<Terminal size={18} />}
+            label="Product Strategy"
+            value="System Mapping • API Integrations • SDLC Architecture"
+          />
           <SpecCard
             icon={<Presentation size={18} />}
-            label="Customer Motion"
-            value="Discovery • Demos • Proof of Value"
+            label="AI Automation"
+            value="Human-in-the-Loop AI • Workflow Engineering • LLM Benchmarking"
           />
           <SpecCard
             icon={<Network size={18} />}
-            label="Delivery Lens"
-            value="Implementation Docs • Support • Feedback Loops"
+            label="Quality Lens"
+            value="Regression Pipelines • System Blueprints • E2E Validation Logs"
           />
         </div>
       </div>
@@ -70,7 +80,7 @@ function SpecCard({ icon, label, value }: { icon: React.ReactNode; label: string
         {icon}
         <span className="text-[10px] uppercase tracking-tighter font-mono text-white/40">{label}</span>
       </div>
-      <p className="text-sm font-medium text-white/90 leading-tight">{value}</p>
+      <p className="text-xs sm:text-sm font-medium text-white/90 leading-tight">{value}</p>
     </div>
   );
 }

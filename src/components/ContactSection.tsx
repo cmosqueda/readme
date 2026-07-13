@@ -17,7 +17,7 @@ export default function ContactSection() {
             <Terminal size={16} className="text-emerald-500" />
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">Contact_Points</h2>
           </div>
-          <h3 className="text-3xl font-bold text-white/90">Let’s translate your product into a clear customer-ready solution.</h3>
+          <h3 className="text-3xl font-bold text-white/90">Designing and planning high-integrity, scalable systems.</h3>
         </div>
 
         {/* CHIP INTERFACE */}
