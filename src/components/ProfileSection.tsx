@@ -1,4 +1,4 @@
-import { Compass, Terminal, Presentation, Network } from "lucide-react";
+import { Terminal, Presentation, Network } from "lucide-react";
 
 export default function ProfileSection() {
   return (
@@ -34,19 +34,6 @@ export default function ProfileSection() {
         {/* ========================= */}
         {/* PHILOSOPHY CARD */}
         {/* ========================= */}
-        <div className="bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-          <div className="flex items-start gap-4">
-            <Compass className="text-emerald-500 w-6 h-6 shrink-0 mt-1" />
-            <div>
-              <h3 className="text-white font-medium mb-2">Systems Philosophy</h3>
-              <p className="text-sm text-white/60 leading-relaxed">
-                Reliability is an architectural constraint. I identify operational bottlenecks within complex systems,
-                design human-in-the-loop AI automations to optimize them, and translate the entire lifecycle into
-                technical documentation that engineering teams can seamlessly implement.
-              </p>
-            </div>
-          </div>
-        </div>
 
         {/* ========================= */}
         {/* TECHNICAL SPEC GRID */}
