@@ -1,4 +1,4 @@
-// pages/Dashboard.tsx
+// pages/Home.tsx
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import NavigationBar from "../components/NavigationBar";
@@ -8,13 +8,19 @@ import FeaturedSection from "../components/FeaturedSection";
 import ExperienceSection from "../components/ExperienceSection";
 import ContactSection from "../components/ContactSection";
 import BlogSection from "../components/BlogSection";
+import { sections } from "../data/navigation";
 
-// removed workflow
-// const sections = ["profile", "featured", "workflow", "experience", "blogs", "contact"];
-const sections = ["profile", "featured", "experience", "blogs", "contact"];
+const sectionComponents: Record<string, React.ReactNode> = {
+  profile: <ProfileSection />,
+  featured: <FeaturedSection />,
+  // workflow: <WorkflowSection />,
+  experience: <ExperienceSection />,
+  blogs: <BlogSection />,
+  contact: <ContactSection />,
+};
 
 export default function Home() {
-  const [active, setActive] = useState("profile");
+  const [active, setActive] = useState(sections[0].id);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,7 +38,7 @@ export default function Home() {
       },
     );
 
-    sections.forEach((id) => {
+    sections.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
@@ -48,29 +54,11 @@ export default function Home() {
         <NavigationBar active={active} />
 
         <main className="flex-1 overflow-y-auto px-6 py-10 space-y-20 scrollbar-hide">
-          <section id="profile" className="mt-5">
-            <ProfileSection />
-          </section>
-
-          <section id="featured">
-            <FeaturedSection />
-          </section>
-
-          {/* <section id="workflow">
-            <WorkflowSection />
-          </section> */}
-
-          <section id="experience">
-            <ExperienceSection />
-          </section>
-
-          <section id="blogs">
-            <BlogSection />
-          </section>
-
-          <section id="contact">
-            <ContactSection />
-          </section>
+          {sections.map(({ id }, index) => (
+            <section key={id} id={id} className={index === 0 ? "mt-5" : undefined}>
+              {sectionComponents[id]}
+            </section>
+          ))}
         </main>
       </div>
     </div>

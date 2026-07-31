@@ -1,9 +1,10 @@
-import { Search, Network, Presentation, Terminal } from "lucide-react";
+import { motion } from "framer-motion";
+import { Terminal } from "lucide-react";
+import { Icon } from "../lib/icons";
+import { fadeInUp, staggerContainer } from "../lib/motion";
 import { workflowPrinciples } from "../data/workflowApproach";
 
 export default function WorkflowSection() {
-  const icons = [<Search size={20} />, <Network size={20} />, <Presentation size={20} />];
-
   return (
     <section className="w-full flex justify-center py-10 px-4">
       <div className="w-full max-w-4xl">
@@ -16,16 +17,23 @@ export default function WorkflowSection() {
         </div>
 
         {/* PRINCIPLES GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {workflowPrinciples.map((principle, index) => (
-            <div
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          {workflowPrinciples.map((principle) => (
+            <motion.div
               key={principle.id}
+              variants={fadeInUp}
               className="relative group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-500"
             >
               <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-emerald-500/0 group-hover:border-emerald-500/40 rounded-tr-2xl transition-all duration-500" />
 
               <div className="mb-6 inline-flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-500/5 text-emerald-500 border border-emerald-500/10">
-                {icons[index]}
+                <Icon name={principle.iconKey} size={20} />
               </div>
 
               <div className="space-y-2">
@@ -42,9 +50,9 @@ export default function WorkflowSection() {
                 <span className="text-[9px] font-mono text-white/20 uppercase tracking-tighter">Status: Field-Ready</span>
                 <span className="text-[9px] font-mono text-emerald-500/40 uppercase">{principle.meta}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

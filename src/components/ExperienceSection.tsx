@@ -1,5 +1,7 @@
+import { motion } from "framer-motion";
 import { Briefcase, Calendar, MapPin, ChevronRight } from "lucide-react";
 import { experiences } from "../data/experiences";
+import { fadeInUp, staggerContainer } from "../lib/motion";
 
 export default function ExperienceSection() {
   return (
@@ -12,9 +14,15 @@ export default function ExperienceSection() {
         </div>
 
         {/* TIMELINE LIST */}
-        <div className="space-y-12">
+        <motion.div
+          className="space-y-12"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+        >
           {experiences.map((exp, index) => (
-            <div key={exp.id} className="relative pl-8 group">
+            <motion.div key={exp.id} variants={fadeInUp} className="relative pl-8 group">
               {/* Vertical Line Connector */}
               {index !== experiences.length - 1 && (
                 <div className="absolute left-[11px] top-8 w-[1px] h-full bg-gradient-to-b from-emerald-500/30 to-transparent" />
@@ -64,9 +72,9 @@ export default function ExperienceSection() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* RECENT STATUS FOOTER */}
         {/* <div className="mt-16 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-transparent border border-white/5">

@@ -1,17 +1,17 @@
 // BlogPostPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { ArrowLeft, ArrowUp, Calendar, ChevronLeft, ChevronRight, Clock } from "lucide-react";
-import useMarkdownFile from "../hooks/useMarkdownFile";
 import ReactMarkdown from "react-markdown";
-import { getBlogPosition } from "../data/blogPosts";
+import { getBlogBySlug, getBlogPosition } from "../lib/content";
+import { fadeInUp } from "../lib/motion";
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
   const [readingProgress, setReadingProgress] = useState(0);
 
-  // Feed the dynamic URL slug parameters directly to your generic hook
-  const blog = useMarkdownFile("blogs", slug || "");
+  const blog = getBlogBySlug(slug);
 
   const { previousSlug, nextSlug } = useMemo(() => getBlogPosition(slug), [slug]);
 
@@ -53,8 +53,10 @@ export default function BlogPostPage() {
     return (
       <div className="w-full min-h-screen flex items-center justify-center bg-gray-950 font-mono text-white/40 text-xs">
         <div className="flex flex-col items-center gap-2">
-          <div className="w-4 h-4 border border-emerald-500 border-t-transparent animate-spin rounded-full" />
-          <span>LOADING_SOLUTION_NOTE...</span>
+          <span>NOTE_NOT_FOUND</span>
+          <Link to="/" className="text-emerald-400 hover:text-emerald-300 transition-colors">
+            RETURN_TO_PORTFOLIO
+          </Link>
         </div>
       </div>
     );
@@ -77,7 +79,13 @@ export default function BlogPostPage() {
         />
       </div>
 
-      <div className="w-full max-w-3xl">
+      <motion.div
+        key={slug}
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-3xl"
+      >
         {/* BACK TO HOME NAVIGATION */}
         <Link
           to="/"
@@ -134,7 +142,7 @@ export default function BlogPostPage() {
 
         {/* LINKED BLOG PAGING */}
         <BlogPagination previousSlug={previousSlug} nextSlug={nextSlug} />
-      </div>
+      </motion.div>
 
       {/* FLOATING BACK TO START BUTTON */}
       <button
@@ -180,7 +188,7 @@ function BlogPagination({ previousSlug, nextSlug }: { previousSlug: string | nul
 }
 
 function BlogPaginationCard({ direction, slug }: { direction: "previous" | "next"; slug: string }) {
-  const blog = useMarkdownFile("blogs", slug);
+  const blog = getBlogBySlug(slug);
   const isPrevious = direction === "previous";
 
   return (

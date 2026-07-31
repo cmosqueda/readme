@@ -1,29 +1,32 @@
-import { Mail, Globe, Github, Send, Terminal, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+import { Send, Terminal, MapPin } from "lucide-react";
+import { Icon } from "../lib/icons";
 import { contactLinks } from "../data/contact";
+import { fadeInUp, staggerContainer } from "../lib/motion";
 
 export default function ContactSection() {
-  const icons: Record<string, React.ReactNode> = {
-    Email: <Mail size={14} />,
-    LinkedIn: <Globe size={14} />,
-    GitHub: <Github size={14} />,
-  };
-
   return (
     <section className="w-full flex justify-center py-24 px-4">
-      <div className="w-full max-w-4xl border-t border-white/5 pt-16">
-        {/* HEADER */}
-        <div className="mb-10 space-y-4">
+      <motion.div
+        className="w-full max-w-4xl border-t border-white/5 pt-16"
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <motion.div variants={fadeInUp} className="mb-10 space-y-4">
           <div className="flex items-center gap-2">
             <Terminal size={16} className="text-emerald-500" />
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">Contact_Points</h2>
           </div>
           <h3 className="text-3xl font-bold text-white/90">Designing and planning high-integrity, scalable systems.</h3>
-        </div>
+        </motion.div>
 
         {/* CHIP INTERFACE */}
-        <div className="flex flex-wrap gap-3 mb-16">
+        <motion.div variants={staggerContainer} className="flex flex-wrap gap-3 mb-16">
           {contactLinks.map((contact) => (
-            <a
+            <motion.a
+              variants={fadeInUp}
               key={contact.id}
               href={contact.link}
               target="_blank"
@@ -36,7 +39,7 @@ export default function ContactSection() {
               "
             >
               <span className="text-emerald-500/60 group-hover:text-emerald-400 transition-colors">
-                {icons[contact.platform]}
+                <Icon name={contact.iconKey} size={14} />
               </span>
               <span className="text-xs font-mono text-white/60 group-hover:text-white transition-colors">
                 {contact.platform}
@@ -45,7 +48,7 @@ export default function ContactSection() {
               <span className="text-[10px] text-white/30 group-hover:text-white/50 transition-colors">
                 {contact.value}
               </span>
-            </a>
+            </motion.a>
           ))}
 
           {/* STATUS CHIP (Non-clickable) */}
@@ -55,7 +58,7 @@ export default function ContactSection() {
               Available_for_Internship
             </span>
           </div> */}
-        </div>
+        </motion.div>
 
         {/* SYSTEM FOOTER */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 opacity-40">
@@ -72,7 +75,7 @@ export default function ContactSection() {
 
           <p className="text-[9px] font-mono uppercase tracking-[0.4em]">End_of_Transmission</p>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

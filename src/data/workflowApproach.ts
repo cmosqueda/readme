@@ -1,6 +1,16 @@
-export const workflowPrinciples = [
+import type { IconKey } from "../lib/iconRegistry";
+
+export const workflowPrinciples: {
+  id: string;
+  iconKey: IconKey;
+  title: string;
+  subtitle: string;
+  description: string;
+  meta: string;
+}[] = [
   {
     id: "01",
+    iconKey: "search",
     title: "Discover Before Designing",
     subtitle: "Customer Context First",
     description:
@@ -9,6 +19,7 @@ export const workflowPrinciples = [
   },
   {
     id: "02",
+    iconKey: "network",
     title: "Translate Problems into Solutions",
     subtitle: "Business Need → Technical Fit",
     description:
@@ -17,6 +28,7 @@ export const workflowPrinciples = [
   },
   {
     id: "03",
+    iconKey: "presentation",
     title: "Prove Value with Evidence",
     subtitle: "Demo • PoC • Documentation",
     description:

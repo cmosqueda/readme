@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Layers, X, ShieldCheck, Zap, ArrowRight, ExternalLink } from "lucide-react";
-import useMarkdownProject, { type ProjectData } from "../hooks/MarkdownEngine";
 import ReactMarkdown from "react-markdown";
+import { getAllProjects, type ProjectData } from "../lib/content";
+import { fadeInUp, fadeScale, staggerContainer } from "../lib/motion";
 
-const PROJECT_SLUGS = ["featured-quickease"];
+const projects = getAllProjects();
 
 export default function FeaturedSection() {
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
@@ -44,22 +46,36 @@ export default function FeaturedSection() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-10">
-          {PROJECT_SLUGS.map((slug) => (
-            <ProjectCard key={slug} slug={slug} onOpen={setSelectedProject} />
+        <motion.div
+          className="flex flex-col gap-10"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {projects.map((project) => (
+            <ProjectCard key={project.slug} project={project} onOpen={setSelectedProject} />
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* FULL VIEW PROJECT DETAIL */}
-      {selectedProject && <ProjectFullView project={selectedProject} onClose={() => setSelectedProject(null)} />}
+      <AnimatePresence>
+        {selectedProject && <ProjectFullView project={selectedProject} onClose={() => setSelectedProject(null)} />}
+      </AnimatePresence>
     </section>
   );
 }
 
 function ProjectFullView({ project, onClose }: { project: ProjectData; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-[100] bg-gray-950 text-white overflow-y-auto selection:bg-emerald-500/20">
+    <motion.div
+      variants={fadeScale}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="fixed inset-0 z-[100] bg-gray-950 text-white overflow-y-auto selection:bg-emerald-500/20"
+    >
       {/* Sticky Header */}
       <div className="sticky top-0 z-20 border-b border-white/10 bg-gray-950/90 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
@@ -194,18 +210,14 @@ function ProjectFullView({ project, onClose }: { project: ProjectData; onClose: 
           </div>
         </aside>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function ProjectCard({ slug, onOpen }: { slug: string; onOpen: (p: ProjectData) => void }) {
-  const project = useMarkdownProject(slug);
-
-  if (!project)
-    return <div className="h-64 bg-white/[0.01] animate-pulse rounded-2xl border border-white/5 shadow-inner" />;
-
+function ProjectCard({ project, onOpen }: { project: ProjectData; onOpen: (p: ProjectData) => void }) {
   return (
-    <button
+    <motion.button
+      variants={fadeInUp}
       onClick={() => onOpen(project)}
       className="text-left w-full group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-emerald-500/35 hover:bg-emerald-500/[0.03] transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
     >
@@ -257,6 +269,6 @@ function ProjectCard({ slug, onOpen }: { slug: string; onOpen: (p: ProjectData) 
           </div>
         </div>
       </div>
-    </button>
+    </motion.button>
   );
 }
