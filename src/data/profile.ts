@@ -1,30 +1,30 @@
 import type { IconKey } from "../lib/iconRegistry";
 
 export const profile = {
-  eyebrow: "Corporate_Assignment // Promoted",
-  titleLine1: "System",
+  eyebrow: "Business Operations. System Design.",
+  titleLine1: "Product Systems",
   titleAccent: "Analyst",
   bioParagraphs: [
-    "From a young age, I’ve always been fascinated by how technology drives people's everyday lives. Starting my BSIT journey exposed me to the sweet spot where technology meets business operations—where I saw everything intersect. Specializing in Information Systems and Database Management deepened my focus on data-driven solutions, machine learning, and business workflows. Today, that background shapes how I approach systems analytically: ensuring that every architecture decision, automation script, and design I create genuinely optimizes how people work.",
+    "I research how people, teams, and businesses work before helping shape the product around them. By validating user needs and mapping real workflows, I turn ambiguous problems into practical requirements, system designs, and delivery plans.",
+    "My work sits between product and engineering: I partner with product leads on direction, translate findings for technical teams, and support quality validation so what ships reflects the original user need.",
   ],
-  focusLine:
-    "// Focus: AI Automation & Architecture, High-Integrity Testing, System Mapping, and Production-Ready Blueprints.",
+  focusLine: "// Focus: User research, workflow design, product requirements, system mapping, and QA validation.",
 };
 
 export const specCards: { iconKey: IconKey; label: string; value: string }[] = [
   {
     iconKey: "terminal",
-    label: "Product Strategy",
-    value: "System Mapping • API Integrations • SDLC Architecture",
+    label: "User & Workflow Discovery",
+    value: "User Validation • Stakeholder Context • Process Mapping",
   },
   {
     iconKey: "presentation",
-    label: "AI Automation",
-    value: "Human-in-the-Loop AI • Workflow Engineering • LLM Benchmarking",
+    label: "Requirements & System Design",
+    value: "User Flows • Functional Requirements • Technical Specifications",
   },
   {
     iconKey: "network",
-    label: "Quality Lens",
-    value: "Regression Pipelines • System Blueprints • E2E Validation Logs",
+    label: "Quality & Delivery Support",
+    value: "Test Scenarios • E2E Validation • Technical Documentation",
   },
 ];

@@ -19,7 +19,13 @@ export default function ContactSection() {
             <Terminal size={16} className="text-emerald-500" />
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">Contact_Points</h2>
           </div>
-          <h3 className="text-3xl font-bold text-white/90">Designing and planning high-integrity, scalable systems.</h3>
+          <h3 className="text-3xl font-bold text-white/90">
+            Let&apos;s turn validated needs into a buildable product system.
+          </h3>
+          <p className="max-w-2xl text-sm leading-relaxed text-white/50">
+            Open to early-career product systems opportunities and scoped product discovery, workflow design, and
+            requirements consulting.
+          </p>
         </motion.div>
 
         {/* CHIP INTERFACE */}

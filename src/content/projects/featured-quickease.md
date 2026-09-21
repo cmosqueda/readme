@@ -2,9 +2,9 @@
 id: "qe-02"
 title: "QuickEase 2.0"
 category: "EdTech • AI Validation"
-role: "Lead QA & Researcher"
+role: "QA Lead & Product Research Support"
 status: "Stable"
-description: "A capstone project featuring an AI-powered study helper platform combined with gamification and a dedicated social environment for peer learning and knowledge-sharing."
+description: "An AI-powered study-helper platform shaped through educational research, quality validation, and iterative user-experience testing."
 tools: ["Gemini 2.5/2.0", "AHP", "Postman", "Jest"]
 workflow: ["ISO/IEC 25010", "SUS Testing", "AHP Framework"]
 stats:
@@ -18,7 +18,7 @@ stats:
     value: "Iterative/Regression"
 ---
 
-# Quality Assurance Strategy
+# Problem & Quality Strategy
 
 QuickEase 2.0 is an AI-powered study helper platform utilizing **Document-Grounded Generation (DGG)**. My role involved architecting a multi-layered validation framework to ensure educational integrity and LLM reliability.
 
@@ -32,7 +32,7 @@ I led the implementation of a hybrid testing approach to cover the full applicat
 
 ---
 
-# The DGG AI Validation (Human-in-the-Loop)
+# Research-Led DGG AI Validation
 
 A critical component of this project was the comparative analysis of LLM performance within our DGG pipeline. We aimed to optimize for **Inference Quality** vs. **Cost Efficiency**.
 

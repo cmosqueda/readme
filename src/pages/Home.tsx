@@ -1,10 +1,11 @@
 // pages/Home.tsx
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import MobileProfileCard from "../components/MobileProfileCard";
 import NavigationBar from "../components/NavigationBar";
 import ProfileSection from "../components/ProfileSection";
 import FeaturedSection from "../components/FeaturedSection";
-// import WorkflowSection from "../components/WorkflowSection";
+import WorkflowSection from "../components/WorkflowSection";
 import ExperienceSection from "../components/ExperienceSection";
 import ContactSection from "../components/ContactSection";
 import BlogSection from "../components/BlogSection";
@@ -12,8 +13,8 @@ import { sections } from "../data/navigation";
 
 const sectionComponents: Record<string, React.ReactNode> = {
   profile: <ProfileSection />,
+  workflow: <WorkflowSection />,
   featured: <FeaturedSection />,
-  // workflow: <WorkflowSection />,
   experience: <ExperienceSection />,
   blogs: <BlogSection />,
   contact: <ContactSection />,
@@ -54,6 +55,7 @@ export default function Home() {
         <NavigationBar active={active} />
 
         <main className="flex-1 overflow-y-auto px-6 py-10 space-y-20 scrollbar-hide">
+          <MobileProfileCard />
           {sections.map(({ id }, index) => (
             <section key={id} id={id} className={index === 0 ? "mt-5" : undefined}>
               {sectionComponents[id]}

@@ -18,6 +18,9 @@ export default function ProfileSection() {
         {/* ========================= */}
         <motion.div variants={fadeInUp} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
+            <p className="text-center sm:text-left text-[10px] font-mono uppercase tracking-[0.28em] text-emerald-400/70">
+              {profile.eyebrow}
+            </p>
             <h1 className="text-5xl text-center sm:text-left sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono leading-none">
               {profile.titleLine1} <span className="text-emerald-500">{profile.titleAccent}</span>
             </h1>

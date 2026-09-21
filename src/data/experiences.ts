@@ -6,8 +6,8 @@ export const experiences = [
     period: "July 2026 — Present",
     location: "Cagayan de Oro, PH",
     description:
-      "Drives strategic planning and core system architecture for an educational technology platform. Conducts targeted AI and EdTech research to design human-in-the-loop workflow blueprints, build custom automation scripts, and author technical specifications that transform operational workflows into scalable solutions.",
-    highlights: ["AI Workflow Automation", "System Blueprint Design", "SDLC Optimization"],
+      "Partners with the Product Owner and cross-functional team to research EdTech and AI-enabled workflows, validate operational needs, and translate findings into human-in-the-loop system blueprints, technical specifications, and delivery-ready documentation. Supports quality validation and automation work throughout implementation.",
+    highlights: ["Workflow Discovery", "System Requirements", "Quality Validation"],
   },
   {
     id: "02",
@@ -16,8 +16,8 @@ export const experiences = [
     period: "May 2026 — July 2026",
     location: "Cagayan de Oro, PH",
     description:
-      "Contributed to layout design and social media content creation for the company’s digital products. Expanded responsibilities to include end-to-end quality assurance testing, validating user flows, and ensuring product compliance with design specifications.",
-    highlights: ["System Flow Mapping", "Functional Documentation", "Cross-Functional Alignment"],
+      "Contributed to digital-product design and support, then expanded into end-to-end QA work: validating user flows, documenting functional findings, and helping the team keep delivered experiences aligned with product and design requirements.",
+    highlights: ["User-Flow Validation", "Functional Documentation", "Product Support"],
   },
   {
     id: "03",
@@ -26,8 +26,8 @@ export const experiences = [
     period: "Feb 2026 — April 2026",
     location: "Cagayan de Oro, PH",
     description:
-      "Creative production and layout design of digital academic books for DEPED Matatag curriculum-compliant learning resources. Expanded responsibilities across the creative field, contributing to edtech quality control by executing end-to-end manual QA testing and validating interface user flows.",
-    highlights: ["E2E System Validation", "Hierarchical Defect Tracking", "EdTech Quality Control"],
+      "Produced digital academic learning resources for the DEPED Matatag curriculum and supported EdTech quality control through end-to-end manual QA, interface-flow validation, and structured defect tracking.",
+    highlights: ["E2E Validation", "Defect Tracking", "EdTech Quality"],
   },
   {
     id: "04",
@@ -36,7 +36,7 @@ export const experiences = [
     period: "March 2025 — Jan 2026",
     location: "Cagayan de Oro, PH",
     description:
-      "Led the end-to-end development and quality verification of an AI-powered literacy platform utilizing Document-Grounded Generation (DGG). Benchmarked LLM costs (Gemini vs GPT-4o mini) and designed structured web scraping tools to secure training data while ensuring software compliance under ISO/IEC 25010 metrics.",
+      "Led the end-to-end development and quality verification of an AI-powered literacy platform using Document-Grounded Generation (DGG). Benchmarked LLM costs, designed structured web-scraping tools to secure training data, and supported compliance under ISO/IEC 25010 metrics.",
     highlights: ["Model Evaluation (AHP)", "Data Acquisition Tools", "ISO/IEC 25010 Compliance"],
   },
 ];

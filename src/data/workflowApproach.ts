@@ -7,32 +7,40 @@ export const workflowPrinciples: {
   subtitle: string;
   description: string;
   meta: string;
+  signal: string;
+  deliverables: string[];
 }[] = [
   {
     id: "01",
     iconKey: "search",
-    title: "Discover Before Designing",
-    subtitle: "Customer Context First",
+    title: "Discover the Real Workflow",
+    subtitle: "Research & Validation",
     description:
-      "I start by understanding the user’s current workflow, constraints, stakeholders, and success criteria before recommending a product path or technical solution.",
-    meta: "Discovery Motion",
+      "I learn how users, stakeholders, and operations work today, then validate the constraints, pain points, and success criteria before recommending a solution.",
+    meta: "Discover",
+    signal: "User needs, stakeholder context, operational constraints, and existing workflow friction.",
+    deliverables: ["Research notes", "Workflow map", "Validated problem"],
   },
   {
     id: "02",
     iconKey: "network",
-    title: "Translate Problems into Solutions",
-    subtitle: "Business Need → Technical Fit",
+    title: "Define a Buildable System",
+    subtitle: "Requirements & Design",
     description:
-      "I connect pain points to product capabilities, API behavior, user flows, and implementation requirements so the solution is clear to both technical and non-technical teams.",
-    meta: "Solution Mapping",
+      "I translate validated needs into user flows, functional requirements, system behavior, and technical documentation that align product and engineering teams.",
+    meta: "Define",
+    signal: "Validated needs and workflow findings that need a clear, feasible product response.",
+    deliverables: ["User flows", "Requirements", "System blueprint"],
   },
   {
     id: "03",
     iconKey: "presentation",
-    title: "Prove Value with Evidence",
-    subtitle: "Demo • PoC • Documentation",
+    title: "Validate What Ships",
+    subtitle: "Quality & Delivery Support",
     description:
-      "I use demos, test scenarios, QA artifacts, and structured documentation to show how the proposed solution works, where it fits, and what risks need to be managed.",
-    meta: "Proof of Value",
+      "I support implementation with test scenarios, QA artifacts, demos, and documentation to verify that the delivered experience still meets the validated need.",
+    meta: "Validate",
+    signal: "A build in progress and the original user need it is meant to solve.",
+    deliverables: ["Test scenarios", "QA findings", "Delivery notes"],
   },
 ];

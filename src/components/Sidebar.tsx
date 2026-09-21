@@ -1,80 +1,18 @@
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { Download, ExternalLink, X } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
-import profilePic from "../assets/mosqueda-pic.jpg";
+import { Download, ExternalLink } from "lucide-react";
 import { Icon } from "../lib/icons";
 import { identity, summaryTags } from "../data/identity";
-import { fadeScale } from "../lib/motion";
+import ProfilePhotoPreview from "./ProfilePhotoPreview";
 
 export default function Sidebar() {
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isPreviewOpen) return;
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsPreviewOpen(false);
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isPreviewOpen]);
-
   return (
     <aside className="hidden md:flex w-72 flex-col justify-between p-8 border-r border-white/5 bg-gray-950/50 backdrop-blur-xl relative">
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
 
       <div className="flex flex-col gap-8">
         {/* PROFILE SCANNER AREA */}
-        <motion.button
-          type="button"
-          onClick={() => setIsPreviewOpen(true)}
-          aria-label="View full profile picture"
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="relative group mx-auto cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 rounded-full"
-        >
-          <div className="absolute -inset-1 bg-gradient-to-b from-emerald-500/20 to-transparent rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-          <div className="relative w-36 h-36 rounded-full border-2 border-white/5 bg-gray-900 flex items-center justify-center overflow-hidden">
-            <img src={profilePic} alt="Profile" />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-white/80">View</span>
-            </div>
-          </div>
-        </motion.button>
-
-        {createPortal(
-          <AnimatePresence>
-            {isPreviewOpen && (
-              <motion.div
-                variants={fadeScale}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                onClick={() => setIsPreviewOpen(false)}
-                className="fixed inset-0 z-[200] flex items-center justify-center bg-gray-950/90 backdrop-blur-xl p-8"
-              >
-                <button
-                  type="button"
-                  onClick={() => setIsPreviewOpen(false)}
-                  aria-label="Close preview"
-                  className="absolute top-6 right-6 rounded-full border border-white/10 bg-white/[0.03] p-3 text-white/50 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300"
-                >
-                  <X size={18} />
-                </button>
-                <img
-                  src={profilePic}
-                  alt="Profile preview"
-                  onClick={(event) => event.stopPropagation()}
-                  className="max-h-[85vh] max-w-[85vw] rounded-2xl border border-white/10 object-contain shadow-[0_0_60px_rgba(16,185,129,0.15)]"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body,
-        )}
+        <div className="mx-auto">
+          <ProfilePhotoPreview sizeClassName="w-36 h-36" />
+        </div>
 
         {/* IDENTITY DETAILS */}
         <div className="flex flex-col gap-5">
