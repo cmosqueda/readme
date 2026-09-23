@@ -20,7 +20,7 @@ export default function MobileProfileCard() {
           href={identity.cvHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="profile-card-action neo-button-primary group mt-5 flex min-h-14 items-center justify-between rounded-2xl px-5 py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+          className="profile-card-action resume-button neo-button-primary group mt-5 flex min-h-14 items-center justify-between rounded-2xl px-5 py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
         >
           <span className="flex items-center gap-3">
             <span className="rounded-lg bg-white/15 p-1.5 text-white transition-transform group-hover:scale-110">

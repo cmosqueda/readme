@@ -24,7 +24,7 @@ export default function Sidebar() {
             target="_blank"
             rel="noopener noreferrer"
             className="
-              neo-button-primary group flex items-center justify-between rounded-2xl px-4 py-3
+              resume-button neo-button-primary group flex items-center justify-between rounded-2xl px-4 py-3
               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]
             "
           >

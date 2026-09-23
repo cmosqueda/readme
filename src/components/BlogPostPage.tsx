@@ -1,5 +1,5 @@
 // BlogPostPage.tsx
-import { useEffect, useMemo, useState } from "react";
+import { isValidElement, useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowUp, Calendar, ChevronLeft, ChevronRight, Clock } from "lucide-react";
@@ -7,6 +7,33 @@ import ReactMarkdown from "react-markdown";
 import { getBlogBySlug, getBlogPosition } from "../lib/content";
 import { fadeInUp } from "../lib/motion";
 import { setPageSeo } from "../lib/seo";
+
+const blogMarkdownComponents = {
+  h1: ({ children }: { children?: ReactNode }) => (
+    <h1 className="mb-6 border-b border-[#d5dde5] pb-2 font-[Manrope] text-2xl font-bold text-[#2d3b4c]">{children}</h1>
+  ),
+  h2: ({ children }: { children?: ReactNode }) => (
+    <h2 className="mb-4 mt-10 font-[Manrope] text-xl font-bold text-[#2d3b4c]">{children}</h2>
+  ),
+  p: ({ children }: { children?: ReactNode }) => (
+    <p className="mb-6 text-sm leading-relaxed text-[#52657a] sm:text-base">{children}</p>
+  ),
+  li: ({ children }: { children?: ReactNode }) => <li className="mb-2 list-inside list-disc text-sm text-[#52657a]">{children}</li>,
+  pre: ({ children }: { children?: ReactNode }) => {
+    if (isValidElement<{ className?: string; children?: ReactNode }>(children)) {
+      const language = children.props.className?.match(/language-(\w+)/)?.[1];
+
+      if (language === "mermaid") {
+        return <MermaidDiagram chart={String(children.props.children).replace(/\n$/, "")} />;
+      }
+    }
+
+    return <pre className="neo-pressed my-6 overflow-x-auto rounded-xl p-4">{children}</pre>;
+  },
+  code: ({ children }: { children?: ReactNode }) => (
+    <code className="neo-pressed rounded px-1.5 py-0.5 text-sm text-[#496b86]">{children}</code>
+  ),
+};
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -135,27 +162,7 @@ export default function BlogPostPage() {
 
         {/* EXTRACTED MARKDOWN TEXT MARKUP */}
         <article className="prose prose-slate max-w-none pb-16">
-          <ReactMarkdown
-            components={{
-              h1: ({ children }) => (
-                <h1 className="mb-6 border-b border-[#d5dde5] pb-2 font-[Manrope] text-2xl font-bold text-[#2d3b4c]">
-                  {children}
-                </h1>
-              ),
-              h2: ({ children }) => (
-                <h2 className="mb-4 mt-10 font-[Manrope] text-xl font-bold text-[#2d3b4c]">{children}</h2>
-              ),
-              p: ({ children }) => (
-                <p className="mb-6 text-sm leading-relaxed text-[#52657a] sm:text-base">{children}</p>
-              ),
-              li: ({ children }) => <li className="mb-2 list-inside list-disc text-sm text-[#52657a]">{children}</li>,
-              code: ({ children }) => (
-                <code className="neo-pressed rounded px-1.5 py-0.5 text-sm text-[#496b86]">
-                  {children}
-                </code>
-              ),
-            }}
-          >
+          <ReactMarkdown components={blogMarkdownComponents}>
             {blog.content}
           </ReactMarkdown>
         </article>
@@ -181,6 +188,54 @@ export default function BlogPostPage() {
         <span className="hidden sm:inline">Back to start</span>
       </button>
     </main>
+  );
+}
+
+function MermaidDiagram({ chart }: { chart: string }) {
+  const diagramId = useId().replace(/:/g, "");
+  const [svg, setSvg] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const renderDiagram = async () => {
+      try {
+        const { default: mermaid } = await import("mermaid");
+
+        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "neutral" });
+        const { svg: renderedSvg } = await mermaid.render(`mermaid-${diagramId}`, chart);
+
+        if (!cancelled) setSvg(renderedSvg);
+      } catch (renderError) {
+        console.error("Unable to render Mermaid diagram:", renderError);
+        if (!cancelled) setError(true);
+      }
+    };
+
+    void renderDiagram();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chart, diagramId]);
+
+  if (error) {
+    return (
+      <pre className="my-6 overflow-x-auto rounded-xl border border-[#d5dde5] bg-[#f8fafc] p-4 text-sm text-[#52657a]">
+        <code>{chart}</code>
+      </pre>
+    );
+  }
+
+  return (
+    <div className="my-8 overflow-x-auto rounded-xl border border-[#d5dde5] bg-white p-4 shadow-sm" aria-label="Mermaid diagram">
+      {svg ? (
+        <div className="mermaid-diagram min-w-max" role="img" dangerouslySetInnerHTML={{ __html: svg }} />
+      ) : (
+        <p className="m-0 text-sm text-[#718194]">Loading diagram…</p>
+      )}
+    </div>
   );
 }
 

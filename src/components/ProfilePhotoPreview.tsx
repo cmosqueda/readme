@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import profilePic from "../assets/mosqueda_photo.png";
+import profilePic from "../assets/me-img.jpg";
 import { fadeScale } from "../lib/motion";
 
 type Props = {

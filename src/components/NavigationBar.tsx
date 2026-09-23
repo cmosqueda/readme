@@ -34,16 +34,17 @@ export default function NavigationBar({ active }: Props) {
               onClick={() => handleScroll(id)}
               className={`
                 relative flex-shrink-0 px-5 py-2 rounded-full
-                text-[11px] font-semibold tracking-wide capitalize
+                text-xs font-semibold tracking-wide capitalize
                 transition-colors duration-300 ease-out
-                ${isActive ? "text-[#3e607a]" : "text-[#718194] hover:text-[#2d3b4c]"}
+                ${isActive ? "font-extrabold text-[#2d3b4c]" : "text-[#617388] hover:text-[#2d3b4c]"}
               `}
+              aria-current={isActive ? "page" : undefined}
             >
               {isActive && (
                 <motion.div
                   layoutId="nav-active-pill"
                   transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                  className="neo-pressed absolute inset-0 rounded-full z-[-1]"
+                  className="absolute inset-0 -z-10 rounded-full border border-[#7492aa]/50 bg-[#dbe5ed] shadow-[inset_2px_2px_5px_#cbd3dc,inset_-2px_-2px_5px_#ffffff]"
                 />
               )}
               <span className="relative">
@@ -56,14 +57,14 @@ export default function NavigationBar({ active }: Props) {
       </div>
 
       <div className="fixed inset-x-0 top-0 z-[50] flex items-center justify-between px-5 py-4 md:hidden">
-        <div className="neo-card rounded-2xl px-4 py-2.5">
-          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#8090a0]">Portfolio</p>
-          <p className="text-xs font-bold capitalize text-[#43556a]">{activeLabel}</p>
+        <div className="mobile-nav-card rounded-2xl px-4 py-2.5" aria-live="polite">
+          <p className="mobile-nav-label text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#617388]">Viewing</p>
+          <p className="mobile-nav-current mt-0.5 text-sm font-extrabold capitalize tracking-tight text-[#2d3b4c]">{activeLabel}</p>
         </div>
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(true)}
-          className="neo-card flex h-11 w-11 items-center justify-center rounded-2xl text-[#496b86] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+          className="mobile-nav-card flex h-11 w-11 items-center justify-center rounded-2xl text-[#2d3b4c] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
           aria-label="Open site navigation"
           aria-expanded={isMobileMenuOpen}
         >
@@ -81,7 +82,7 @@ export default function NavigationBar({ active }: Props) {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <motion.nav
-              className="neo-surface ml-auto flex h-full w-full max-w-[20rem] flex-col rounded-3xl p-6"
+              className="mobile-nav-panel ml-auto flex h-full w-full max-w-[20rem] flex-col rounded-3xl p-6"
               aria-label="Mobile site navigation"
               initial={{ opacity: 0, x: 32 }}
               animate={{ opacity: 1, x: 0 }}
@@ -91,10 +92,10 @@ export default function NavigationBar({ active }: Props) {
             >
               <div className="mb-10 flex items-center justify-between">
                 <div>
-                  <p className="section-kicker">Navigate</p>
-                  <p className="mt-1 font-[Manrope] text-xl font-bold text-[#2d3b4c]">Portfolio sections</p>
+                  <p className="mobile-nav-label section-kicker">Currently viewing</p>
+                  <p className="mobile-nav-current mt-1 font-[Manrope] text-xl font-extrabold capitalize text-[#2d3b4c]">{activeLabel}</p>
                 </div>
-                <button
+                  <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="neo-card flex h-10 w-10 items-center justify-center rounded-xl text-[#52657a] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
@@ -113,11 +114,12 @@ export default function NavigationBar({ active }: Props) {
                       type="button"
                       onClick={() => handleScroll(id)}
                       className={`flex items-center justify-between rounded-2xl px-4 py-4 text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86] ${
-                        isActive ? "neo-pressed" : "neo-card-interactive"
+                        isActive ? "mobile-nav-item-active" : "mobile-nav-item"
                       }`}
+                      aria-current={isActive ? "page" : undefined}
                     >
-                      <span className={`text-sm font-bold capitalize ${isActive ? "text-[#496b86]" : "text-[#43556a]"}`}>{label}</span>
-                      <span className="text-[10px] font-bold text-[#8090a0]">0{index + 1}</span>
+                      <span className={`text-[15px] font-extrabold capitalize ${isActive ? "text-white" : "text-[#43556a]"}`}>{label}</span>
+                      <span className={`text-[10px] font-extrabold ${isActive ? "text-white/75" : "text-[#718194]"}`}>0{index + 1}</span>
                     </button>
                   );
                 })}
