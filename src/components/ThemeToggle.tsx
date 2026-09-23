@@ -51,7 +51,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="theme-toggle neo-card fixed right-[4.5rem] top-4 z-[60] flex h-11 w-11 items-center justify-center rounded-full text-[#496b86] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86] sm:right-5 sm:top-5"
+      className="theme-toggle neo-card fixed right-[4.5rem] top-4 z-[60] flex h-11 w-11 items-center justify-center rounded-full text-[#496b86] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86] md:right-5 md:top-5"
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       aria-pressed={isDark}
     >
