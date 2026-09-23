@@ -1,9 +1,10 @@
 import { Download, ExternalLink } from "lucide-react";
+import { memo } from "react";
 import { identity } from "../data/identity";
 import ProfilePhotoPreview from "./ProfilePhotoPreview";
 import StrengthMarquee from "./StrengthMarquee";
 
-export default function Sidebar() {
+export default memo(function Sidebar() {
   return (
     <aside className="neo-surface hidden md:flex w-72 flex-col justify-between p-8 relative z-10">
 
@@ -52,4 +53,4 @@ export default function Sidebar() {
       </div>
     </aside>
   );
-}
+});

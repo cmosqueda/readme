@@ -1,6 +1,6 @@
 import { Moon, Sun } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -14,7 +14,7 @@ function getInitialTheme(): Theme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-export default function ThemeToggle() {
+export default memo(function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const themeRef = useRef(theme);
   const prefersReducedMotion = useReducedMotion();
@@ -73,4 +73,4 @@ export default function ThemeToggle() {
       </AnimatePresence>
     </button>
   );
-}
+});

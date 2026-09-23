@@ -11,6 +11,19 @@
     />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#edf1f5" />
+    <script>
+      (() => {
+        try {
+          const savedTheme = localStorage.getItem("portfolio-theme");
+          const theme = savedTheme === "dark" || savedTheme === "light"
+            ? savedTheme
+            : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          document.documentElement.dataset.theme = theme;
+        } catch {
+          // Keep the light theme when browser storage is unavailable.
+        }
+      })();
+    </script>
     <link rel="canonical" href="https://cmosqueda.vercel.app/" />
 
     <meta property="og:type" content="website" />

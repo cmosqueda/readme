@@ -1,9 +1,10 @@
 import { Download, ExternalLink } from "lucide-react";
+import { memo } from "react";
 import { identity } from "../data/identity";
 import ProfilePhotoPreview from "./ProfilePhotoPreview";
 import StrengthMarquee from "./StrengthMarquee";
 
-export default function MobileProfileCard() {
+export default memo(function MobileProfileCard() {
   return (
     <aside className="mx-auto w-full max-w-4xl px-4 pt-24 md:hidden">
       <div className="profile-card relative overflow-hidden rounded-[2rem] p-6">
@@ -38,4 +39,4 @@ export default function MobileProfileCard() {
       </div>
     </aside>
   );
-}
+});

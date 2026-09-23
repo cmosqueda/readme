@@ -1,5 +1,5 @@
 // pages/Home.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import MobileProfileCard from "../components/MobileProfileCard";
 import NavigationBar from "../components/NavigationBar";
@@ -23,18 +23,17 @@ const sectionComponents: Record<string, React.ReactNode> = {
 
 export default function Home() {
   const [active, setActive] = useState(sections[0].id);
+  const scrollRootRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
+          if (entry.isIntersecting) setActive((current) => current === entry.target.id ? current : entry.target.id);
         });
       },
       {
-        root: null,
+        root: scrollRootRef.current,
         rootMargin: "-40% 0px -50% 0px",
         threshold: 0,
       },
@@ -56,7 +55,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <NavigationBar active={active} />
 
-        <main className="flex-1 overflow-y-auto px-4 py-10 space-y-20 sm:px-6 scrollbar-hide">
+        <main ref={scrollRootRef} className="flex-1 overflow-y-auto px-4 py-10 space-y-20 sm:px-6 scrollbar-hide">
           <MobileProfileCard />
           {sections.map(({ id }, index) => (
             <section key={id} id={id} className={index === 0 ? "mt-5" : undefined}>

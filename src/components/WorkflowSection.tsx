@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, CircleDotDashed, Network, Route, Search, SlidersHorizontal } from "lucide-react";
 import { fadeInUp, staggerContainer } from "../lib/motion";
@@ -17,12 +17,19 @@ const nodes = [
 type NodeId = (typeof nodes)[number]["id"];
 type Position = { x: number; y: number };
 type DragState = { id: NodeId; offsetX: number; offsetY: number };
+type PendingPosition = { id: NodeId; position: Position };
 
 export default function WorkflowSection() {
   const [activeId, setActiveId] = useState<NodeId>("discover");
   const [positions, setPositions] = useState<Record<NodeId, Position>>(() => Object.fromEntries(nodes.map((node) => [node.id, node.start])) as Record<NodeId, Position>);
   const dragRef = useRef<DragState | null>(null);
+  const moveFrameRef = useRef<number | null>(null);
+  const pendingPositionRef = useRef<PendingPosition | null>(null);
   const active = nodes.find((node) => node.id === activeId) ?? nodes[0];
+
+  useEffect(() => () => {
+    if (moveFrameRef.current !== null) window.cancelAnimationFrame(moveFrameRef.current);
+  }, []);
 
   const beginDrag = (event: React.PointerEvent<HTMLButtonElement>, id: NodeId) => {
     const position = positions[id];
@@ -42,10 +49,27 @@ export default function WorkflowSection() {
     const scaleY = CANVAS_HEIGHT / bounds.height;
     const x = ((event.clientX - bounds.left) * scaleX) - drag.offsetX;
     const y = ((event.clientY - bounds.top) * scaleY) - drag.offsetY;
-    setPositions((current) => ({
-      ...current,
-      [drag.id]: { x: Math.max(10, Math.min(CANVAS_WIDTH - NODE_WIDTH - 10, x)), y: Math.max(10, Math.min(CANVAS_HEIGHT - NODE_HEIGHT - 10, y)) },
-    }));
+    pendingPositionRef.current = {
+      id: drag.id,
+      position: {
+        x: Math.max(10, Math.min(CANVAS_WIDTH - NODE_WIDTH - 10, x)),
+        y: Math.max(10, Math.min(CANVAS_HEIGHT - NODE_HEIGHT - 10, y)),
+      },
+    };
+
+    if (moveFrameRef.current !== null) return;
+
+    moveFrameRef.current = window.requestAnimationFrame(() => {
+      const pending = pendingPositionRef.current;
+      moveFrameRef.current = null;
+      if (!pending) return;
+
+      setPositions((current) => {
+        const previous = current[pending.id];
+        if (previous.x === pending.position.x && previous.y === pending.position.y) return current;
+        return { ...current, [pending.id]: pending.position };
+      });
+    });
   };
 
   const endDrag = () => { dragRef.current = null; };
