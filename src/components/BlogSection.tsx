@@ -13,14 +13,12 @@ export default function BlogSection() {
       <div className="w-full max-w-4xl">
         {/* SECTION HEADER */}
         <div className="flex items-center gap-4 mb-12">
-          <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
-            <BookOpen className="text-emerald-500" size={20} />
+          <div className="neo-icon h-10 w-10">
+            <BookOpen size={19} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Blogs & Articles</h2>
-            <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">
-              Discovery, Demos & Product Thinking
-            </p>
+            <h2 className="section-title">Notes & articles</h2>
+            <p className="section-kicker">Discovery, Demos & Product Thinking</p>
           </div>
         </div>
 
@@ -46,21 +44,21 @@ function BlogCard({ post }: { post: BlogPost }) {
     <motion.div variants={fadeInUp}>
       <Link
         to={`/blogs/${post.slug}`}
-        className="group relative bg-white/[0.01] border border-white/5 rounded-xl p-6 hover:border-emerald-500/30 hover:bg-emerald-500/[0.01] transition-all duration-300 flex flex-col justify-between items-start h-full gap-4"
+        className="neo-card-interactive group relative flex h-full flex-col items-start justify-between gap-4 rounded-2xl p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
       >
         <div className="space-y-3 w-full">
-          <div className="flex items-center justify-between text-[10px] font-mono text-white/40">
-            <span className="text-emerald-500/80">{post.category}</span>
+          <div className="flex w-full items-center justify-between text-[10px] font-semibold text-[#718194]">
+            <span className="text-[#496b86]">{post.category}</span>
             <span>{post.readTime}</span>
           </div>
-          <h3 className="text-lg font-bold text-white/90 group-hover:text-emerald-400 transition-colors font-mono line-clamp-2">
+          <h3 className="font-[Manrope] text-lg font-bold text-[#2d3b4c] transition-colors line-clamp-2">
             {post.title}
           </h3>
-          <p className="text-xs text-white/40 line-clamp-3 leading-relaxed">{post.summary}</p>
+          <p className="text-xs leading-relaxed text-[#617388] line-clamp-3">{post.summary}</p>
         </div>
 
-        <div className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-emerald-500/70 pt-2 group-hover:text-emerald-400 transition-colors">
-          Read Note <ChevronRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+        <div className="flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-wide text-[#496b86]">
+          Read article <ChevronRight size={12} className="transition-transform group-hover:translate-x-0.5" />
         </div>
       </Link>
     </motion.div>

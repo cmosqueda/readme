@@ -13,7 +13,7 @@ export const profile = {
 
 export const specCards: { iconKey: IconKey; label: string; value: string }[] = [
   {
-    iconKey: "terminal",
+    iconKey: "search",
     label: "User & Workflow Discovery",
     value: "User Validation • Stakeholder Context • Process Mapping",
   },

@@ -4,7 +4,7 @@ export const identity = {
   name: "Tine Mosqueda",
   tagline: "Turning validated workflows into buildable product systems.",
   cvHref: "/docu/Christine-Mosqueda_resume.pdf",
-  systemLabel: "Rocket_Puncher",
+  systemLabel: "@cmosqueda",
 };
 
 export const summaryTags: { iconKey: IconKey; label: string }[] = [

@@ -18,22 +18,22 @@ export default function ProfileSection() {
         {/* ========================= */}
         <motion.div variants={fadeInUp} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <p className="text-center sm:text-left text-[10px] font-mono uppercase tracking-[0.28em] text-emerald-400/70">
+            <p className="section-kicker text-center sm:text-left">
               {profile.eyebrow}
             </p>
-            <h1 className="text-5xl text-center sm:text-left sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent font-mono leading-none">
-              {profile.titleLine1} <span className="text-emerald-500">{profile.titleAccent}</span>
+            <h1 className="font-[Manrope] text-5xl text-center sm:text-left sm:text-6xl font-extrabold tracking-[-0.06em] text-[#2d3b4c] leading-none">
+              {profile.titleLine1} <span className="text-[#496b86]">{profile.titleAccent}</span>
             </h1>
           </div>
 
-          <div className="border-l-2 border-emerald-500/30 pl-6 flex flex-col gap-4">
+          <div className="neo-pressed rounded-r-2xl border-l-4 border-[#9cafc1] py-4 pl-6 pr-4 flex flex-col gap-4">
             {profile.bioParagraphs.map((paragraph) => (
-              <p key={paragraph} className="text-base sm:text-lg text-white/80 max-w-2xl leading-relaxed">
+              <p key={paragraph} className="max-w-2xl text-base leading-relaxed text-[#43556a] sm:text-lg">
                 {paragraph}
               </p>
             ))}
 
-            <p className="text-sm text-white/50 max-w-xl font-mono">{profile.focusLine}</p>
+            <p className="max-w-xl text-sm text-[#718194]">{profile.focusLine.replace("// Focus: ", "Focus: ")}</p>
           </div>
         </motion.div>
 
@@ -54,13 +54,13 @@ function SpecCard({ iconKey, label, value }: { iconKey: IconKey; label: string; 
   return (
     <motion.div
       variants={fadeInUp}
-      className="group hover:bg-white/5 transition-colors border border-white/5 rounded-xl p-4 flex flex-col gap-3"
+      className="neo-card-interactive flex flex-col gap-3 rounded-2xl p-5"
     >
-      <div className="flex items-center gap-2 text-emerald-500">
+      <div className="flex items-center gap-2 text-[#496b86]">
         <Icon name={iconKey} size={18} />
-        <span className="text-[10px] uppercase tracking-tighter font-mono text-white/40">{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wide text-[#718194]">{label}</span>
       </div>
-      <p className="text-xs sm:text-sm font-medium text-white/90 leading-tight">{value}</p>
+      <p className="text-xs font-medium leading-tight text-[#43556a] sm:text-sm">{value}</p>
     </motion.div>
   );
 }

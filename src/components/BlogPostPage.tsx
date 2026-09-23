@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowUp, Calendar, ChevronLeft, ChevronRight, Clock } from "
 import ReactMarkdown from "react-markdown";
 import { getBlogBySlug, getBlogPosition } from "../lib/content";
 import { fadeInUp } from "../lib/motion";
+import { setPageSeo } from "../lib/seo";
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -20,6 +21,25 @@ export default function BlogPostPage() {
     window.scrollTo({ top: 0, behavior: "auto" });
     setReadingProgress(0);
   }, [slug]);
+
+  useEffect(() => {
+    if (!blog) {
+      setPageSeo({
+        title: "Article not found | Tine Mosqueda",
+        description: "The requested portfolio article could not be found.",
+        path: "/",
+      });
+      return;
+    }
+
+    setPageSeo({
+      title: `${blog.title} | Tine Mosqueda`,
+      description: blog.summary,
+      path: `/blogs/${blog.slug}`,
+      type: "article",
+      publishedTime: blog.date,
+    });
+  }, [blog]);
 
   useEffect(() => {
     const updateReadingProgress = () => {
@@ -51,11 +71,11 @@ export default function BlogPostPage() {
 
   if (!blog) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-gray-950 font-mono text-white/40 text-xs">
+      <div className="app-shell flex min-h-screen w-full items-center justify-center text-xs text-[#718194]">
         <div className="flex flex-col items-center gap-2">
-          <span>NOTE_NOT_FOUND</span>
-          <Link to="/" className="text-emerald-400 hover:text-emerald-300 transition-colors">
-            RETURN_TO_PORTFOLIO
+          <span>Article not found</span>
+          <Link to="/" className="text-[#496b86] transition-colors hover:text-[#2d3b4c]">
+            Return to portfolio
           </Link>
         </div>
       </div>
@@ -63,10 +83,10 @@ export default function BlogPostPage() {
   }
 
   return (
-    <main className="relative w-full min-h-screen bg-gray-950 text-white/90 py-16 px-4 flex justify-center selection:bg-emerald-500/20">
+    <main className="app-shell relative flex min-h-screen w-full justify-center px-4 py-16">
       {/* READING PROGRESS BAR */}
       <div
-        className="fixed top-0 left-0 right-0 z-[80] h-1 bg-white/5"
+        className="fixed top-0 left-0 right-0 z-[80] h-1 bg-[#d5dde5]"
         role="progressbar"
         aria-label="Reading progress"
         aria-valuemin={0}
@@ -74,7 +94,7 @@ export default function BlogPostPage() {
         aria-valuenow={Math.round(readingProgress)}
       >
         <div
-          className="h-full bg-emerald-500 transition-[width] duration-150 ease-out"
+          className="h-full bg-[#496b86] transition-[width] duration-150 ease-out"
           style={{ width: `${readingProgress}%` }}
         />
       </div>
@@ -89,21 +109,21 @@ export default function BlogPostPage() {
         {/* BACK TO HOME NAVIGATION */}
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs font-mono text-white/40 hover:text-emerald-400 transition-colors mb-12 group"
+          className="group mb-12 inline-flex items-center gap-2 text-xs font-semibold text-[#718194] transition-colors hover:text-[#496b86]"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-          RETURN_TO_PORTFOLIO
+          Back to portfolio
         </Link>
 
         {/* METADATA HEADER BLOCK */}
-        <header className="border-b border-white/5 pb-8 mb-12">
-          <span className="text-[10px] font-mono uppercase text-emerald-500 tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded">
+        <header className="mb-12 border-b border-[#d5dde5] pb-8">
+          <span className="neo-pressed rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#496b86]">
             {blog.category}
           </span>
-          <h1 className="text-3xl md:text-4xl font-bold font-mono text-white mt-4 tracking-tight leading-tight">
+          <h1 className="mt-4 font-[Manrope] text-3xl font-extrabold leading-tight tracking-[-0.05em] text-[#2d3b4c] md:text-4xl">
             {blog.title}
           </h1>
-          <div className="flex items-center gap-4 text-white/40 text-xs font-mono mt-4">
+          <div className="mt-4 flex items-center gap-4 text-xs font-medium text-[#718194]">
             <span className="flex items-center gap-1.5">
               <Calendar size={13} /> {blog.date}
             </span>
@@ -114,23 +134,23 @@ export default function BlogPostPage() {
         </header>
 
         {/* EXTRACTED MARKDOWN TEXT MARKUP */}
-        <article className="prose prose-invert prose-emerald max-w-none pb-16">
+        <article className="prose prose-slate max-w-none pb-16">
           <ReactMarkdown
             components={{
               h1: ({ children }) => (
-                <h1 className="text-2xl font-bold text-white mb-6 border-b border-white/5 pb-2 font-mono">
+                <h1 className="mb-6 border-b border-[#d5dde5] pb-2 font-[Manrope] text-2xl font-bold text-[#2d3b4c]">
                   {children}
                 </h1>
               ),
               h2: ({ children }) => (
-                <h2 className="text-xl font-bold text-white/90 mt-10 mb-4 font-mono">{children}</h2>
+                <h2 className="mb-4 mt-10 font-[Manrope] text-xl font-bold text-[#2d3b4c]">{children}</h2>
               ),
               p: ({ children }) => (
-                <p className="text-white/70 leading-relaxed mb-6 text-sm sm:text-base">{children}</p>
+                <p className="mb-6 text-sm leading-relaxed text-[#52657a] sm:text-base">{children}</p>
               ),
-              li: ({ children }) => <li className="list-disc list-inside text-white/60 text-sm mb-2">{children}</li>,
+              li: ({ children }) => <li className="mb-2 list-inside list-disc text-sm text-[#52657a]">{children}</li>,
               code: ({ children }) => (
-                <code className="bg-white/5 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-sm border border-white/5">
+                <code className="neo-pressed rounded px-1.5 py-0.5 text-sm text-[#496b86]">
                   {children}
                 </code>
               ),
@@ -150,15 +170,15 @@ export default function BlogPostPage() {
         onClick={handleBackToStart}
         aria-label="Back to start"
         className={`
-          fixed bottom-6 right-6 z-[70]
-          flex items-center gap-2 rounded-full border border-white/10 bg-gray-900/90 px-4 py-3
-          text-[10px] font-mono uppercase tracking-wider text-white/60 shadow-lg backdrop-blur
-          transition-all duration-300 hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400
+          neo-card fixed bottom-6 right-6 z-[70]
+          flex items-center gap-2 rounded-full px-4 py-3
+          text-[10px] font-bold uppercase tracking-wide text-[#52657a]
+          transition-all duration-300 hover:text-[#496b86]
           ${readingProgress > 8 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}
         `}
       >
         <ArrowUp size={14} />
-        <span className="hidden sm:inline">Back_To_Start</span>
+        <span className="hidden sm:inline">Back to start</span>
       </button>
     </main>
   );
@@ -170,7 +190,7 @@ function BlogPagination({ previousSlug, nextSlug }: { previousSlug: string | nul
   return (
     <nav
       aria-label="Blog post navigation"
-      className="grid grid-cols-1 gap-4 border-t border-white/5 pt-8 pb-24 md:grid-cols-2"
+      className="grid grid-cols-1 gap-4 border-t border-[#d5dde5] pb-24 pt-8 md:grid-cols-2"
     >
       {previousSlug ? (
         <BlogPaginationCard direction="previous" slug={previousSlug} />
@@ -195,24 +215,23 @@ function BlogPaginationCard({ direction, slug }: { direction: "previous" | "next
     <Link
       to={`/blogs/${slug}`}
       className={`
-        group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all duration-300
-        hover:border-emerald-500/30 hover:bg-emerald-500/[0.03]
+        neo-card-interactive group rounded-2xl p-5
         ${isPrevious ? "text-left" : "text-left md:text-right"}
       `}
     >
       <div
-        className={`flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-white/35 ${isPrevious ? "justify-start" : "justify-start md:justify-end"}`}
+        className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#718194] ${isPrevious ? "justify-start" : "justify-start md:justify-end"}`}
       >
         {isPrevious && <ChevronLeft size={13} className="transition-transform group-hover:-translate-x-0.5" />}
         <span>{isPrevious ? "Previous Note" : "Next Note"}</span>
         {!isPrevious && <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
       </div>
 
-      <h2 className="mt-3 text-base font-bold text-white/85 transition-colors group-hover:text-emerald-400">
+      <h2 className="mt-3 font-[Manrope] text-base font-bold text-[#2d3b4c]">
         {blog?.title || formatSlugTitle(slug)}
       </h2>
 
-      <p className="mt-2 text-xs leading-relaxed text-white/40 line-clamp-2">
+      <p className="mt-2 text-xs leading-relaxed text-[#718194] line-clamp-2">
         {blog?.summary || "Open the next related solution note."}
       </p>
     </Link>

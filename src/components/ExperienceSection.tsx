@@ -9,8 +9,8 @@ export default function ExperienceSection() {
       <div className="w-full max-w-4xl">
         {/* HEADER */}
         <div className="flex items-center gap-3 mb-12">
-          <Briefcase className="text-emerald-500" size={20} />
-          <h2 className="text-2xl font-bold tracking-tight uppercase font-mono text-white/90">Experience</h2>
+          <span className="neo-icon h-10 w-10"><Briefcase size={19} /></span>
+          <h2 className="section-title">Experience</h2>
         </div>
 
         {/* TIMELINE LIST */}
@@ -25,24 +25,24 @@ export default function ExperienceSection() {
             <motion.div key={exp.id} variants={fadeInUp} className="relative pl-8 group">
               {/* Vertical Line Connector */}
               {index !== experiences.length - 1 && (
-                <div className="absolute left-[11px] top-8 w-[1px] h-full bg-gradient-to-b from-emerald-500/30 to-transparent" />
+                <div className="absolute left-[11px] top-8 h-full w-[2px] bg-[#c6d1db]" />
               )}
 
               {/* Timeline Node */}
-              <div className="absolute left-0 top-1 w-6 h-6 rounded-full border border-white/10 bg-gray-950 flex items-center justify-center group-hover:border-emerald-500/50 transition-colors">
-                <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-emerald-500 animate-pulse" />
+              <div className="neo-card absolute left-0 top-1 flex h-6 w-6 items-center justify-center rounded-full">
+                <div className="h-2 w-2 rounded-full bg-[#7492aa]" />
               </div>
 
               {/* CONTENT */}
               <div className="flex flex-col md:flex-row md:items-start gap-4">
                 {/* Dates & Location */}
                 <div className="w-full md:w-48 shrink-0 space-y-2 mt-1">
-                  <div className="flex items-center gap-2 text-[10px] font-mono text-white/40 uppercase">
-                    <Calendar size={12} className="text-emerald-500/50" />
+                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[#718194]">
+                    <Calendar size={12} className="text-[#7492aa]" />
                     {exp.period}
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] font-mono text-white/40 uppercase">
-                    <MapPin size={12} className="text-white/20" />
+                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[#718194]">
+                    <MapPin size={12} className="text-[#91a6b8]" />
                     {exp.location}
                   </div>
                 </div>
@@ -50,20 +50,20 @@ export default function ExperienceSection() {
                 {/* Role & Company Details */}
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white/90 group-hover:text-emerald-400 transition-colors">
+                    <h3 className="font-[Manrope] text-xl font-bold text-[#2d3b4c]">
                       {exp.role}
                     </h3>
-                    <p className="text-sm font-medium text-white/60">{exp.company}</p>
+                    <p className="text-sm font-medium text-[#617388]">{exp.company}</p>
                   </div>
 
-                  <p className="text-sm text-white/40 leading-relaxed max-w-2xl">{exp.description}</p>
+                  <p className="max-w-2xl text-sm leading-relaxed text-[#617388]">{exp.description}</p>
 
                   {/* Highlights/Skills Tags */}
                   <div className="flex flex-wrap gap-2">
                     {exp.highlights.map((skill) => (
                       <span
                         key={skill}
-                        className="flex items-center gap-1 text-[9px] font-mono text-emerald-500/70 bg-emerald-500/5 border border-emerald-500/10 px-2 py-1 rounded"
+                        className="neo-pressed flex items-center gap-1 rounded-md px-2 py-1 text-[9px] font-medium text-[#52657a]"
                       >
                         <ChevronRight size={10} />
                         {skill}
