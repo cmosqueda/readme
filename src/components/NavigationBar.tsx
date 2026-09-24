@@ -6,16 +6,14 @@ import { sections } from "../data/navigation";
 
 type Props = {
   active: string;
+  onNavigate: (id: string) => void;
 };
 
-export default function NavigationBar({ active }: Props) {
+export default function NavigationBar({ active, onNavigate }: Props) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleScroll = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+  const handleNavigate = (id: string) => {
+    onNavigate(id);
     setIsMobileMenuOpen(false);
   };
 
@@ -31,7 +29,7 @@ export default function NavigationBar({ active }: Props) {
           return (
             <button
               key={id}
-              onClick={() => handleScroll(id)}
+              onClick={() => handleNavigate(id)}
               className={`
                 relative flex-shrink-0 px-5 py-2 rounded-full
                 text-xs font-semibold tracking-wide capitalize
@@ -44,7 +42,7 @@ export default function NavigationBar({ active }: Props) {
                 <motion.div
                   layoutId="nav-active-pill"
                   transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                  className="absolute inset-0 -z-10 rounded-full border border-[#7492aa]/50 bg-[#dbe5ed] shadow-[inset_2px_2px_5px_#cbd3dc,inset_-2px_-2px_5px_#ffffff]"
+                  className="absolute inset-0 -z-10 rounded-full border border-[#4b7355] bg-[#e4ede5]"
                 />
               )}
               <span className="relative">
@@ -64,7 +62,7 @@ export default function NavigationBar({ active }: Props) {
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(true)}
-          className="mobile-nav-card flex h-11 w-11 items-center justify-center rounded-2xl text-[#2d3b4c] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+          className="mobile-nav-card flex h-11 w-11 items-center justify-center rounded-2xl text-[#2d3b4c] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
           aria-label="Open site navigation"
           aria-expanded={isMobileMenuOpen}
         >
@@ -75,7 +73,7 @@ export default function NavigationBar({ active }: Props) {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 z-[80] bg-[#203044]/35 p-4 md:hidden"
+            className="fixed inset-0 z-[80] bg-[#1f2e22]/35 p-4 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -93,12 +91,12 @@ export default function NavigationBar({ active }: Props) {
               <div className="mb-10 flex items-center justify-between">
                 <div>
                   <p className="mobile-nav-label section-kicker">Currently viewing</p>
-                  <p className="mobile-nav-current mt-1 font-[Manrope] text-xl font-extrabold capitalize text-[#2d3b4c]">{activeLabel}</p>
+                  <p className="mobile-nav-current mt-1 font-[Fraunces] text-xl font-extrabold capitalize text-[#2d3b4c]">{activeLabel}</p>
                 </div>
                   <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="neo-card flex h-10 w-10 items-center justify-center rounded-xl text-[#52657a] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+                  className="neo-card flex h-10 w-10 items-center justify-center rounded-xl text-[#52657a] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
                   aria-label="Close site navigation"
                 >
                   <X size={18} />
@@ -112,8 +110,8 @@ export default function NavigationBar({ active }: Props) {
                     <button
                       key={id}
                       type="button"
-                      onClick={() => handleScroll(id)}
-                      className={`flex items-center justify-between rounded-2xl px-4 py-4 text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86] ${
+                      onClick={() => handleNavigate(id)}
+                      className={`flex items-center justify-between rounded-2xl px-4 py-4 text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355] ${
                         isActive ? "mobile-nav-item-active" : "mobile-nav-item"
                       }`}
                       aria-current={isActive ? "page" : undefined}

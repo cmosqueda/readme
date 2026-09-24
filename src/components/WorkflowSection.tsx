@@ -83,7 +83,7 @@ export default function WorkflowSection() {
         </div>
 
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="workflow-sandbox overflow-hidden rounded-3xl border border-[#344555]">
-          <motion.div variants={fadeInUp} className="sandbox-toolbar flex h-12 items-center justify-between border-b px-4"><div className="flex items-center gap-2 text-[#a9c7df]"><CircleDotDashed size={15} /><span className="text-[10px] font-bold uppercase tracking-[0.14em]">Workflow sandbox</span></div><div className="flex items-center gap-2 text-[10px] font-semibold text-[#9eb1c0]"><SlidersHorizontal size={13} /> Drag to arrange</div></motion.div>
+          <motion.div variants={fadeInUp} className="sandbox-toolbar flex h-12 items-center justify-between border-b px-4"><div className="flex items-center gap-2 text-[#8fbf98]"><CircleDotDashed size={15} /><span className="text-[10px] font-bold uppercase tracking-[0.14em]">Workflow sandbox</span></div><div className="flex items-center gap-2 text-[10px] font-semibold text-[#9eb1c0]"><SlidersHorizontal size={13} /> Drag to arrange</div></motion.div>
 
           <div className="overflow-x-auto p-3 sm:p-5">
             <div
@@ -94,7 +94,7 @@ export default function WorkflowSection() {
               aria-label="Draggable product systems workflow graph"
             >
               <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`} aria-hidden="true">
-                <defs><marker id="sandbox-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#7492aa" /></marker></defs>
+                <defs><marker id="sandbox-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#6f9376" /></marker></defs>
                 <Connection from={rightPort(positions.discover)} to={leftPort(positions.define)} />
                 <Connection from={rightPort(positions.define)} to={leftPort(positions.validate)} />
                 <Connection from={bottomPort(positions.validate)} to={bottomPort(positions.discover)} feedback />
@@ -104,7 +104,7 @@ export default function WorkflowSection() {
           </div>
 
           <motion.div key={active.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16 }} className="sandbox-console mx-3 mb-3 rounded-xl border p-3 sm:mx-5 sm:mb-5">
-            <div className="mb-3 flex items-center justify-between"><span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#a9c7df]">Active simulation</span><span className="rounded bg-[#a9c7df]/10 px-2 py-1 text-[9px] font-bold text-[#496b86]">{active.label}</span></div>
+            <div className="mb-3 flex items-center justify-between"><span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#8fbf98]">Active simulation</span><span className="rounded bg-[#8fbf98]/10 px-2 py-1 text-[9px] font-bold text-[#4b7355]">{active.label}</span></div>
             <div className="grid grid-cols-3 gap-2 text-center"><SimulationToken label="Input" value={active.input} /><SimulationToken label="Process" value={active.action} active /><SimulationToken label="Output" value={active.output} /></div>
           </motion.div>
         </motion.div>
@@ -124,7 +124,7 @@ function Connection({ from, to, feedback = false }: { from: Position; to: Positi
   const path = feedback
     ? `M ${from.x} ${from.y} C ${from.x - spread} ${controlY}, ${to.x + spread} ${controlY}, ${to.x} ${to.y}`
     : `M ${from.x} ${from.y} C ${from.x + spread} ${from.y}, ${to.x - spread} ${to.y}, ${to.x} ${to.y}`;
-  return <path d={path} fill="none" stroke={feedback ? "#718194" : "#7492aa"} strokeWidth={feedback ? 2 : 3} strokeDasharray={feedback ? "7 8" : undefined} strokeLinecap="round" markerEnd="url(#sandbox-arrow)" opacity=".78" />;
+  return <path d={path} fill="none" stroke={feedback ? "#718194" : "#6f9376"} strokeWidth={feedback ? 2 : 3} strokeDasharray={feedback ? "7 8" : undefined} strokeLinecap="round" markerEnd="url(#sandbox-arrow)" opacity=".78" />;
 }
 
 type Node = (typeof nodes)[number];
@@ -132,7 +132,7 @@ type Node = (typeof nodes)[number];
 function SandboxNode({ node, position, active, onSelect, onPointerDown }: { node: Node; position: Position; active: boolean; onSelect: (id: NodeId) => void; onPointerDown: (event: React.PointerEvent<HTMLButtonElement>, id: NodeId) => void }) {
   const Icon = node.icon;
   return (
-    <button type="button" onClick={() => onSelect(node.id)} onFocus={() => onSelect(node.id)} onPointerDown={(event) => onPointerDown(event, node.id)} aria-pressed={active} style={{ left: position.x, top: position.y, width: NODE_WIDTH }} className={`sandbox-node group absolute cursor-grab touch-none rounded-2xl border text-left outline-none transition-shadow active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-[#a9c7df] ${active ? "sandbox-node-active" : ""}`}>
+    <button type="button" onClick={() => onSelect(node.id)} onFocus={() => onSelect(node.id)} onPointerDown={(event) => onPointerDown(event, node.id)} aria-pressed={active} style={{ left: position.x, top: position.y, width: NODE_WIDTH }} className={`sandbox-node group absolute cursor-grab touch-none rounded-2xl border text-left outline-none transition-shadow active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-[#8fbf98] ${active ? "sandbox-node-active" : ""}`}>
       <span className={`sandbox-port absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-[3px] ${active ? "sandbox-port-active" : ""}`} />
       <span className={`sandbox-port absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-[3px] ${active ? "sandbox-port-active" : ""}`} />
       <span className="flex items-center gap-2 border-b border-white/10 px-4 py-3"><span className={`sandbox-node-icon flex h-7 w-7 items-center justify-center rounded-md ${active ? "sandbox-node-icon-active" : ""}`}><Icon size={15} /></span><span><span className="sandbox-node-title block text-sm font-bold">{node.label}</span><span className="sandbox-node-type block text-[9px] font-semibold uppercase tracking-wide">{node.type}</span></span></span>

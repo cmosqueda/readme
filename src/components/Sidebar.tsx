@@ -16,7 +16,7 @@ export default memo(function Sidebar() {
         {/* IDENTITY DETAILS */}
         <div className="flex flex-col gap-5">
           <div className="space-y-1">
-            <p className="font-[Manrope] text-xl font-bold tracking-tight text-[#2d3b4c]">{identity.name}</p>
+            <p className="font-[Fraunces] text-xl font-bold tracking-tight text-[#2d3b4c]">{identity.name}</p>
             <p className="text-xs text-[#617388] leading-relaxed">{identity.tagline}</p>
           </div>
 
@@ -26,7 +26,7 @@ export default memo(function Sidebar() {
             rel="noopener noreferrer"
             className="
               resume-button neo-button-primary group flex items-center justify-between rounded-2xl px-4 py-3
-              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]
             "
           >
             <div className="flex items-center gap-3">

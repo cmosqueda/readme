@@ -30,7 +30,7 @@ export default function ExperienceSection() {
 
               {/* Timeline Node */}
               <div className="neo-card absolute left-0 top-1 flex h-6 w-6 items-center justify-center rounded-full">
-                <div className="h-2 w-2 rounded-full bg-[#7492aa]" />
+                <div className="h-2 w-2 rounded-full bg-[#6f9376]" />
               </div>
 
               {/* CONTENT */}
@@ -38,7 +38,7 @@ export default function ExperienceSection() {
                 {/* Dates & Location */}
                 <div className="w-full md:w-48 shrink-0 space-y-2 mt-1">
                   <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[#718194]">
-                    <Calendar size={12} className="text-[#7492aa]" />
+                    <Calendar size={12} className="text-[#6f9376]" />
                     {exp.period}
                   </div>
                   <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[#718194]">
@@ -50,7 +50,7 @@ export default function ExperienceSection() {
                 {/* Role & Company Details */}
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h3 className="font-[Manrope] text-xl font-bold text-[#2d3b4c]">
+                    <h3 className="font-[Fraunces] text-xl font-bold text-[#2d3b4c]">
                       {exp.role}
                     </h3>
                     <p className="text-sm font-medium text-[#617388]">{exp.company}</p>

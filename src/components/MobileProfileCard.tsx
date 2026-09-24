@@ -12,7 +12,7 @@ export default memo(function MobileProfileCard() {
         <div className="profile-card-identity flex items-center gap-4 rounded-2xl p-4">
           <ProfilePhotoPreview sizeClassName="h-24 w-24" />
           <div className="min-w-0 space-y-1">
-            <p className="font-[Manrope] text-xl font-bold tracking-tight text-[#2d3b4c]">{identity.name}</p>
+            <p className="font-[Fraunces] text-xl font-bold tracking-tight text-[#2d3b4c]">{identity.name}</p>
             <p className="text-xs leading-relaxed text-[#617388]">{identity.tagline}</p>
           </div>
         </div>
@@ -21,7 +21,7 @@ export default memo(function MobileProfileCard() {
           href={identity.cvHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="profile-card-action resume-button neo-button-primary group mt-5 flex min-h-14 items-center justify-between rounded-2xl px-5 py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+          className="profile-card-action resume-button neo-button-primary group mt-5 flex min-h-14 items-center justify-between rounded-2xl px-5 py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
         >
           <span className="flex items-center gap-3">
             <span className="rounded-lg bg-white/15 p-1.5 text-white transition-transform group-hover:scale-110">

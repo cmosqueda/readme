@@ -32,7 +32,7 @@ export default function ProfilePhotoPreview({ sizeClassName }: Props) {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative group shrink-0 cursor-pointer rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#496b86]"
+        className="relative group shrink-0 cursor-pointer rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4b7355]"
       >
         <div
           className={`neo-card relative ${sizeClassName} flex items-center justify-center overflow-hidden rounded-2xl`}
@@ -62,7 +62,7 @@ export default function ProfilePhotoPreview({ sizeClassName }: Props) {
                 type="button"
                 onClick={() => setIsPreviewOpen(false)}
                 aria-label="Close profile photo preview"
-                className="neo-card absolute top-4 right-4 rounded-full p-3 text-[#52657a] transition hover:text-[#2d3b4c] sm:top-6 sm:right-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+                className="neo-card absolute top-4 right-4 rounded-full p-3 text-[#52657a] transition hover:text-[#2d3b4c] sm:top-6 sm:right-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
               >
                 <X size={18} />
               </button>

@@ -10,10 +10,10 @@ import { setPageSeo } from "../lib/seo";
 
 const blogMarkdownComponents = {
   h1: ({ children }: { children?: ReactNode }) => (
-    <h1 className="mb-6 border-b border-[#d5dde5] pb-2 font-[Manrope] text-2xl font-bold text-[#2d3b4c]">{children}</h1>
+    <h1 className="mb-6 border-b border-[#d5dde5] pb-2 font-[Fraunces] text-2xl font-bold text-[#2d3b4c]">{children}</h1>
   ),
   h2: ({ children }: { children?: ReactNode }) => (
-    <h2 className="mb-4 mt-10 font-[Manrope] text-xl font-bold text-[#2d3b4c]">{children}</h2>
+    <h2 className="mb-4 mt-10 font-[Fraunces] text-xl font-bold text-[#2d3b4c]">{children}</h2>
   ),
   p: ({ children }: { children?: ReactNode }) => (
     <p className="mb-6 text-sm leading-relaxed text-[#52657a] sm:text-base">{children}</p>
@@ -31,7 +31,7 @@ const blogMarkdownComponents = {
     return <pre className="neo-pressed my-6 overflow-x-auto rounded-xl p-4">{children}</pre>;
   },
   code: ({ children }: { children?: ReactNode }) => (
-    <code className="neo-pressed rounded px-1.5 py-0.5 text-sm text-[#496b86]">{children}</code>
+    <code className="neo-pressed rounded px-1.5 py-0.5 text-sm text-[#4b7355]">{children}</code>
   ),
 };
 
@@ -101,7 +101,7 @@ export default function BlogPostPage() {
       <div className="app-shell flex min-h-screen w-full items-center justify-center text-xs text-[#718194]">
         <div className="flex flex-col items-center gap-2">
           <span>Article not found</span>
-          <Link to="/" className="text-[#496b86] transition-colors hover:text-[#2d3b4c]">
+          <Link to="/" className="text-[#4b7355] transition-colors hover:text-[#2d3b4c]">
             Return to portfolio
           </Link>
         </div>
@@ -121,7 +121,7 @@ export default function BlogPostPage() {
         aria-valuenow={Math.round(readingProgress)}
       >
         <div
-          className="h-full bg-[#496b86] transition-[width] duration-150 ease-out"
+          className="h-full bg-[#4b7355] transition-[width] duration-150 ease-out"
           style={{ width: `${readingProgress}%` }}
         />
       </div>
@@ -135,8 +135,8 @@ export default function BlogPostPage() {
       >
         {/* BACK TO HOME NAVIGATION */}
         <Link
-          to="/"
-          className="group mb-12 inline-flex items-center gap-2 text-xs font-semibold text-[#718194] transition-colors hover:text-[#496b86]"
+          to="/#blogs"
+          className="group mb-12 inline-flex items-center gap-2 text-xs font-semibold text-[#718194] transition-colors hover:text-[#4b7355]"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
           Back to portfolio
@@ -144,10 +144,10 @@ export default function BlogPostPage() {
 
         {/* METADATA HEADER BLOCK */}
         <header className="mb-12 border-b border-[#d5dde5] pb-8">
-          <span className="neo-pressed rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#496b86]">
+          <span className="neo-pressed rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#4b7355]">
             {blog.category}
           </span>
-          <h1 className="mt-4 font-[Manrope] text-3xl font-extrabold leading-tight tracking-[-0.05em] text-[#2d3b4c] md:text-4xl">
+          <h1 className="mt-4 font-[Fraunces] text-3xl font-extrabold leading-tight tracking-[-0.05em] text-[#2d3b4c] md:text-4xl">
             {blog.title}
           </h1>
           <div className="mt-4 flex items-center gap-4 text-xs font-medium text-[#718194]">
@@ -180,7 +180,7 @@ export default function BlogPostPage() {
           neo-card fixed bottom-6 right-6 z-[70]
           flex items-center gap-2 rounded-full px-4 py-3
           text-[10px] font-bold uppercase tracking-wide text-[#52657a]
-          transition-all duration-300 hover:text-[#496b86]
+          transition-all duration-300 hover:text-[#4b7355]
           ${readingProgress > 8 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}
         `}
       >
@@ -282,7 +282,7 @@ function BlogPaginationCard({ direction, slug }: { direction: "previous" | "next
         {!isPrevious && <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
       </div>
 
-      <h2 className="mt-3 font-[Manrope] text-base font-bold text-[#2d3b4c]">
+      <h2 className="mt-3 font-[Fraunces] text-base font-bold text-[#2d3b4c]">
         {blog?.title || formatSlugTitle(slug)}
       </h2>
 

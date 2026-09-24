@@ -16,10 +16,10 @@ export default function ContactSection() {
       >
         <motion.div variants={fadeInUp} className="mb-10 space-y-4">
           <div className="flex items-center gap-2">
-            <MessageCircle size={16} className="text-[#496b86]" />
+            <MessageCircle size={16} className="text-[#4b7355]" />
             <h2 className="section-kicker">Get in touch</h2>
           </div>
-          <h3 className="font-[Manrope] text-3xl font-bold tracking-[-0.04em] text-[#2d3b4c]">
+          <h3 className="font-[Fraunces] text-3xl font-bold tracking-[-0.04em] text-[#2d3b4c]">
             Let&apos;s turn validated needs into a buildable product system.
           </h3>
           <p className="max-w-2xl text-sm leading-relaxed text-[#617388]">
@@ -41,7 +41,7 @@ export default function ContactSection() {
                 neo-card-interactive group flex items-center gap-3 rounded-full px-4 py-2
               "
             >
-              <span className="text-[#496b86]">
+              <span className="text-[#4b7355]">
                 <Icon name={contact.iconKey} size={14} />
               </span>
               <span className="text-xs font-semibold text-[#43556a]">

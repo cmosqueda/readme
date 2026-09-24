@@ -69,7 +69,9 @@ function pageHtml(template, { title, description, pathname, type = "website", bo
   html = replaceMeta(html, /<meta name="twitter:url"[^>]*>/, `<meta name="twitter:url" content="${url}" />`);
   if (publishedTime) html = replaceMeta(html, /<meta property="article:published_time"[^>]*>/, `<meta property="article:published_time" content="${publishedTime}" />`);
   html = html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, `<script type="application/ld+json">${JSON.stringify(schema)}</script>`);
-  return html.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
+  // `hidden` keeps this SEO-only fallback out of the first paint so real visitors never see
+  // unstyled text before React mounts; crawlers still read it from the raw HTML.
+  return html.replace('<div id="root"></div>', `<div id="root"><div hidden>${body}</div></div>`);
 }
 
 async function getContent(directory) {

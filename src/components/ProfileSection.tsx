@@ -21,12 +21,12 @@ export default function ProfileSection() {
             <p className="section-kicker text-center sm:text-left">
               {profile.eyebrow}
             </p>
-            <h1 className="font-[Manrope] text-5xl text-center sm:text-left sm:text-6xl font-extrabold tracking-[-0.06em] text-[#2d3b4c] leading-none">
-              {profile.titleLine1} <span className="text-[#496b86]">{profile.titleAccent}</span>
+            <h1 className="font-[Fraunces] text-5xl text-center sm:text-left sm:text-6xl font-extrabold tracking-[-0.06em] text-[#2d3b4c] leading-none">
+              {profile.titleLine1} <span className="text-[#4b7355]">{profile.titleAccent}</span>
             </h1>
           </div>
 
-          <div className="neo-pressed rounded-r-2xl border-l-4 border-[#9cafc1] py-4 pl-6 pr-4 flex flex-col gap-4">
+          <div className="neo-pressed rounded-r-2xl border-l-4 border-[#9cb8a0] py-4 pl-6 pr-4 flex flex-col gap-4">
             {profile.bioParagraphs.map((paragraph) => (
               <p key={paragraph} className="max-w-2xl text-base leading-relaxed text-[#43556a] sm:text-lg">
                 {paragraph}
@@ -56,7 +56,7 @@ function SpecCard({ iconKey, label, value }: { iconKey: IconKey; label: string; 
       variants={fadeInUp}
       className="neo-card-interactive flex flex-col gap-3 rounded-2xl p-5"
     >
-      <div className="flex items-center gap-2 text-[#496b86]">
+      <div className="flex items-center gap-2 text-[#4b7355]">
         <Icon name={iconKey} size={18} />
         <span className="text-[10px] font-bold uppercase tracking-wide text-[#718194]">{label}</span>
       </div>

@@ -9,7 +9,7 @@ const posts = getAllBlogPosts();
 
 export default function BlogSection() {
   return (
-    <section id="blogs" className="w-full flex justify-center py-12 px-4 relative">
+    <section className="w-full flex justify-center py-12 px-4 relative">
       <div className="w-full max-w-4xl">
         {/* SECTION HEADER */}
         <div className="flex items-center gap-4 mb-12">
@@ -44,20 +44,20 @@ function BlogCard({ post }: { post: BlogPost }) {
     <motion.div variants={fadeInUp}>
       <Link
         to={`/blogs/${post.slug}`}
-        className="neo-card-interactive group relative flex h-full flex-col items-start justify-between gap-4 rounded-2xl p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+        className="neo-card-interactive group relative flex h-full flex-col items-start justify-between gap-4 rounded-2xl p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
       >
         <div className="space-y-3 w-full">
           <div className="flex w-full items-center justify-between text-[10px] font-semibold text-[#718194]">
-            <span className="text-[#496b86]">{post.category}</span>
+            <span className="text-[#4b7355]">{post.category}</span>
             <span>{post.readTime}</span>
           </div>
-          <h3 className="font-[Manrope] text-lg font-bold text-[#2d3b4c] transition-colors line-clamp-2">
+          <h3 className="font-[Fraunces] text-lg font-bold text-[#2d3b4c] transition-colors line-clamp-2">
             {post.title}
           </h3>
           <p className="text-xs leading-relaxed text-[#617388] line-clamp-3">{post.summary}</p>
         </div>
 
-        <div className="flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-wide text-[#496b86]">
+        <div className="flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-wide text-[#4b7355]">
           Read article <ChevronRight size={12} className="transition-transform group-hover:translate-x-0.5" />
         </div>
       </Link>

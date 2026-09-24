@@ -30,18 +30,18 @@ function ProjectCard({ project }: { project: ProjectData }) {
     <motion.div variants={fadeInUp}>
       <Link
         to={`/projects/${project.slug}`}
-        className="neo-card-interactive group relative block w-full overflow-hidden rounded-3xl text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#496b86]"
+        className="neo-card-interactive group relative block w-full overflow-hidden rounded-3xl text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
       >
         <div className="relative z-10 p-6 md:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#496b86]">{project.category}</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#4b7355]">{project.category}</span>
                 <span className="hidden h-1 w-1 rounded-full bg-[#b5c3cf] sm:block" />
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-[#718194]">{project.status}</span>
               </div>
               <div>
-                <h3 className="font-[Manrope] text-2xl font-bold text-[#2d3b4c] sm:text-3xl">{project.title}</h3>
+                <h3 className="font-[Fraunces] text-2xl font-bold text-[#2d3b4c] sm:text-3xl">{project.title}</h3>
                 <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#617388]">{project.description}</p>
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -52,7 +52,7 @@ function ProjectCard({ project }: { project: ProjectData }) {
               <div className="neo-pressed rounded-2xl p-4">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <p className="text-[9px] font-semibold uppercase tracking-wide text-[#8090a0]">View case study</p>
-                  <ExternalLink size={14} className="text-[#496b86] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ExternalLink size={14} className="text-[#4b7355] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
                 <p className="text-xs leading-relaxed text-[#617388]">Open the complete solution brief, metrics, and implementation notes.</p>
               </div>
