@@ -25,24 +25,24 @@ export default function ExperienceSection() {
             <motion.div key={exp.id} variants={fadeInUp} className="relative pl-8 group">
               {/* Vertical Line Connector */}
               {index !== experiences.length - 1 && (
-                <div className="absolute left-[11px] top-8 h-full w-[2px] bg-[#c6d1db]" />
+                <div className="absolute left-[11px] top-8 h-full w-[2px] bg-[color:var(--md-outline-variant)]" />
               )}
 
               {/* Timeline Node */}
               <div className="neo-card absolute left-0 top-1 flex h-6 w-6 items-center justify-center rounded-full">
-                <div className="h-2 w-2 rounded-full bg-[#6f9376]" />
+                <div className="h-2 w-2 rounded-full bg-[color:var(--md-secondary)]" />
               </div>
 
               {/* CONTENT */}
               <div className="flex flex-col md:flex-row md:items-start gap-4">
                 {/* Dates & Location */}
                 <div className="w-full md:w-48 shrink-0 space-y-2 mt-1">
-                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[#718194]">
-                    <Calendar size={12} className="text-[#6f9376]" />
+                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--md-on-surface-variant)]">
+                    <Calendar size={12} className="text-[color:var(--md-secondary)]" />
                     {exp.period}
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[#718194]">
-                    <MapPin size={12} className="text-[#91a6b8]" />
+                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--md-on-surface-variant)]">
+                    <MapPin size={12} className="text-[color:var(--md-on-surface-variant)]/70" />
                     {exp.location}
                   </div>
                 </div>
@@ -50,20 +50,20 @@ export default function ExperienceSection() {
                 {/* Role & Company Details */}
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h3 className="font-[Fraunces] text-xl font-bold text-[#2d3b4c]">
+                    <h3 className="font-['Roboto_Mono'] text-xl font-bold text-[color:var(--md-on-surface)]">
                       {exp.role}
                     </h3>
-                    <p className="text-sm font-medium text-[#617388]">{exp.company}</p>
+                    <p className="text-sm font-medium text-[color:var(--md-on-surface-variant)]">{exp.company}</p>
                   </div>
 
-                  <p className="max-w-2xl text-sm leading-relaxed text-[#617388]">{exp.description}</p>
+                  <p className="max-w-2xl text-sm leading-relaxed text-[color:var(--md-on-surface-variant)]">{exp.description}</p>
 
                   {/* Highlights/Skills Tags */}
                   <div className="flex flex-wrap gap-2">
                     {exp.highlights.map((skill) => (
                       <span
                         key={skill}
-                        className="neo-pressed flex items-center gap-1 rounded-md px-2 py-1 text-[9px] font-medium text-[#52657a]"
+                        className="neo-pressed flex items-center gap-1 rounded-md px-2 py-1 text-[9px] font-medium text-[color:var(--md-on-surface-variant)]"
                       >
                         <ChevronRight size={10} />
                         {skill}

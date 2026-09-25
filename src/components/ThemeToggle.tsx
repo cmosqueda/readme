@@ -4,9 +4,24 @@ import { memo, useEffect, useRef, useState } from "react";
 
 type Theme = "light" | "dark";
 
-type ViewTransitionDocument = Document & {
-  startViewTransition?: (updateCallback: () => void) => { finished: Promise<void> };
+type ViewTransition = {
+  ready: Promise<void>;
+  finished: Promise<void>;
+  updateCallbackDone: Promise<void>;
+  skipTransition: () => void;
 };
+
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (updateCallback: () => void) => ViewTransition;
+};
+
+// M3 motion tokens (https://m3.material.io/styles/motion/easing-and-duration).
+// Emphasized-decelerate: fast start, slow settle — used for elements expanding into view.
+const M3_EMPHASIZED_DECELERATE = "cubic-bezier(0.05, 0.7, 0.1, 1)";
+// Emphasized: the general-purpose curve for attention-worthy transitions (framer-motion needs the bezier as an array).
+const M3_EMPHASIZED = [0.2, 0, 0, 1] as const;
+const M3_DURATION_REVEAL = 600; // "long2" token
+const M3_DURATION_ICON = 200; // "short4" token
 
 function getInitialTheme(): Theme {
   const savedTheme = localStorage.getItem("portfolio-theme");
@@ -14,9 +29,17 @@ function getInitialTheme(): Theme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-export default memo(function ThemeToggle() {
+type Props = {
+  className?: string;
+};
+
+const defaultClassName =
+  "theme-toggle neo-card fixed right-5 top-5 z-[60] flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--md-primary)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]";
+
+export default memo(function ThemeToggle({ className }: Props) {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const themeRef = useRef(theme);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -38,20 +61,45 @@ export default memo(function ThemeToggle() {
     // Keep this outside React's render cycle so rapid clicks cannot use a stale theme.
     const nextTheme: Theme = themeRef.current === "dark" ? "light" : "dark";
     const viewTransitionDocument = document as ViewTransitionDocument;
+    const button = buttonRef.current;
 
-    if (!prefersReducedMotion && viewTransitionDocument.startViewTransition) {
-      viewTransitionDocument.startViewTransition(() => applyTheme(nextTheme));
+    if (prefersReducedMotion || !viewTransitionDocument.startViewTransition || !button) {
+      applyTheme(nextTheme);
       return;
     }
 
-    applyTheme(nextTheme);
+    // Anchor the reveal on the button itself so it works the same for a
+    // mouse click, a tap, or a keyboard activation.
+    const { left, top, width, height } = button.getBoundingClientRect();
+    const x = left + width / 2;
+    const y = top + height / 2;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    );
+
+    const transition = viewTransitionDocument.startViewTransition(() => applyTheme(nextTheme));
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`],
+        },
+        {
+          duration: M3_DURATION_REVEAL,
+          easing: M3_EMPHASIZED_DECELERATE,
+          pseudoElement: "::view-transition-new(root)",
+        },
+      );
+    });
   };
 
   return (
     <button
+      ref={buttonRef}
       type="button"
       onClick={toggleTheme}
-      className="theme-toggle neo-card fixed right-[4.5rem] top-4 z-[60] flex h-11 w-11 items-center justify-center rounded-full text-[#4b7355] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355] md:right-5 md:top-5"
+      className={className ?? defaultClassName}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       aria-pressed={isDark}
     >
@@ -59,12 +107,12 @@ export default memo(function ThemeToggle() {
         <motion.span
           key={theme}
           aria-hidden="true"
-          initial={{ opacity: 0, rotate: -90, scale: 0.75 }}
+          initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
           animate={{ opacity: 1, rotate: 0, scale: 1 }}
-          exit={{ opacity: 0, rotate: 90, scale: 0.75 }}
+          exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
           transition={{
-            duration: 0.2,
-            ease: [0.4, 0, 0.2, 1],
+            duration: M3_DURATION_ICON / 1000,
+            ease: M3_EMPHASIZED,
           }}
           className="flex"
         >

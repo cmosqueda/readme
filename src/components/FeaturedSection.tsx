@@ -30,31 +30,31 @@ function ProjectCard({ project }: { project: ProjectData }) {
     <motion.div variants={fadeInUp}>
       <Link
         to={`/projects/${project.slug}`}
-        className="neo-card-interactive group relative block w-full overflow-hidden rounded-3xl text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
+        className="neo-card-interactive group relative block w-full overflow-hidden rounded-3xl text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]"
       >
         <div className="relative z-10 p-6 md:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#4b7355]">{project.category}</span>
-                <span className="hidden h-1 w-1 rounded-full bg-[#b5c3cf] sm:block" />
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-[#718194]">{project.status}</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--md-primary)]">{project.category}</span>
+                <span className="hidden h-1 w-1 rounded-full bg-[color:var(--md-outline-variant)] sm:block" />
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-[color:var(--md-on-surface-variant)]">{project.status}</span>
               </div>
               <div>
-                <h3 className="font-[Fraunces] text-2xl font-bold text-[#2d3b4c] sm:text-3xl">{project.title}</h3>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#617388]">{project.description}</p>
+                <h3 className="font-['Roboto_Mono'] text-2xl font-bold text-[color:var(--md-on-surface)] sm:text-3xl">{project.title}</h3>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[color:var(--md-on-surface-variant)]">{project.description}</p>
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
-                {project.workflow.slice(0, 3).map((step) => <span key={step} className="neo-pressed rounded-full px-3 py-1.5 text-[9px] font-medium text-[#52657a]">{step}</span>)}
+                {project.workflow.slice(0, 3).map((step) => <span key={step} className="neo-pressed rounded-full px-3 py-1.5 text-[9px] font-medium text-[color:var(--md-on-surface-variant)]">{step}</span>)}
               </div>
             </div>
             <div className="w-full lg:w-auto lg:min-w-[180px]">
               <div className="neo-pressed rounded-2xl p-4">
                 <div className="mb-4 flex items-center justify-between gap-4">
-                  <p className="text-[9px] font-semibold uppercase tracking-wide text-[#8090a0]">View case study</p>
-                  <ExternalLink size={14} className="text-[#4b7355] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <p className="text-[9px] font-semibold uppercase tracking-wide text-[color:var(--md-on-surface-variant)]/70">View case study</p>
+                  <ExternalLink size={14} className="text-[color:var(--md-primary)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
-                <p className="text-xs leading-relaxed text-[#617388]">Open the complete solution brief, metrics, and implementation notes.</p>
+                <p className="text-xs leading-relaxed text-[color:var(--md-on-surface-variant)]">Open the complete solution brief, metrics, and implementation notes.</p>
               </div>
             </div>
           </div>

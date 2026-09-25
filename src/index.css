@@ -1,17 +1,94 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&family=Roboto+Mono:wght@500;600;700&display=swap");
 @import "tailwindcss";
 
+/* ==========================================================================
+   Material Design 3 — design tokens
+   Reference: https://m3.material.io/styles (color roles, elevation, shape)
+   Seed palette: #50718a / #375d7a / #aab2bc / #e9edf2 / #101828
+   ========================================================================== */
 @layer base {
   :root {
-    font-family: "DM Sans", Arial, sans-serif;
-    color: #1c1c1a;
-    background: #f6f5f1;
+    /* ---- color roles (light scheme) ---- */
+    --md-primary: #375d7a;
+    --md-on-primary: #ffffff;
+    --md-primary-container: #c3d3dd;
+    --md-on-primary-container: #12293a;
+
+    --md-secondary: #50718a;
+    --md-on-secondary-container: #22323d;
+
+    --md-surface: #e9edf2;
+    --md-surface-dim: #d7dde3;
+    --md-surface-bright: #e9edf2;
+    --md-surface-container-lowest: #ffffff;
+    --md-surface-container-low: #f3f5f8;
+    --md-surface-container: #e9edf2;
+    --md-surface-container-high: #dde3e9;
+    --md-surface-container-highest: #d1d8df;
+
+    --md-on-surface: #101828;
+    --md-on-surface-variant: #56606c;
+    --md-outline: #7c8896;
+    --md-outline-variant: #aab2bc;
+
+    --md-scrim: #101828;
+    --md-shadow: 16 24 40;
+    --md-state-hover: 4.5%;
+    --md-state-focus: 8%;
+    --md-state-press: 10%;
+
+    /* ---- shape scale ---- */
+    --md-shape-xs: 4px;
+    --md-shape-sm: 8px;
+    --md-shape-md: 12px;
+    --md-shape-lg: 16px;
+    --md-shape-xl: 28px;
+    --md-shape-full: 999px;
+
+    /* ---- elevation (box-shadow values, M3 spec) ---- */
+    --md-elevation-1: 0px 1px 2px 0px rgb(var(--md-shadow) / 0.3), 0px 1px 3px 1px rgb(var(--md-shadow) / 0.15);
+    --md-elevation-2: 0px 1px 2px 0px rgb(var(--md-shadow) / 0.3), 0px 2px 6px 2px rgb(var(--md-shadow) / 0.15);
+    --md-elevation-3: 0px 1px 3px 0px rgb(var(--md-shadow) / 0.3), 0px 4px 8px 3px rgb(var(--md-shadow) / 0.15);
+    --md-elevation-4: 0px 2px 3px 0px rgb(var(--md-shadow) / 0.3), 0px 6px 10px 4px rgb(var(--md-shadow) / 0.15);
+
+    font-family: "Roboto", Arial, sans-serif;
+    color: var(--md-on-surface);
+    background: var(--md-surface);
     font-synthesis: none;
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --md-primary: #50718a;
+    --md-on-primary: #ffffff;
+    --md-primary-container: #2a3c4f;
+    --md-on-primary-container: #c3d3dd;
+
+    --md-secondary: #5f7d95;
+    --md-on-secondary-container: #d3dde3;
+
+    --md-surface: #101828;
+    --md-surface-dim: #101828;
+    --md-surface-bright: #38445a;
+    --md-surface-container-lowest: #0b111c;
+    --md-surface-container-low: #161f2f;
+    --md-surface-container: #1b2436;
+    --md-surface-container-high: #222c40;
+    --md-surface-container-highest: #2a3549;
+
+    --md-on-surface: #e9edf2;
+    --md-on-surface-variant: #aab2bc;
+    --md-outline: #5c6b7a;
+    --md-outline-variant: #33405a;
+
+    --md-scrim: #000000;
+    --md-shadow: 0 0 0;
   }
 
   body {
     min-width: 320px;
-    background: #f6f5f1;
+    background: var(--md-surface);
   }
 
   button,
@@ -20,8 +97,8 @@
   }
 
   ::selection {
-    background: #dbe6dc;
-    color: #1f2e22;
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -38,45 +115,62 @@
 
 @layer components {
   .app-shell {
-    background: #f6f5f1;
-    color: #1c1c1a;
+    background: var(--md-surface);
+    color: var(--md-on-surface);
   }
 
-  /* Floating nav pill / rail — kept flat, framed by a hairline border instead of a dual shadow. */
+  /* Floating nav rail: M3 elevated surface, level 2, fully rounded, tonal fill. */
   .neo-surface {
-    background: #ffffff;
-    border: 1px solid #1c1c1a;
-    box-shadow: none;
+    background: var(--md-surface-container-high);
+    border: none;
+    box-shadow: var(--md-elevation-2);
   }
 
-  /* Grid item / card: flat white, thin dark border; elevation is reserved for hover only. */
+  /* M3 elevated card: tonal surface + soft shadow, no hairline border. */
   .neo-card {
-    background: #ffffff;
-    border: 1px solid #1c1c1a;
-    box-shadow: none;
+    background: var(--md-surface-container-low);
+    border: 1px solid var(--md-outline-variant);
+    box-shadow: var(--md-elevation-1);
   }
 
   .neo-card-interactive {
-    background: #ffffff;
-    border: 1px solid #1c1c1a;
-    box-shadow: none;
+    position: relative;
+    background: var(--md-surface-container-low);
+    border: 1px solid var(--md-outline-variant);
+    box-shadow: var(--md-elevation-1);
+    isolation: isolate;
     transition:
-      box-shadow 180ms ease,
-      transform 180ms ease,
-      border-color 180ms ease,
-      color 180ms ease;
+      box-shadow 200ms cubic-bezier(0.2, 0, 0, 1),
+      transform 200ms cubic-bezier(0.2, 0, 0, 1),
+      border-color 200ms ease;
+  }
+
+  /* M3 state layer: a tonal overlay instead of a literal shadow/lift trick. */
+  .neo-card-interactive::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--md-primary);
+    opacity: 0;
+    transition: opacity 150ms ease;
   }
 
   .neo-card-interactive:hover {
-    box-shadow: 6px 6px 0 0 rgb(28 28 26 / 8%), 0 12px 28px -12px rgb(28 28 26 / 22%);
-    transform: translateY(-3px);
-    border-color: #4b7355;
+    box-shadow: var(--md-elevation-3);
+    transform: translateY(-2px);
+    border-color: var(--md-primary);
   }
 
-  /* Recessed chip/tag/code-block treatment — a quiet tinted well, no inset shadow. */
+  .neo-card-interactive:hover::after {
+    opacity: var(--md-state-hover);
+  }
+
+  /* Recessed / filled-tonal surface: chips, code wells, inline tags. */
   .neo-pressed {
-    background: #f0efe9;
-    border: 1px solid rgb(28 28 26 / 12%);
+    background: var(--md-surface-container-high);
+    border: 1px solid transparent;
     box-shadow: none;
   }
 
@@ -84,72 +178,86 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.5rem;
-    color: #4b7355;
-    background: #ffffff;
-    border: 1px solid #1c1c1a;
+    border-radius: var(--md-shape-md);
+    color: var(--md-on-primary-container);
+    background: var(--md-primary-container);
+    border: none;
     box-shadow: none;
   }
 
-  /* Primary CTA: flat, sharp corners, immediate fill-flip on hover instead of soft glow. */
+  /* M3 filled button: solid tonal fill, pill shape, flat at rest, state-layer on hover/press. */
   .neo-button-primary {
-    color: #4b7355;
-    background: transparent;
-    border: 2px solid #1c1c1a;
-    border-radius: 0 !important;
+    position: relative;
+    isolation: isolate;
+    color: var(--md-on-primary);
+    background: var(--md-primary);
+    border: none;
+    border-radius: var(--md-shape-full) !important;
     box-shadow: none;
+    overflow: hidden;
     transition:
-      background 150ms ease,
-      color 150ms ease,
+      box-shadow 150ms ease,
       transform 150ms ease;
   }
 
+  .neo-button-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--md-on-primary);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
   .neo-button-primary:hover {
-    background: #1c1c1a;
-    color: #ffffff;
-    transform: translateY(-1px);
+    box-shadow: var(--md-elevation-1);
+  }
+
+  .neo-button-primary:hover::after {
+    opacity: var(--md-state-hover);
   }
 
   .neo-button-primary:active {
-    transform: translateY(0);
-    background: #4b7355;
-    border-color: #4b7355;
-    color: #ffffff;
-  }
-
-  .mobile-nav-card {
-    background: #ffffff;
-    border: 1px solid #1c1c1a;
     box-shadow: none;
   }
 
+  .neo-button-primary:active::after {
+    opacity: var(--md-state-press);
+  }
+
+  .mobile-nav-card {
+    background: var(--md-surface-container-high);
+    border: none;
+    box-shadow: var(--md-elevation-1);
+  }
+
   .mobile-nav-panel {
-    background: #ffffff;
-    border-left: 1px solid #1c1c1a;
-    box-shadow: -12px 0 32px rgb(28 28 26 / 10%);
+    background: var(--md-surface-container-lowest);
+    border-left: none;
+    box-shadow: var(--md-elevation-4);
   }
 
   .mobile-nav-item {
-    border: 1px solid rgb(28 28 26 / 16%);
-    color: #43443f;
+    border: 1px solid var(--md-outline-variant);
+    color: var(--md-on-surface-variant);
     background: transparent;
     transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
   }
 
   .mobile-nav-item:hover {
-    border-color: #1c1c1a;
-    background: #f0efe9;
+    border-color: var(--md-outline);
+    background: var(--md-surface-container-high);
   }
 
   .mobile-nav-item-active {
-    background: #4b7355;
-    border: 1px solid #4b7355;
-    color: #ffffff;
+    background: var(--md-primary);
+    border: 1px solid var(--md-primary);
+    color: var(--md-on-primary);
     box-shadow: none;
   }
 
   .section-kicker {
-    color: #4b7355;
+    color: var(--md-primary);
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -157,9 +265,8 @@
   }
 
   .section-title {
-    color: #1c1c1a;
-    font-family: "Fraunces", "Georgia", serif;
-    font-optical-sizing: auto;
+    color: var(--md-on-surface);
+    font-family: "Roboto Mono", "Courier New", monospace;
     font-size: 1.6rem;
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -185,15 +292,15 @@
   }
 
   .profile-card {
-    background: #ffffff;
-    border: 1px solid #1c1c1a;
-    box-shadow: none;
+    background: var(--md-surface-container-low);
+    border: 1px solid var(--md-outline-variant);
+    box-shadow: var(--md-elevation-1);
   }
 
   .profile-card-identity,
   .profile-card-strengths {
-    background: #f0efe9;
-    border: 1px solid rgb(28 28 26 / 12%);
+    background: var(--md-surface-container-high);
+    border: none;
     box-shadow: none;
   }
 
@@ -202,109 +309,109 @@
   }
 
   .workflow-sandbox {
-    background: #ffffff;
-    border-color: #1c1c1a;
-    box-shadow: none;
+    background: var(--md-surface-container-low);
+    border-color: var(--md-outline-variant);
+    box-shadow: var(--md-elevation-1);
   }
 
   .sandbox-grid {
-    background-color: #f0efe9;
-    background-image: radial-gradient(rgb(28 28 26 / 22%) 1px, transparent 1px);
+    background-color: var(--md-surface-container-high);
+    background-image: radial-gradient(rgb(var(--md-shadow) / 22%) 1px, transparent 1px);
     background-size: 16px 16px;
     box-shadow: none;
   }
 
   .sandbox-toolbar {
-    background: #ffffff;
-    border-color: rgb(28 28 26 / 15%);
-    box-shadow: inset 0 -1px 0 rgb(28 28 26 / 8%);
+    background: var(--md-surface-container-low);
+    border-color: var(--md-outline-variant);
+    box-shadow: inset 0 -1px 0 var(--md-outline-variant);
   }
 
   .sandbox-node {
-    background: #ffffff;
-    border-color: #1c1c1a;
-    box-shadow: none;
+    background: var(--md-surface-container-low);
+    border-color: var(--md-outline-variant);
+    box-shadow: var(--md-elevation-1);
     transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
   }
 
   .sandbox-node:hover {
     transform: translateY(-2px);
-    box-shadow: 4px 4px 0 0 rgb(28 28 26 / 10%);
+    box-shadow: var(--md-elevation-2);
   }
 
   .sandbox-node-active {
-    background: #f0efe9;
-    border-color: #4b7355;
-    box-shadow: none;
+    background: var(--md-primary-container);
+    border-color: var(--md-primary);
+    box-shadow: var(--md-elevation-1);
   }
 
   .sandbox-port {
-    background: #ffffff;
-    border-color: #1c1c1a;
+    background: var(--md-surface-container-low);
+    border-color: var(--md-outline);
     box-shadow: none;
   }
 
   .sandbox-port-active {
-    border-color: #4b7355;
-    background: #e4ede5;
+    border-color: var(--md-primary);
+    background: var(--md-primary-container);
   }
 
   .sandbox-node-icon {
-    background: #f0efe9;
-    color: #55564f;
-    border: 1px solid rgb(28 28 26 / 14%);
+    background: var(--md-surface-container-high);
+    color: var(--md-on-surface-variant);
+    border: none;
     box-shadow: none;
   }
 
   .sandbox-node-icon-active {
-    background: #4b7355;
-    color: #ffffff;
-    border-color: #4b7355;
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+    border-color: var(--md-primary);
     box-shadow: none;
   }
 
   .sandbox-token {
-    background: #f0efe9;
-    border-color: rgb(28 28 26 / 14%);
+    background: var(--md-surface-container-high);
+    border-color: transparent;
     box-shadow: none;
   }
 
   .sandbox-token-active {
-    background: #e4ede5;
-    border-color: #4b7355;
+    background: var(--md-primary-container);
+    border-color: var(--md-primary);
   }
 
   .sandbox-console {
-    background: #ffffff;
-    border-color: #1c1c1a;
+    background: var(--md-surface-container-low);
+    border-color: var(--md-outline-variant);
     box-shadow: none;
   }
 
   .sandbox-node-title {
-    color: #1c1c1a;
+    color: var(--md-on-surface);
   }
 
   .sandbox-node-type,
   .sandbox-node-meta,
   .sandbox-token-label {
-    color: #6b6c64;
+    color: var(--md-on-surface-variant);
   }
 
   .sandbox-node-tag {
-    background: #e4ede5;
-    color: #395940;
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
   }
 
   .sandbox-token-value {
-    color: #43443f;
+    color: var(--md-on-surface-variant);
   }
 
   .sandbox-token-value-active {
-    color: #4b7355;
+    color: var(--md-primary);
   }
 
   .skeleton-shimmer {
-    background: linear-gradient(110deg, #e4ede5 28%, #f8faf8 45%, #e4ede5 62%);
+    background: linear-gradient(110deg, var(--md-surface-container-high) 28%, var(--md-surface-container-lowest) 45%, var(--md-surface-container-high) 62%);
     background-size: 220% 100%;
     box-shadow: none;
     animation: skeleton-shimmer 1.2s ease-in-out infinite;
@@ -337,282 +444,27 @@
     }
   }
 
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-  }
-
-  [data-theme="dark"] body,
   [data-theme="dark"] .app-shell {
-    background: #14140f;
-    color: #eeede6;
-  }
-
-  [data-theme="dark"] .neo-surface,
-  [data-theme="dark"] .neo-card,
-  [data-theme="dark"] .neo-card-interactive,
-  [data-theme="dark"] .neo-icon {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 24%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .neo-card-interactive:hover {
-    box-shadow: 6px 6px 0 0 rgb(0 0 0 / 30%), 0 14px 30px -12px rgb(0 0 0 / 55%);
-    border-color: #8fbf98;
-  }
-
-  [data-theme="dark"] .neo-pressed {
-    background: #14140f;
-    border-color: rgb(238 237 230 / 12%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .neo-button-primary {
-    color: #8fbf98;
-    border-color: rgb(238 237 230 / 55%);
-  }
-
-  [data-theme="dark"] .neo-button-primary:hover {
-    background: #eeede6;
-    color: #14140f;
-    border-color: #eeede6;
-  }
-
-  [data-theme="dark"] .neo-button-primary:active {
-    background: #4b7355;
-    border-color: #4b7355;
-    color: #ffffff;
-  }
-
-  [data-theme="dark"] .mobile-nav-card {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 24%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .mobile-nav-label {
-    color: #8fbf98;
-  }
-
-  [data-theme="dark"] .mobile-nav-current {
-    color: #eeede6;
-  }
-
-  [data-theme="dark"] .mobile-nav-panel {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 20%);
-    box-shadow: -12px 0 32px rgb(0 0 0 / 40%);
-  }
-
-  [data-theme="dark"] .mobile-nav-item {
-    border-color: rgb(238 237 230 / 16%);
-    color: #d6d5cb;
-    background: transparent;
-  }
-
-  [data-theme="dark"] .mobile-nav-item:hover {
-    border-color: rgb(238 237 230 / 45%);
-    background: #24241c;
-  }
-
-  [data-theme="dark"] .mobile-nav-item-active {
-    background: #4b7355;
-    border-color: #8fbf98;
-    color: #ffffff;
-  }
-
-  [data-theme="dark"] .profile-card {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 22%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .profile-card-identity,
-  [data-theme="dark"] .profile-card-strengths {
-    background: #14140f;
-    border-color: rgb(238 237 230 / 12%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .profile-card-action {
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .resume-button {
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .resume-button:hover {
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .workflow-sandbox {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 22%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-grid {
-    background-color: #14140f;
-    background-image: radial-gradient(rgb(238 237 230 / 17%) 1px, transparent 1px);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-toolbar,
-  [data-theme="dark"] .sandbox-node {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 22%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-node-active {
-    background: #14140f;
-    border-color: #8fbf98;
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-port {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 40%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-port-active {
-    background: #24352a;
-    border-color: #8fbf98;
-  }
-
-  [data-theme="dark"] .sandbox-node-icon {
-    background: #14140f;
-    color: #b9b8ad;
-    border-color: rgb(238 237 230 / 14%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-node-icon-active {
-    background: #4b7355;
-    color: #ffffff;
-    border-color: #4b7355;
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-token {
-    background: #14140f;
-    border-color: rgb(238 237 230 / 14%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-token-active {
-    background: #24352a;
-    border-color: #8fbf98;
-  }
-
-  [data-theme="dark"] .sandbox-console {
-    background: #1c1c17;
-    border-color: rgb(238 237 230 / 22%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .sandbox-node-title {
-    color: #eeede6;
-  }
-
-  [data-theme="dark"] .sandbox-node-type,
-  [data-theme="dark"] .sandbox-node-meta,
-  [data-theme="dark"] .sandbox-token-label {
-    color: #b9b8ad;
-  }
-
-  [data-theme="dark"] .sandbox-node-tag {
-    background: #24352a;
-    color: #bfe0c6;
-  }
-
-  [data-theme="dark"] .sandbox-token-value {
-    color: #d6d5cb;
-  }
-
-  [data-theme="dark"] .sandbox-token-value-active {
-    color: #8fbf98;
-  }
-
-  [data-theme="dark"] .skeleton-shimmer {
-    background: linear-gradient(110deg, #14140f 28%, #24241c 45%, #14140f 62%);
-    box-shadow: none;
-  }
-
-  [data-theme="dark"] .section-title {
-    color: #eeede6;
-  }
-
-  [data-theme="dark"] .section-kicker {
-    color: #8fbf98;
-  }
-
-  [data-theme="dark"] [class~="text-[#2d3b4c]"] {
-    color: #eeede6 !important;
-  }
-  [data-theme="dark"] [class~="text-[#43556a]"] {
-    color: #d6d5cb !important;
-  }
-  [data-theme="dark"] [class~="text-[#52657a]"] {
-    color: #c2c1b6 !important;
-  }
-  [data-theme="dark"] [class~="text-[#617388]"] {
-    color: #b0afa3 !important;
-  }
-  [data-theme="dark"] [class~="text-[#718194]"] {
-    color: #b9b8ad !important;
-  }
-  [data-theme="dark"] [class~="text-[#8090a0]"] {
-    color: #a5a499 !important;
-  }
-  [data-theme="dark"] [class~="text-[#91a6b8]"] {
-    color: #b0afa3 !important;
-  }
-  [data-theme="dark"] [class~="text-[#4b7355]"] {
-    color: #8fbf98 !important;
-  }
-  [data-theme="dark"] [class~="text-[#6f9376]"] {
-    color: #8fbf98 !important;
-  }
-  [data-theme="dark"] [class~="bg-[#e4ede5]"] {
-    background: #24352a !important;
-  }
-  [data-theme="dark"] [class~="bg-[#f6f5f1]/90"] {
-    background: rgb(28 28 23 / 90%) !important;
-  }
-  [data-theme="dark"] [class~="border-[#d5dde5]"] {
-    border-color: rgb(238 237 230 / 22%) !important;
-  }
-  [data-theme="dark"] [class~="border-[#4b7355]"] {
-    border-color: #8fbf98 !important;
+    background: var(--md-surface);
+    color: var(--md-on-surface);
   }
 }
 
-/* Theme changes are composited separately, so they cannot override Framer Motion's transitions. */
+/* Material Motion — theme toggle reveal.
+   ThemeToggle.tsx drives an expanding-circle wipe from the button's position
+   via the Web Animations API (M3 emphasized-decelerate easing). These rules
+   only stop the browser's default cross-fade and stack the incoming theme
+   on top, so the circle reveals it over the frozen outgoing snapshot. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 300ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 ::view-transition-old(root) {
-  animation-name: theme-fade-out;
+  z-index: 1;
 }
 
 ::view-transition-new(root) {
-  animation-name: theme-fade-in;
-}
-
-@keyframes theme-fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes theme-fade-in {
-  from {
-    opacity: 0;
-  }
+  z-index: 2147483647;
 }

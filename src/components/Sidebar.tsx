@@ -16,8 +16,8 @@ export default memo(function Sidebar() {
         {/* IDENTITY DETAILS */}
         <div className="flex flex-col gap-5">
           <div className="space-y-1">
-            <p className="font-[Fraunces] text-xl font-bold tracking-tight text-[#2d3b4c]">{identity.name}</p>
-            <p className="text-xs text-[#617388] leading-relaxed">{identity.tagline}</p>
+            <p className="font-['Roboto_Mono'] text-xl font-bold tracking-tight text-[color:var(--md-on-surface)]">{identity.name}</p>
+            <p className="text-xs text-[color:var(--md-on-surface-variant)] leading-relaxed">{identity.tagline}</p>
           </div>
 
           <a
@@ -26,16 +26,16 @@ export default memo(function Sidebar() {
             rel="noopener noreferrer"
             className="
               resume-button neo-button-primary group flex items-center justify-between rounded-2xl px-4 py-3
-              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]
             "
           >
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-white/15 p-1.5 text-white transition-transform group-hover:scale-110">
+              <div className="rounded-lg bg-[color:var(--md-on-primary)]/15 p-1.5 text-[color:var(--md-on-primary)] transition-transform group-hover:scale-110">
                 <Download size={14} />
               </div>
               <span className="text-xs font-bold tracking-wide">Download résumé</span>
             </div>
-            <ExternalLink size={12} className="text-white/70" />
+            <ExternalLink size={12} className="text-[color:var(--md-on-primary)]/70" />
           </a>
         </div>
 
@@ -47,8 +47,8 @@ export default memo(function Sidebar() {
 
       <div className="space-y-4">
         <div className="flex justify-between items-center px-1">
-          <p className="text-[10px] text-[#8090a0]">{identity.systemLabel}</p>
-          <p className="text-[10px] text-[#8090a0]">© {new Date().getFullYear()}</p>
+          <p className="text-[10px] text-[color:var(--md-on-surface-variant)]/70">{identity.systemLabel}</p>
+          <p className="text-[10px] text-[color:var(--md-on-surface-variant)]/70">© {new Date().getFullYear()}</p>
         </div>
       </div>
     </aside>

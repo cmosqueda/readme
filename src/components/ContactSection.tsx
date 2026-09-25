@@ -8,7 +8,7 @@ export default function ContactSection() {
   return (
     <section className="w-full flex justify-center py-24 px-4">
       <motion.div
-        className="w-full max-w-4xl border-t border-[#d5dde5] pt-16"
+        className="w-full max-w-4xl border-t border-[color:var(--md-outline-variant)] pt-16"
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
@@ -16,13 +16,13 @@ export default function ContactSection() {
       >
         <motion.div variants={fadeInUp} className="mb-10 space-y-4">
           <div className="flex items-center gap-2">
-            <MessageCircle size={16} className="text-[#4b7355]" />
+            <MessageCircle size={16} className="text-[color:var(--md-primary)]" />
             <h2 className="section-kicker">Get in touch</h2>
           </div>
-          <h3 className="font-[Fraunces] text-3xl font-bold tracking-[-0.04em] text-[#2d3b4c]">
+          <h3 className="font-['Roboto_Mono'] text-3xl font-bold tracking-[-0.04em] text-[color:var(--md-on-surface)]">
             Let&apos;s turn validated needs into a buildable product system.
           </h3>
-          <p className="max-w-2xl text-sm leading-relaxed text-[#617388]">
+          <p className="max-w-2xl text-sm leading-relaxed text-[color:var(--md-on-surface-variant)]">
             Open to early-career product systems opportunities and scoped product discovery, workflow design, and
             requirements consulting.
           </p>
@@ -41,14 +41,14 @@ export default function ContactSection() {
                 neo-card-interactive group flex items-center gap-3 rounded-full px-4 py-2
               "
             >
-              <span className="text-[#4b7355]">
+              <span className="text-[color:var(--md-primary)]">
                 <Icon name={contact.iconKey} size={14} />
               </span>
-              <span className="text-xs font-semibold text-[#43556a]">
+              <span className="text-xs font-semibold text-[color:var(--md-on-surface-variant)]">
                 {contact.platform}
               </span>
-              <div className="h-3 w-px bg-[#c6d1db]" />
-              <span className="text-[10px] text-[#718194]">
+              <div className="h-3 w-px bg-[color:var(--md-outline-variant)]" />
+              <span className="text-[10px] text-[color:var(--md-on-surface-variant)]/80">
                 {contact.value}
               </span>
             </motion.a>
@@ -64,7 +64,7 @@ export default function ContactSection() {
         </motion.div>
 
         {/* SYSTEM FOOTER */}
-        <div className="flex flex-col items-start justify-between gap-6 text-[#718194] sm:flex-row sm:items-center">
+        <div className="flex flex-col items-start justify-between gap-6 text-[color:var(--md-on-surface-variant)] sm:flex-row sm:items-center">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <MapPin size={12} />

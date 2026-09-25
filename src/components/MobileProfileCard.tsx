@@ -12,8 +12,8 @@ export default memo(function MobileProfileCard() {
         <div className="profile-card-identity flex items-center gap-4 rounded-2xl p-4">
           <ProfilePhotoPreview sizeClassName="h-24 w-24" />
           <div className="min-w-0 space-y-1">
-            <p className="font-[Fraunces] text-xl font-bold tracking-tight text-[#2d3b4c]">{identity.name}</p>
-            <p className="text-xs leading-relaxed text-[#617388]">{identity.tagline}</p>
+            <p className="font-['Roboto_Mono'] text-xl font-bold tracking-tight text-[color:var(--md-on-surface)]">{identity.name}</p>
+            <p className="text-xs leading-relaxed text-[color:var(--md-on-surface-variant)]">{identity.tagline}</p>
           </div>
         </div>
 
@@ -21,15 +21,15 @@ export default memo(function MobileProfileCard() {
           href={identity.cvHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="profile-card-action resume-button neo-button-primary group mt-5 flex min-h-14 items-center justify-between rounded-2xl px-5 py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
+          className="profile-card-action resume-button neo-button-primary group mt-5 flex min-h-14 items-center justify-between rounded-2xl px-5 py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]"
         >
           <span className="flex items-center gap-3">
-            <span className="rounded-lg bg-white/15 p-1.5 text-white transition-transform group-hover:scale-110">
+            <span className="rounded-lg bg-[color:var(--md-on-primary)]/15 p-1.5 text-[color:var(--md-on-primary)] transition-transform group-hover:scale-110">
               <Download size={14} />
             </span>
             <span className="text-xs font-bold tracking-wide">Download résumé</span>
           </span>
-          <ExternalLink size={14} className="text-white/70" />
+          <ExternalLink size={14} className="text-[color:var(--md-on-primary)]/70" />
         </a>
 
         <div className="profile-card-strengths mt-5 rounded-2xl p-4">

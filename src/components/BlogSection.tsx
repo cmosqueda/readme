@@ -44,20 +44,20 @@ function BlogCard({ post }: { post: BlogPost }) {
     <motion.div variants={fadeInUp}>
       <Link
         to={`/blogs/${post.slug}`}
-        className="neo-card-interactive group relative flex h-full flex-col items-start justify-between gap-4 rounded-2xl p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4b7355]"
+        className="neo-card-interactive group relative flex h-full flex-col items-start justify-between gap-4 rounded-2xl p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]"
       >
         <div className="space-y-3 w-full">
-          <div className="flex w-full items-center justify-between text-[10px] font-semibold text-[#718194]">
-            <span className="text-[#4b7355]">{post.category}</span>
+          <div className="flex w-full items-center justify-between text-[10px] font-semibold text-[color:var(--md-on-surface-variant)]">
+            <span className="text-[color:var(--md-primary)]">{post.category}</span>
             <span>{post.readTime}</span>
           </div>
-          <h3 className="font-[Fraunces] text-lg font-bold text-[#2d3b4c] transition-colors line-clamp-2">
+          <h3 className="font-['Roboto_Mono'] text-lg font-bold text-[color:var(--md-on-surface)] transition-colors line-clamp-2">
             {post.title}
           </h3>
-          <p className="text-xs leading-relaxed text-[#617388] line-clamp-3">{post.summary}</p>
+          <p className="text-xs leading-relaxed text-[color:var(--md-on-surface-variant)] line-clamp-3">{post.summary}</p>
         </div>
 
-        <div className="flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-wide text-[#4b7355]">
+        <div className="flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-wide text-[color:var(--md-primary)]">
           Read article <ChevronRight size={12} className="transition-transform group-hover:translate-x-0.5" />
         </div>
       </Link>
