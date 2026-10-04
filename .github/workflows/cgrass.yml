@@ -1,0 +1,34 @@
+name: Refresh GitHub contribution artwork
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Generate contribution artwork
+        uses: nrysk/cgrass@v1.0.0
+        with:
+          github_username: cmosqueda
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          output_path: output/output.png
+          command: theme
+          argument: github
+      - name: Publish contribution artwork
+        uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: output
+          commit_message: "Refresh contribution artwork"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

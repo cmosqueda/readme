@@ -10,10 +10,10 @@ import { setPageSeo } from "../lib/seo";
 
 const blogMarkdownComponents = {
   h1: ({ children }: { children?: ReactNode }) => (
-    <h1 className="mb-6 border-b border-[color:var(--md-outline-variant)] pb-2 font-['Roboto_Mono'] text-2xl font-bold text-[color:var(--md-on-surface)]">{children}</h1>
+    <h1 className="mb-6 border-b border-[color:var(--md-outline-variant)] pb-2 font-sans text-2xl font-bold text-[color:var(--md-on-surface)]">{children}</h1>
   ),
   h2: ({ children }: { children?: ReactNode }) => (
-    <h2 className="mb-4 mt-10 font-['Roboto_Mono'] text-xl font-bold text-[color:var(--md-on-surface)]">{children}</h2>
+    <h2 className="mb-4 mt-10 font-sans text-xl font-bold text-[color:var(--md-on-surface)]">{children}</h2>
   ),
   p: ({ children }: { children?: ReactNode }) => (
     <p className="mb-6 text-sm leading-relaxed text-[color:var(--md-on-surface-variant)] sm:text-base">{children}</p>
@@ -110,10 +110,10 @@ export default function BlogPostPage() {
   }
 
   return (
-    <main className="app-shell relative flex min-h-screen w-full justify-center px-4 py-16">
+    <main className="app-shell github-detail relative min-h-screen w-full px-4 py-8 md:py-12">
       {/* READING PROGRESS BAR */}
       <div
-        className="fixed top-0 left-0 right-0 z-[80] h-1 bg-[color:var(--md-outline-variant)]"
+        className="fixed top-0 left-0 right-0 z-[80] h-1 bg-[color:var(--gh-subtle)]"
         role="progressbar"
         aria-label="Reading progress"
         aria-valuemin={0}
@@ -121,7 +121,7 @@ export default function BlogPostPage() {
         aria-valuenow={Math.round(readingProgress)}
       >
         <div
-          className="h-full bg-[color:var(--md-primary)] transition-[width] duration-150 ease-out"
+          className="h-full bg-[color:var(--gh-link)] transition-[width] duration-150 ease-out"
           style={{ width: `${readingProgress}%` }}
         />
       </div>
@@ -131,26 +131,27 @@ export default function BlogPostPage() {
         variants={fadeInUp}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-3xl"
+        className="mx-auto w-full max-w-4xl"
       >
         {/* BACK TO HOME NAVIGATION */}
         <Link
           to="/#blogs"
-          className="group mb-12 inline-flex items-center gap-2 text-xs font-semibold text-[color:var(--md-on-surface-variant)] transition-colors hover:text-[color:var(--md-primary)]"
+          className="github-detail-back group mb-6 inline-flex items-center gap-2 text-sm"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
           Back to portfolio
         </Link>
 
         {/* METADATA HEADER BLOCK */}
-        <header className="mb-12 border-b border-[color:var(--md-outline-variant)] pb-8">
-          <span className="neo-pressed rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[color:var(--md-primary)]">
+        <header className="github-detail-header mb-8">
+          <div className="github-file-bar"><span>⌘</span><span>articles / {blog.slug}.md</span></div>
+          <span className="github-badge mt-5">
             {blog.category}
           </span>
-          <h1 className="mt-4 font-['Roboto_Mono'] text-3xl font-extrabold leading-tight tracking-[-0.05em] text-[color:var(--md-on-surface)] md:text-4xl">
+          <h1 className="github-detail-title mt-4">
             {blog.title}
           </h1>
-          <div className="mt-4 flex items-center gap-4 text-xs font-medium text-[color:var(--md-on-surface-variant)]">
+          <div className="github-detail-meta mt-4 flex items-center gap-4 text-xs">
             <span className="flex items-center gap-1.5">
               <Calendar size={13} /> {blog.date}
             </span>
@@ -161,7 +162,7 @@ export default function BlogPostPage() {
         </header>
 
         {/* EXTRACTED MARKDOWN TEXT MARKUP */}
-        <article className="prose prose-slate max-w-none pb-16">
+        <article className="github-markdown max-w-none pb-16">
           <ReactMarkdown components={blogMarkdownComponents}>
             {blog.content}
           </ReactMarkdown>
@@ -176,16 +177,10 @@ export default function BlogPostPage() {
         type="button"
         onClick={handleBackToStart}
         aria-label="Back to start"
-        className={`
-          neo-card fixed bottom-6 right-6 z-[70]
-          flex items-center gap-2 rounded-full px-4 py-3
-          text-[10px] font-bold uppercase tracking-wide text-[color:var(--md-on-surface-variant)]
-          transition-all duration-300 hover:text-[color:var(--md-primary)]
-          ${readingProgress > 8 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}
-        `}
+        className={`github-back-to-top fixed bottom-6 right-6 z-[70] flex items-center gap-2 px-3 py-2 text-xs font-medium transition-all duration-300 ${readingProgress > 8 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}
       >
         <ArrowUp size={14} />
-        <span className="hidden sm:inline">Back to start</span>
+        <span className="hidden sm:inline">Back to top</span>
       </button>
     </main>
   );
@@ -195,6 +190,13 @@ function MermaidDiagram({ chart }: { chart: string }) {
   const diagramId = useId().replace(/:/g, "");
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -203,8 +205,25 @@ function MermaidDiagram({ chart }: { chart: string }) {
       try {
         const { default: mermaid } = await import("mermaid");
 
-        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "neutral" });
-        const { svg: renderedSvg } = await mermaid.render(`mermaid-${diagramId}`, chart);
+        const dark = theme === "dark";
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "strict",
+          theme: "base",
+          themeVariables: {
+            background: dark ? "#0d1117" : "#ffffff",
+            primaryColor: dark ? "#161b22" : "#f6f8fa",
+            primaryBorderColor: dark ? "#30363d" : "#d0d7de",
+            primaryTextColor: dark ? "#f0f6fc" : "#1f2328",
+            secondaryColor: dark ? "#0d1117" : "#ffffff",
+            tertiaryColor: dark ? "#161b22" : "#f6f8fa",
+            lineColor: dark ? "#8b949e" : "#57606a",
+            textColor: dark ? "#f0f6fc" : "#1f2328",
+            mainBkg: dark ? "#161b22" : "#f6f8fa",
+            nodeBorder: dark ? "#30363d" : "#d0d7de",
+          },
+        });
+        const { svg: renderedSvg } = await mermaid.render(`mermaid-${diagramId}-${theme}`, chart);
 
         if (!cancelled) setSvg(renderedSvg);
       } catch (renderError) {
@@ -218,7 +237,7 @@ function MermaidDiagram({ chart }: { chart: string }) {
     return () => {
       cancelled = true;
     };
-  }, [chart, diagramId]);
+  }, [chart, diagramId, theme]);
 
   if (error) {
     return (
@@ -269,24 +288,21 @@ function BlogPaginationCard({ direction, slug }: { direction: "previous" | "next
   return (
     <Link
       to={`/blogs/${slug}`}
-      className={`
-        neo-card-interactive group rounded-2xl p-5
-        ${isPrevious ? "text-left" : "text-left md:text-right"}
-      `}
+      className={`github-pagination-card group p-4 ${isPrevious ? "text-left" : "text-left md:text-right"}`}
     >
       <div
-        className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--md-on-surface-variant)] ${isPrevious ? "justify-start" : "justify-start md:justify-end"}`}
+        className={`flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.1em] github-muted ${isPrevious ? "justify-start" : "justify-start md:justify-end"}`}
       >
         {isPrevious && <ChevronLeft size={13} className="transition-transform group-hover:-translate-x-0.5" />}
         <span>{isPrevious ? "Previous Note" : "Next Note"}</span>
         {!isPrevious && <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
       </div>
 
-      <h2 className="mt-3 font-['Roboto_Mono'] text-base font-bold text-[color:var(--md-on-surface)]">
+      <h2 className="github-pagination-title mt-3 font-sans text-base font-semibold">
         {blog?.title || formatSlugTitle(slug)}
       </h2>
 
-      <p className="mt-2 text-xs leading-relaxed text-[color:var(--md-on-surface-variant)] line-clamp-2">
+      <p className="github-muted mt-2 text-xs leading-relaxed line-clamp-2">
         {blog?.summary || "Open the next related solution note."}
       </p>
     </Link>

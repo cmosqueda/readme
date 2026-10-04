@@ -1,42 +1,19 @@
-import { Download, ExternalLink } from "lucide-react";
 import { memo } from "react";
 import { identity } from "../data/identity";
 import ProfilePhotoPreview from "./ProfilePhotoPreview";
-import StrengthMarquee from "./StrengthMarquee";
 
 export default memo(function MobileProfileCard() {
   return (
-    <aside className="mx-auto w-full max-w-4xl px-4 pt-24 md:hidden">
-      <div className="profile-card relative overflow-hidden rounded-[2rem] p-6">
-
-        <div className="profile-card-identity flex items-center gap-4 rounded-2xl p-4">
-          <ProfilePhotoPreview sizeClassName="h-24 w-24" />
-          <div className="min-w-0 space-y-1">
-            <p className="font-['Roboto_Mono'] text-xl font-bold tracking-tight text-[color:var(--md-on-surface)]">{identity.name}</p>
-            <p className="text-xs leading-relaxed text-[color:var(--md-on-surface-variant)]">{identity.tagline}</p>
-          </div>
-        </div>
-
-        <a
-          href={identity.cvHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="profile-card-action resume-button neo-button-primary group mt-5 flex min-h-14 items-center justify-between rounded-2xl px-5 py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]"
-        >
-          <span className="flex items-center gap-3">
-            <span className="rounded-lg bg-[color:var(--md-on-primary)]/15 p-1.5 text-[color:var(--md-on-primary)] transition-transform group-hover:scale-110">
-              <Download size={14} />
-            </span>
-            <span className="text-xs font-bold tracking-wide">Download résumé</span>
-          </span>
-          <ExternalLink size={14} className="text-[color:var(--md-on-primary)]/70" />
-        </a>
-
-        <div className="profile-card-strengths mt-5 rounded-2xl p-4">
-          <p className="section-kicker mb-3">Core strengths</p>
-          <StrengthMarquee />
+    <aside className="github-mobile-profile mx-auto w-full max-w-5xl md:hidden">
+      <div className="flex items-start gap-4">
+        <ProfilePhotoPreview sizeClassName="github-avatar h-20 w-20 shrink-0" />
+        <div className="min-w-0 pt-1">
+          <p className="text-xl font-semibold tracking-tight">{identity.name}</p>
+          <p className="github-muted text-sm">{identity.systemLabel}</p>
+          <p className="mt-3 text-sm leading-relaxed">{identity.tagline}</p>
         </div>
       </div>
+      <a href={identity.cvHref} target="_blank" rel="noopener noreferrer" className="github-button mt-4 block w-full px-3 py-1.5 text-center text-sm font-medium">View résumé</a>
     </aside>
   );
 });

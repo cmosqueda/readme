@@ -6,7 +6,6 @@ import MobileProfileCard from "../components/MobileProfileCard";
 import NavigationBar from "../components/NavigationBar";
 import ProfileSection from "../components/ProfileSection";
 import FeaturedSection from "../components/FeaturedSection";
-import WorkflowSection from "../components/WorkflowSection";
 import ExperienceSection from "../components/ExperienceSection";
 import ContactSection from "../components/ContactSection";
 import BlogSection from "../components/BlogSection";
@@ -14,7 +13,6 @@ import { sections } from "../data/navigation";
 
 const sectionComponents: Record<string, React.ReactNode> = {
   profile: <ProfileSection />,
-  workflow: <WorkflowSection />,
   featured: <FeaturedSection />,
   experience: <ExperienceSection />,
   blogs: <BlogSection />,
@@ -70,7 +68,7 @@ export default function Home() {
           onNavigate={(id) => navigate({ pathname: "/", hash: `#${id}` })}
         />
 
-        <main ref={scrollRootRef} className="flex-1 overflow-y-auto px-4 py-10 space-y-20 sm:px-6 scrollbar-hide">
+        <main ref={scrollRootRef} className="flex-1 overflow-y-auto px-4 pb-0 pt-24 space-y-16 sm:px-6 md:py-10 scrollbar-hide">
           <MobileProfileCard />
           {sections.map(({ id }, index) => (
             <section key={id} id={id} className={index === 0 ? "mt-5" : undefined}>

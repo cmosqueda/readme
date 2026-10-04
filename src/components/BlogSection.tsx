@@ -1,6 +1,5 @@
-// BlogSection.tsx
-import { motion } from "framer-motion";
 import { BookOpen, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { getAllBlogPosts, type BlogPost } from "../lib/content";
 import { fadeInUp, staggerContainer } from "../lib/motion";
@@ -9,30 +8,14 @@ const posts = getAllBlogPosts();
 
 export default function BlogSection() {
   return (
-    <section className="w-full flex justify-center py-12 px-4 relative">
-      <div className="w-full max-w-4xl">
-        {/* SECTION HEADER */}
-        <div className="flex items-center gap-4 mb-12">
-          <div className="neo-icon h-10 w-10">
-            <BookOpen size={19} />
-          </div>
-          <div>
-            <h2 className="section-title">Notes & articles</h2>
-            <p className="section-kicker">Discovery, Demos & Product Thinking</p>
-          </div>
+    <section className="w-full justify-center px-4 py-12">
+      <div className="mx-auto w-full max-w-5xl">
+        <div className="github-section-heading">
+          <div className="github-section-icon"><BookOpen size={18} /></div>
+          <div><h2>Blogs & articles</h2><p>Working notes on product thinking, systems, testing, and the developer transition.</p></div>
         </div>
-
-        {/* BLOG GRID/LIST */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {posts.map((post) => (
-            <BlogCard key={post.slug} post={post} />
-          ))}
+        <motion.div className="github-article-list" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }}>
+          {posts.map((post) => <BlogCard key={post.slug} post={post} />)}
         </motion.div>
       </div>
     </section>
@@ -42,24 +25,15 @@ export default function BlogSection() {
 function BlogCard({ post }: { post: BlogPost }) {
   return (
     <motion.div variants={fadeInUp}>
-      <Link
-        to={`/blogs/${post.slug}`}
-        className="neo-card-interactive group relative flex h-full flex-col items-start justify-between gap-4 rounded-2xl p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]"
-      >
-        <div className="space-y-3 w-full">
-          <div className="flex w-full items-center justify-between text-[10px] font-semibold text-[color:var(--md-on-surface-variant)]">
-            <span className="text-[color:var(--md-primary)]">{post.category}</span>
-            <span>{post.readTime}</span>
-          </div>
-          <h3 className="font-['Roboto_Mono'] text-lg font-bold text-[color:var(--md-on-surface)] transition-colors line-clamp-2">
-            {post.title}
-          </h3>
-          <p className="text-xs leading-relaxed text-[color:var(--md-on-surface-variant)] line-clamp-3">{post.summary}</p>
+      <Link to={`/blogs/${post.slug}`} className="github-article-card group">
+        <div className="github-article-icon"><BookOpen size={17} /></div>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex flex-wrap items-center gap-2 text-xs github-muted"><span className="github-badge">{post.category}</span><span>·</span><span>{post.readTime}</span>{post.date && <><span>·</span><span>{post.date}</span></>}</div>
+          <h3>{post.title}</h3>
+          <p>{post.summary}</p>
+          <div className="mt-3 flex flex-wrap gap-1.5">{post.tags.map((tag) => <span key={tag} className="github-topic">{tag}</span>)}</div>
         </div>
-
-        <div className="flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-wide text-[color:var(--md-primary)]">
-          Read article <ChevronRight size={12} className="transition-transform group-hover:translate-x-0.5" />
-        </div>
+        <ChevronRight size={18} className="github-muted self-center transition-transform group-hover:translate-x-1" />
       </Link>
     </motion.div>
   );

@@ -1,5 +1,5 @@
+import { BookMarked, ExternalLink, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import { Layers, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getAllProjects, type ProjectData } from "../lib/content";
 import { fadeInUp, staggerContainer } from "../lib/motion";
@@ -9,15 +9,15 @@ const projects = getAllProjects();
 export default function FeaturedSection() {
   return (
     <section className="relative flex w-full justify-center px-4 py-12">
-      <div className="w-full max-w-4xl">
-        <div className="mb-12 flex items-center gap-4">
-          <div className="neo-icon h-10 w-10"><Layers size={19} /></div>
+      <div className="w-full max-w-5xl">
+        <div className="github-section-heading">
+          <div className="github-section-icon"><BookMarked size={18} /></div>
           <div>
-            <h2 className="section-title">Featured work</h2>
-            <p className="section-kicker">Discovery • Demo • Proof of Value</p>
+            <h2>Featured projects</h2>
+            <p>Pinboard of systems I researched, mapped, validated, and built.</p>
           </div>
         </div>
-        <motion.div className="flex flex-col gap-10" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+        <motion.div className="grid grid-cols-1 gap-4 md:grid-cols-2" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
           {projects.map((project) => <ProjectCard key={project.slug} project={project} />)}
         </motion.div>
       </div>
@@ -28,35 +28,22 @@ export default function FeaturedSection() {
 function ProjectCard({ project }: { project: ProjectData }) {
   return (
     <motion.div variants={fadeInUp}>
-      <Link
-        to={`/projects/${project.slug}`}
-        className="neo-card-interactive group relative block w-full overflow-hidden rounded-3xl text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--md-primary)]"
-      >
-        <div className="relative z-10 p-6 md:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="min-w-0 flex-1 space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--md-primary)]">{project.category}</span>
-                <span className="hidden h-1 w-1 rounded-full bg-[color:var(--md-outline-variant)] sm:block" />
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-[color:var(--md-on-surface-variant)]">{project.status}</span>
-              </div>
-              <div>
-                <h3 className="font-['Roboto_Mono'] text-2xl font-bold text-[color:var(--md-on-surface)] sm:text-3xl">{project.title}</h3>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[color:var(--md-on-surface-variant)]">{project.description}</p>
-              </div>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {project.workflow.slice(0, 3).map((step) => <span key={step} className="neo-pressed rounded-full px-3 py-1.5 text-[9px] font-medium text-[color:var(--md-on-surface-variant)]">{step}</span>)}
-              </div>
+      <Link to={`/projects/${project.slug}`} className="github-repo-card group relative block h-full p-5 text-left outline-none">
+        <div className="flex h-full flex-col">
+          <div className="min-w-0 flex-1 space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <span className="github-repo-name">⌘ {project.title}</span>
+              <span className="github-badge">{project.status}</span>
             </div>
-            <div className="w-full lg:w-auto lg:min-w-[180px]">
-              <div className="neo-pressed rounded-2xl p-4">
-                <div className="mb-4 flex items-center justify-between gap-4">
-                  <p className="text-[9px] font-semibold uppercase tracking-wide text-[color:var(--md-on-surface-variant)]/70">View case study</p>
-                  <ExternalLink size={14} className="text-[color:var(--md-primary)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </div>
-                <p className="text-xs leading-relaxed text-[color:var(--md-on-surface-variant)]">Open the complete solution brief, metrics, and implementation notes.</p>
-              </div>
+            <p className="text-sm leading-relaxed github-muted">{project.description}</p>
+            <div className="flex flex-wrap gap-2">
+              {project.workflow.slice(0, 3).map((step) => <span key={step} className="github-topic">{step}</span>)}
             </div>
+          </div>
+          <div className="mt-6 flex items-center gap-4 text-xs github-muted">
+            <span className="flex items-center gap-1"><span className="github-language-dot" /> {project.category}</span>
+            <span className="flex items-center gap-1"><Star size={13} /> case study</span>
+            <span className="ml-auto flex items-center gap-1 github-link">Open <ExternalLink size={13} /></span>
           </div>
         </div>
       </Link>
