@@ -984,7 +984,7 @@ export default function ContributionGrass() {
             </button>
             {yearOpen && (
               <ul className="aquarium-year-list" role="listbox" aria-label="Select aquarium year">
-                {years.map((meta) => (
+                {[...years].reverse().map((meta) => (
                   <li key={meta.year}>
                     <button
                       type="button"
