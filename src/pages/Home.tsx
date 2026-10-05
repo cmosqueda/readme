@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import MobileProfileCard from "../components/MobileProfileCard";
 import NavigationBar from "../components/NavigationBar";
 import ProfileSection from "../components/ProfileSection";
-import FeaturedSection from "../components/FeaturedSection";
+import ProjectsSection from "../components/ProjectsSection";
 import ExperienceSection from "../components/ExperienceSection";
 import ContactSection from "../components/ContactSection";
 import BlogSection from "../components/BlogSection";
@@ -13,7 +13,7 @@ import { sections } from "../data/navigation";
 
 const sectionComponents: Record<string, React.ReactNode> = {
   profile: <ProfileSection />,
-  featured: <FeaturedSection />,
+  projects: <ProjectsSection />,
   experience: <ExperienceSection />,
   blogs: <BlogSection />,
   contact: <ContactSection />,

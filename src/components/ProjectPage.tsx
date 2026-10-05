@@ -14,7 +14,7 @@ export default function ProjectPage() {
 
   return <main className="app-shell github-detail min-h-screen px-4 py-8 md:py-12">
     <div className="mx-auto w-full max-w-6xl">
-      <Link to="/#featured" className="github-detail-back mb-6 inline-flex items-center gap-2 text-sm"><ArrowLeft size={15} /> Back to projects</Link>
+      <Link to="/#projects" className="github-detail-back mb-6 inline-flex items-center gap-2 text-sm"><ArrowLeft size={15} /> Back to projects</Link>
       <div className="github-repository-header">
         <div className="github-file-bar"><BookOpen size={16} /><span>cmosqueda / {project.slug}</span><span className="github-badge">{project.status}</span></div>
         <h1 className="github-detail-title mt-5">{project.title}</h1>

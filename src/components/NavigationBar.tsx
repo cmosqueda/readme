@@ -41,7 +41,7 @@ export default function NavigationBar({ active, onNavigate }: Props) {
               `}
               aria-current={isActive ? "page" : undefined}
             >
-              <span className="relative">{label === "featured" ? "projects" : label}</span>
+              <span className="relative">{label}</span>
             </button>
           );
         })}
@@ -112,7 +112,7 @@ export default function NavigationBar({ active, onNavigate }: Props) {
                       className={`github-mobile-nav-item flex items-center justify-between px-3 py-3 text-left outline-none ${isActive ? "github-mobile-nav-item-active" : ""}`}
                       aria-current={isActive ? "page" : undefined}
                     >
-                      <span className="text-[15px] font-semibold capitalize">{label === "featured" ? "projects" : label}</span>
+                      <span className="text-[15px] font-semibold capitalize">{label}</span>
                       <span className="font-mono text-[10px]">0{index + 1}</span>
                     </button>
                   );

@@ -6,14 +6,14 @@ import { fadeInUp, staggerContainer } from "../lib/motion";
 
 const projects = getAllProjects();
 
-export default function FeaturedSection() {
+export default function ProjectsSection() {
   return (
     <section className="relative flex w-full justify-center px-4 py-12">
       <div className="w-full max-w-5xl">
         <div className="github-section-heading">
           <div className="github-section-icon"><BookMarked size={18} /></div>
           <div>
-            <h2>Featured projects</h2>
+            <h2>Projects</h2>
             <p>Pinboard of systems I researched, mapped, validated, and built.</p>
           </div>
         </div>
@@ -32,7 +32,7 @@ function ProjectCard({ project }: { project: ProjectData }) {
         <div className="flex h-full flex-col">
           <div className="min-w-0 flex-1 space-y-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="github-repo-name">⌘ {project.title}</span>
+              <span className="github-repo-name">âŒ˜ {project.title}</span>
               <span className="github-badge">{project.status}</span>
             </div>
             <p className="text-sm leading-relaxed github-muted">{project.description}</p>
