@@ -119,6 +119,16 @@
 .github-grass-heading a { color: var(--gh-link); }
 .github-grass-image { display: block; width: 100%; max-height: 270px; margin-top: .8rem; border: 1px solid var(--gh-border); border-radius: 6px; object-fit: cover; object-position: center; background: var(--gh-subtle); }
 .github-grass-card p { margin-top: .6rem; color: var(--gh-muted); font-size: .72rem; }
+.contribution-aquarium { position: relative; margin-top: .8rem; overflow: hidden; border: 2px solid #0b1e2d; border-radius: 0; background: #0d3a6e; box-shadow: 4px 4px 0 rgb(11 30 45 / .35); }
+.contribution-aquarium-canvas { display: block; width: 100%; height: auto; min-height: 240px; touch-action: none; cursor: crosshair; image-rendering: pixelated; image-rendering: crisp-edges; }
+.contribution-aquarium-tooltip { position: absolute; z-index: 1; transform: translate(-50%, calc(-100% - 10px)); pointer-events: none; border: 2px solid #0b1e2d; border-radius: 0; background: #fff8dc; color: #0b1e2d; padding: .3rem .5rem; font-family: ui-monospace, Menlo, monospace; font-size: .7rem; white-space: nowrap; box-shadow: 2px 2px 0 #0b1e2d; }
+@media (prefers-reduced-motion: reduce) { .contribution-aquarium-canvas { cursor: default; } }
+.aquarium-actions { display: inline-flex; align-items: center; gap: .5rem; }
+.aquarium-feed-btn { border: 2px solid #0b1e2d; border-radius: 0; background: #ffd60a; color: #0b1e2d; padding: .15rem .55rem; font-family: ui-monospace, Menlo, monospace; font-size: .7rem; font-weight: 700; cursor: pointer; box-shadow: 2px 2px 0 #0b1e2d; }
+.aquarium-feed-btn:hover { background: #ffea8a; }
+.aquarium-feed-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #0b1e2d; }
+.aquarium-feed-btn--overlay { position: absolute; top: 8px; right: 8px; z-index: 2; }
+.aquarium-feed-btn--overlay:active { transform: translate(1px, 1px); }
 .github-experience-list { display: grid; width: 100%; gap: .75rem; }
 .github-experience-item { border: 1px solid var(--gh-border); border-radius: 6px; padding: 1rem; }
 .github-experience-item h3 { color: var(--gh-text); font-size: .95rem; font-weight: 600; }

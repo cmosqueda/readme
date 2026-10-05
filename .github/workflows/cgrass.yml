@@ -24,6 +24,12 @@ jobs:
           output_path: output/output.png
           command: theme
           argument: github
+      - name: Export contribution aquarium data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api graphql -f login=cmosqueda -f query='query($login: String!) { user(login: $login) { contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { contributionCount date weekday } } } } } }' > contribution-response.json
+          jq '.data.user.contributionsCollection.contributionCalendar' contribution-response.json > output/contributions.json
       - name: Publish contribution artwork
         uses: crazy-max/ghaction-github-pages@v4
         with:

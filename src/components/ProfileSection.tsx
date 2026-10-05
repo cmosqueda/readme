@@ -1,7 +1,9 @@
+import { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "../lib/motion";
 import { profile } from "../data/profile";
-import ContributionGrass from "./ContributionGrass";
+
+const ContributionGrass = lazy(() => import("./ContributionGrass"));
 
 export default function ProfileSection() {
   return (
@@ -13,7 +15,9 @@ export default function ProfileSection() {
             <div className="flex flex-col gap-2"><p className="section-kicker">{profile.eyebrow}</p><h1 className="github-readme-title">{profile.titleLine1} <span>{profile.titleAccent}</span></h1></div>
             <div className="github-quote">{profile.bioParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}<p className="font-mono text-xs">{profile.focusLine}</p></div>
           </motion.div>
-          <ContributionGrass />
+          <Suspense fallback={<div className="contribution-aquarium" aria-hidden="true" style={{ minHeight: 230 }} />}>
+            <ContributionGrass />
+          </Suspense>
         </div>
       </motion.div>
     </section>
