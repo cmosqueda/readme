@@ -28,8 +28,36 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          mkdir -p output
+          # Legacy sliding-window snapshot (kept for backward compatibility).
           gh api graphql -f login=cmosqueda -f query='query($login: String!) { user(login: $login) { contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { contributionCount date weekday } } } } } }' > contribution-response.json
           jq '.data.user.contributionsCollection.contributionCalendar' contribution-response.json > output/contributions.json
+          # Yearly snapshots: the aquarium resets every January, so each year
+          # gets its own scenery + fish school. History is preserved per year.
+          START_YEAR=2020
+          CURRENT_YEAR=$(date -u +%Y)
+          MANIFEST_TMP=output/years.json.tmp
+          echo "[" > "$MANIFEST_TMP"
+          FIRST=1
+          for YEAR in $(seq $START_YEAR $CURRENT_YEAR); do
+            FROM="${YEAR}-01-01T00:00:00Z"
+            TO="${YEAR}-12-31T23:59:59Z"
+            echo "Fetching contributions for $YEAR..."
+            if gh api graphql -f login=cmosqueda -f from="$FROM" -f to="$TO" -f query='query($login: String! $from: DateTime $to: DateTime) { user(login: $login) { contributionsCollection(from: $from, to: $to) { contributionCalendar { totalContributions weeks { contributionDays { contributionCount date weekday } } } } } }' > contribution-response-year.json; then
+              jq '.data.user.contributionsCollection.contributionCalendar' contribution-response-year.json > "output/contributions-${YEAR}.json"
+              TOTAL=$(jq -r '.totalContributions // 0' "output/contributions-${YEAR}.json")
+              ACTIVE=$(jq -r '[.weeks[].contributionDays[] | select(.contributionCount > 0)] | length' "output/contributions-${YEAR}.json")
+              if [ "$FIRST" -eq 0 ]; then echo "," >> "$MANIFEST_TMP"; fi
+              printf '  {"year": %s, "totalContributions": %s, "activeDays": %s}' "$YEAR" "$TOTAL" "$ACTIVE" >> "$MANIFEST_TMP"
+              FIRST=0
+            else
+              echo "WARNING: failed to fetch $YEAR, skipping."
+            fi
+          done
+          echo "" >> "$MANIFEST_TMP"
+          echo "]" >> "$MANIFEST_TMP"
+          mv "$MANIFEST_TMP" output/years.json
+          cat output/years.json
       - name: Publish contribution artwork
         uses: crazy-max/ghaction-github-pages@v4
         with:

@@ -32,7 +32,7 @@ function ProjectCard({ project }: { project: ProjectData }) {
         <div className="flex h-full flex-col">
           <div className="min-w-0 flex-1 space-y-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="github-repo-name">âŒ˜ {project.title}</span>
+              <span className="github-repo-name">⌘ {project.title}</span>
               <span className="github-badge">{project.status}</span>
             </div>
             <p className="text-sm leading-relaxed github-muted">{project.description}</p>

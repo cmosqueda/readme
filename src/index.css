@@ -124,6 +124,12 @@
 .contribution-aquarium-tooltip { position: absolute; z-index: 1; transform: translate(-50%, calc(-100% - 10px)); pointer-events: none; border: 2px solid #0b1e2d; border-radius: 0; background: #fff8dc; color: #0b1e2d; padding: .3rem .5rem; font-family: ui-monospace, Menlo, monospace; font-size: .7rem; white-space: nowrap; box-shadow: 2px 2px 0 #0b1e2d; }
 @media (prefers-reduced-motion: reduce) { .contribution-aquarium-canvas { cursor: default; } }
 .aquarium-actions { display: inline-flex; align-items: center; gap: .5rem; }
+.aquarium-year { position: absolute; top: 8px; left: 8px; z-index: 2; }
+.aquarium-year-toggle { min-width: 4.5rem; }
+.aquarium-year-list { margin: .25rem 0 0; padding: .25rem; list-style: none; border: 2px solid #0b1e2d; background: #fff8dc; box-shadow: 2px 2px 0 #0b1e2d; }
+.aquarium-year-option { display: block; width: 100%; border: 0; background: transparent; color: #0b1e2d; padding: .2rem .5rem; font-family: ui-monospace, Menlo, monospace; font-size: .7rem; font-weight: 700; text-align: left; white-space: nowrap; cursor: pointer; }
+.aquarium-year-option:hover { background: #ffea8a; }
+.aquarium-year-option--active { background: #ffd60a; }
 .aquarium-feed-btn { border: 2px solid #0b1e2d; border-radius: 0; background: #ffd60a; color: #0b1e2d; padding: .15rem .55rem; font-family: ui-monospace, Menlo, monospace; font-size: .7rem; font-weight: 700; cursor: pointer; box-shadow: 2px 2px 0 #0b1e2d; }
 .aquarium-feed-btn:hover { background: #ffea8a; }
 .aquarium-feed-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #0b1e2d; }

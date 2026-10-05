@@ -3,15 +3,24 @@ import { useEffect, useRef, useState } from "react";
 type ContributionDay = { contributionCount: number; date: string; weekday: number };
 type ContributionCalendar = { totalContributions: number; weeks: Array<{ contributionDays: ContributionDay[] }> };
 type Tooltip = ContributionDay & { x: number; y: number };
+type YearMeta = { year: number; totalContributions: number; activeDays: number };
 
 const username = "cmosqueda";
-const artworkUrl = `https://raw.githubusercontent.com/${username}/readme/output/output.png`;
-const dataUrl = `https://raw.githubusercontent.com/${username}/readme/output/contributions.json`;
+const outputBase = `https://raw.githubusercontent.com/${username}/readme/output`;
+const artworkUrl = `${outputBase}/output.png`;
+/** Legacy sliding-window snapshot (kept as a fallback). */
+const dataUrl = `${outputBase}/contributions.json`;
+const yearsUrl = `${outputBase}/years.json`;
+const yearDataUrl = (year: number) => `${outputBase}/contributions-${year}.json`;
 
 const TARGET_FPS = 28;
 const FRAME_MS = 1000 / TARGET_FPS;
-/** Hard cap so a very active year stays readable and cheap to draw. */
-const MAX_FISH = 32;
+/**
+ * One fish per active day, so e.g. 20 commit-days in a year renders exactly
+ * 20 fish. Capped well above 366 (a full leap year) so a busy year still
+ * stays readable and cheap to draw.
+ */
+const MAX_FISH = 180;
 /** Feed interaction tuning (all in low-res buffer pixels / seconds). */
 const MAX_FEEDS = 6;
 const ATTRACT_R = 64;
@@ -24,20 +33,32 @@ const FEED_LIFE = 10;
  */
 const LOW_H = 168;
 
-function createDemoCalendar(): ContributionCalendar {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - 370 - start.getDay());
-  const weeks = Array.from({ length: 53 }, (_, week) => ({
-    contributionDays: Array.from({ length: 7 }, (_, weekday) => {
-      const date = new Date(start);
-      date.setDate(start.getDate() + week * 7 + weekday);
-      const pattern = (week * 17 + weekday * 11 + Math.floor(week / 5) * 3) % 20;
-      const contributionCount = pattern < 7 ? 0 : pattern < 12 ? 1 : pattern < 16 ? 4 : pattern < 19 ? 9 : 18;
-      return { contributionCount, date: date.toISOString().slice(0, 10), weekday };
-    }),
-  }));
+/** Demo calendar for a full calendar year, seeded by year so local previews show distinct reefs per year. */
+function createDemoCalendarForYear(year: number): ContributionCalendar {
+  const rand = mulberry32(year * 31 + 7);
+  const busyness = 0.3 + rand() * 0.45;
+  const startWeekday = new Date(year, 0, 1).getDay();
+  const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  const totalDays = isLeap ? 366 : 365;
+  const weeks: ContributionCalendar["weeks"] = [];
+  let current: ContributionDay[] = [];
+  for (let i = 0; i < totalDays; i += 1) {
+    const date = new Date(year, 0, 1 + i);
+    const weekday = (startWeekday + i) % 7;
+    const roll = rand();
+    const contributionCount = roll > busyness ? 0 : roll > busyness * 0.7 ? 1 : roll > busyness * 0.4 ? 4 : roll > busyness * 0.15 ? 9 : 18;
+    current.push({ contributionCount, date: date.toISOString().slice(0, 10), weekday });
+    if (current.length === 7) {
+      weeks.push({ contributionDays: current });
+      current = [];
+    }
+  }
+  if (current.length > 0) weeks.push({ contributionDays: current });
   return { totalContributions: weeks.flatMap((week) => week.contributionDays).reduce((total, day) => total + day.contributionCount, 0), weeks };
+}
+
+function createDemoCalendar(): ContributionCalendar {
+  return createDemoCalendarForYear(new Date().getFullYear());
 }
 
 function fishTier(count: number) {
@@ -58,6 +79,97 @@ function mulberry32(seed: number) {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
+
+/** Tiny string hash so each contribution day maps to stable fish placement. */
+function hashStr(s: string) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i += 1) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/**
+ * Yearly scenery themes. The tank resets every January: each year picks a
+ * theme by year (rotating, so consecutive years always look different) and
+ * lays out its decor from a year-seeded PRNG, so revisiting a year shows
+ * the same reef it had.
+ */
+type Scenery = {
+  name: string;
+  water: string[];
+  surface: string;
+  glint: string;
+  ray: string;
+  plankton: string;
+  sand: string;
+  sandDark: string;
+  sandLine: string;
+  speckleLight: string;
+  speckleDark: string;
+  kelp: string;
+  kelpDark: string;
+  rock: string;
+};
+
+const SCENERIES: Scenery[] = [
+  {
+    name: "Lagoon",
+    water: ["#6fe3c1", "#4ed6b6", "#35c0c8", "#2aa8c4", "#1f8ab8", "#1a6fa8", "#155a94", "#10467e", "#0d3a6e"],
+    surface: "#a7f3d0", glint: "#ecfdf5", ray: "#a7f3d0", plankton: "#d1fae5",
+    sand: "#e8d49a", sandDark: "#fff7d6", sandLine: "#d9b96a",
+    speckleLight: "#fff7d6", speckleDark: "#c49a52",
+    kelp: "#22c55e", kelpDark: "#2e7d32", rock: "#8d7b68",
+  },
+  {
+    name: "Ember Reef",
+    water: ["#ffd6a5", "#ffb4a2", "#ff8fa3", "#e07a9a", "#c86b98", "#a8558f", "#7e3f7d", "#5e2f63", "#43204a"],
+    surface: "#ffe5d9", glint: "#fff1e6", ray: "#ffd6a5", plankton: "#ffe5d9",
+    sand: "#e9c46a", sandDark: "#fff3d6", sandLine: "#c98f3d",
+    speckleLight: "#fff3d6", speckleDark: "#b07a3a",
+    kelp: "#84cc16", kelpDark: "#4d7c0f", rock: "#7c4a21",
+  },
+  {
+    name: "Abyss",
+    water: ["#7dd3fc", "#38bdf8", "#0ea5e9", "#0284c7", "#0369a1", "#075985", "#0c4a6e", "#082f49", "#041e2e"],
+    surface: "#bae6fd", glint: "#e0f2fe", ray: "#7dd3fc", plankton: "#bae6fd",
+    sand: "#9db4c0", sandDark: "#e0eef5", sandLine: "#5c6b73",
+    speckleLight: "#e0eef5", speckleDark: "#4a5a63",
+    kelp: "#2dd4bf", kelpDark: "#0f766e", rock: "#475569",
+  },
+  {
+    name: "Kelp Forest",
+    water: ["#bef264", "#a3e635", "#84cc16", "#65a30d", "#4d7c0f", "#3f6212", "#33520f", "#27420c", "#1a2e05"],
+    surface: "#ecfccb", glint: "#f7fee7", ray: "#d9f99d", plankton: "#ecfccb",
+    sand: "#d6c48f", sandDark: "#fff7d6", sandLine: "#a8894a",
+    speckleLight: "#fff7d6", speckleDark: "#8a7440",
+    kelp: "#16a34a", kelpDark: "#14532d", rock: "#6b5d4f",
+  },
+  {
+    name: "Dusk Tide",
+    water: ["#e9d5ff", "#d8b4fe", "#c084fc", "#a855f7", "#9333ea", "#7e22ce", "#6b21a8", "#581c87", "#3b0764"],
+    surface: "#f3e8ff", glint: "#faf5ff", ray: "#d8b4fe", plankton: "#f3e8ff",
+    sand: "#c4b5fd", sandDark: "#f1eaff", sandLine: "#7c6bb0",
+    speckleLight: "#f1eaff", speckleDark: "#6d5fa3",
+    kelp: "#34d399", kelpDark: "#065f46", rock: "#5b536e",
+  },
+];
+
+function sceneryFor(year: number): Scenery {
+  const idx = ((year % SCENERIES.length) + SCENERIES.length) % SCENERIES.length;
+  const found = SCENERIES[idx];
+  return found ?? SCENERIES[0]!;
+}
+
+const CORAL_POOL = ["#d90429", "#ff5d8f", "#e9c46a", "#ef476f", "#ff9e00", "#8338ec", "#3a86ff"];
+
+function yearFromCalendar(cal: ContributionCalendar): number {
+  const days = cal.weeks.flatMap((w) => w.contributionDays);
+  const last = days.length > 0 ? days[days.length - 1] : undefined;
+  const parsed = last ? Number.parseInt(last.date.slice(0, 4), 10) : Number.NaN;
+  return Number.isFinite(parsed) ? (parsed as number) : new Date().getFullYear();
 }
 
 type Species = "koi" | "tang" | "clown" | "purple" | "angel" | "puffer" | "turtle";
@@ -214,11 +326,11 @@ function drawCrab(ctx: CanvasRenderingContext2D, x: number, y: number, frame: bo
   R(ctx, x0 + 1, y0 - 1, 1, 1, OUTLINE);
 }
 
-function drawKelp(ctx: CanvasRenderingContext2D, x: number, baseY: number, h: number, sway: number, color: string) {
+function drawKelp(ctx: CanvasRenderingContext2D, x: number, baseY: number, h: number, sway: number, color: string, dark = "#2e7d32") {
   const x0 = Math.round(x);
   for (let i = 0; i < h; i += 1) {
     const step = i > h * 0.5 ? sway : 0;
-    R(ctx, x0 + step, baseY - i, 1, 1, i % 3 === 2 ? "#2e7d32" : color);
+    R(ctx, x0 + step, baseY - i, 1, 1, i % 3 === 2 ? dark : color);
     if (i % 3 === 1) R(ctx, x0 + step + (i % 6 === 1 ? 1 : -1), baseY - i, 1, 1, color);
   }
 }
@@ -256,25 +368,116 @@ function drawFeed(ctx: CanvasRenderingContext2D, x: number, y: number, amount: n
 export default function ContributionGrass() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [calendar, setCalendar] = useState<ContributionCalendar>(createDemoCalendar);
+  const [years, setYears] = useState<YearMeta[]>([]);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [calendars, setCalendars] = useState<Record<number, ContributionCalendar>>({});
   const [hasLiveData, setHasLiveData] = useState(false);
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   /** Random pinch of feed for the button / keyboard users. */
   const feedRef = useRef<() => void>(() => {});
+  const calendarsRef = useRef<Record<number, ContributionCalendar>>({});
+  calendarsRef.current = calendars;
+  /** Collapsible year picker overlay inside the tank. */
+  const [yearOpen, setYearOpen] = useState(false);
+  const yearBoxRef = useRef<HTMLDivElement>(null);
 
+  // Close the year picker on outside click or Escape.
+  useEffect(() => {
+    if (!yearOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (yearBoxRef.current && !yearBoxRef.current.contains(event.target as Node)) setYearOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setYearOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [yearOpen]);
+
+  // Load the year manifest, then the selected year's snapshot. Each year is
+  // its own tank: empty in January, one fish per active day, scenery by year.
   useEffect(() => {
     const controller = new AbortController();
     const cacheKey = new Date().toISOString().slice(0, 10);
-    fetch(`${dataUrl}?v=${cacheKey}`, { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Contribution data is unavailable"))))
-      .then((data: ContributionCalendar) => {
-        setCalendar(data);
-        setHasLiveData(true);
+    const loadYear = (year: number, signal: AbortSignal) =>
+      fetch(`${yearDataUrl(year)}?v=${cacheKey}`, { signal })
+        .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`No data for ${year}`))))
+        .then((data: ContributionCalendar) => {
+          setCalendars((prev) => ({ ...prev, [year]: data }));
+          setCalendar(data);
+          setHasLiveData(true);
+        });
+    fetch(`${yearsUrl}?v=${cacheKey}`, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("No year manifest"))))
+      .then((metas: YearMeta[]) => {
+        const sorted = [...metas].sort((a, b) => a.year - b.year);
+        setYears(sorted);
+        const latest = sorted.length > 0 ? sorted[sorted.length - 1] : undefined;
+        const year = latest ? latest.year : new Date().getFullYear();
+        setSelectedYear(year);
+        return loadYear(year, controller.signal);
       })
-      .catch((error: unknown) => {
-        if (!(error instanceof DOMException && error.name === "AbortError")) setHasLiveData(false);
+      .catch(() => {
+        // Legacy fallback: single sliding-window snapshot.
+        fetch(`${dataUrl}?v=${cacheKey}`, { signal: controller.signal })
+          .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Contribution data is unavailable"))))
+          .then((data: ContributionCalendar) => {
+            const year = yearFromCalendar(data);
+            const activeDays = data.weeks.flatMap((w) => w.contributionDays).filter((d) => d.contributionCount > 0).length;
+            setYears([{ year, totalContributions: data.totalContributions, activeDays }]);
+            setSelectedYear(year);
+            setCalendars({ [year]: data });
+            setCalendar(data);
+            setHasLiveData(true);
+          })
+          .catch((error: unknown) => {
+            if (!(error instanceof DOMException && error.name === "AbortError")) {
+              // Local/demo mode: synthesize 3 demo years so the collapsible
+              // year picker is visible and testable without live data.
+              const nowYear = new Date().getFullYear();
+              const demoYears = [nowYear - 2, nowYear - 1, nowYear];
+              const demoCalendars: Record<number, ContributionCalendar> = {};
+              const demoMetas: YearMeta[] = demoYears.map((year) => {
+                const cal = createDemoCalendarForYear(year);
+                demoCalendars[year] = cal;
+                const activeDays = cal.weeks.flatMap((w) => w.contributionDays).filter((d) => d.contributionCount > 0).length;
+                return { year, totalContributions: cal.totalContributions, activeDays };
+              });
+              setYears(demoMetas);
+              setSelectedYear(nowYear);
+              setCalendars(demoCalendars);
+              setCalendar(demoCalendars[nowYear] ?? createDemoCalendar());
+              setHasLiveData(false);
+            }
+          });
       });
     return () => controller.abort();
   }, []);
+
+  // Switching years swaps in that year's preserved reef (cached after load).
+  const selectYear = (year: number) => {
+    setSelectedYear(year);
+    setTooltip(null);
+    const cached = calendarsRef.current[year];
+    if (cached) {
+      setCalendar(cached);
+      return;
+    }
+    const cacheKey = new Date().toISOString().slice(0, 10);
+    fetch(`${yearDataUrl(year)}?v=${cacheKey}`)
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`No data for ${year}`))))
+      .then((data: ContributionCalendar) => {
+        setCalendars((prev) => ({ ...prev, [year]: data }));
+        setCalendar(data);
+      })
+      .catch(() => {
+        // Keep the current reef on failure; the selector stays put.
+      });
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -288,8 +491,12 @@ export default function ContributionGrass() {
     ctx.imageSmoothingEnabled = false;
 
     const days = calendar.weeks.flatMap((week) => week.contributionDays);
-    const seed = calendar.totalContributions * 31 + calendar.weeks.length * 101;
-    const rand = mulberry32(seed || 7);
+    // The tank resets every January: scenery is seeded by year alone so a
+    // revisited year shows the same reef, while fish are seeded per day so
+    // each active day keeps its own fish as the year fills in.
+    const year = selectedYear ?? yearFromCalendar(calendar);
+    const scenery = sceneryFor(year);
+    const decorRand = mulberry32(year * 97 + 13);
 
     const hovered = { index: -1 };
     const hits: FishHit[] = [];
@@ -310,19 +517,20 @@ export default function ContributionGrass() {
     const active = days.filter((d) => d.contributionCount > 0).sort((a, b) => b.contributionCount - a.contributionCount);
     const chosen = active.slice(0, MAX_FISH);
     const school: SchoolFish[] = chosen.map((day, i) => {
+      const frand = mulberry32(hashStr(day.date) || 7);
       const tier = Math.max(1, fishTier(day.contributionCount)) as 1 | 2 | 3 | 4;
-      const species = pickSpecies(rand(), tier);
-      const depth = 0.55 + rand() * 0.45;
+      const species = pickSpecies(frand(), tier);
+      const depth = 0.55 + frand() * 0.45;
       return {
         day,
         tier,
-        nx: rand(),
-        yFrac: 0.08 + rand() * 0.7,
-        speed: (tier >= 4 ? 26 : tier === 3 ? 20 : 13) + rand() * 14,
+        nx: frand(),
+        yFrac: 0.08 + frand() * 0.7,
+        speed: (tier >= 4 ? 26 : tier === 3 ? 20 : 13) + frand() * 14,
         dir: (i % 4 === 0 ? -1 : 1) as 1 | -1,
         depth,
         species,
-        phase: rand() * Math.PI * 2,
+        phase: frand() * Math.PI * 2,
         eatT: 0,
       };
     });
@@ -333,29 +541,30 @@ export default function ContributionGrass() {
     const ripples: Ripple[] = [];
 
     const bubbles: Bubble[] = Array.from({ length: 22 }, (_, i) => ({
-      nx: rand(),
-      y: rand(),
-      s: rand() < 0.7 ? 2 : 3,
+      nx: decorRand(),
+      y: decorRand(),
+      s: decorRand() < 0.7 ? 2 : 3,
       // ~5x slower than before: lazy rise, some barely hover.
-      speed: 0.008 + rand() * 0.02,
+      speed: 0.008 + decorRand() * 0.02,
       // Stagger phases/directions: even/odd sway opposite ways at own pace.
-      drift: rand() * Math.PI * 2,
-      swaySpeed: (0.35 + rand() * 0.85) * (i % 2 === 0 ? 1 : -1),
-      swayAmp: 1 + Math.floor(rand() * 3),
-      bobAmp: rand() < 0.4 ? 1 : 0,
+      drift: decorRand() * Math.PI * 2,
+      swaySpeed: (0.35 + decorRand() * 0.85) * (i % 2 === 0 ? 1 : -1),
+      swayAmp: 1 + Math.floor(decorRand() * 3),
+      bobAmp: decorRand() < 0.4 ? 1 : 0,
     }));
     const crabs: Crab[] = [
-      { nx: 0.3, dir: 1, speed: 0.008, phase: rand() * 6 },
-      { nx: 0.55, dir: -1, speed: 0.006, phase: rand() * 6 },
+      { nx: 0.3, dir: 1, speed: 0.008, phase: decorRand() * 6 },
+      { nx: 0.55, dir: -1, speed: 0.006, phase: decorRand() * 6 },
     ];
-    const speckles = Array.from({ length: 120 }, () => ({ nx: rand(), yFrac: rand(), light: rand() < 0.4 }));
-    const kelpSpots = Array.from({ length: 9 }, () => ({ nx: rand(), h: 8 + Math.floor(rand() * 10) }));
-    const coralSpots = [
-      { nx: 0.06, color: "#d90429", tall: 10 },
-      { nx: 0.38, color: "#ff5d8f", tall: 7 },
-      { nx: 0.68, color: "#e9c46a", tall: 8 },
-      { nx: 0.84, color: "#ef476f", tall: 11 },
-    ];
+    const speckles = Array.from({ length: 120 }, () => ({ nx: decorRand(), yFrac: decorRand(), light: decorRand() < 0.4 }));
+    const kelpSpots = Array.from({ length: 7 + Math.floor(decorRand() * 5) }, () => ({ nx: decorRand(), h: 8 + Math.floor(decorRand() * 10) }));
+    const hutNx = 0.2 + decorRand() * 0.5;
+    const coralPool = [...CORAL_POOL].sort(() => decorRand() - 0.5);
+    const coralSpots = [0.06, 0.38, 0.68, 0.84].map((base, i) => ({
+      nx: Math.min(0.95, Math.max(0.05, base + (decorRand() - 0.5) * 0.08)),
+      color: coralPool[i % coralPool.length] ?? "#ef476f",
+      tall: 7 + Math.floor(decorRand() * 5),
+    }));
 
     const ensureSize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -380,8 +589,8 @@ export default function ContributionGrass() {
       return true;
     };
 
-    // Banded teal water — flat squares, no gradients.
-    const WATER = ["#6fe3c1", "#4ed6b6", "#35c0c8", "#2aa8c4", "#1f8ab8", "#1a6fa8", "#155a94", "#10467e", "#0d3a6e"];
+    // Banded water — flat squares, no gradients. Palette swaps per year.
+    const WATER = scenery.water;
     const drawWater = (tick: number) => {
       const BW = buf.width;
       const bandH = Math.max(1, Math.floor(sandTop / WATER.length));
@@ -389,10 +598,10 @@ export default function ContributionGrass() {
         R(ctx, 0, i * bandH, BW, i === WATER.length - 1 ? sandTop - i * bandH + 1 : bandH, color);
       });
       // Pixel surface with a blocky wave.
-      R(ctx, 0, 0, BW, 4, "#a7f3d0");
+      R(ctx, 0, 0, BW, 4, scenery.surface);
       for (let x = 0; x < BW; x += 4) {
         const wob = (x % 8 === 0 ? 1 : 0) + (tick % 2 === 0 && x % 16 === 0 ? 1 : 0);
-        R(ctx, x, 4 + wob, 3, 1, "#ecfdf5");
+        R(ctx, x, 4 + wob, 3, 1, scenery.glint);
       }
       // Stepped light rays (dithered squares, quantized drift).
       const drift = tick % 4;
@@ -400,14 +609,14 @@ export default function ContributionGrass() {
         const base = Math.floor(BW * (0.22 + r * 0.26)) + drift;
         for (let y = 0; y < sandTop; y += 2) {
           const x = base + Math.floor(y * 0.25);
-          if (((x + y) & 1) === 0) R(ctx, x, y, 2, 1, "#a7f3d0");
+          if (((x + y) & 1) === 0) R(ctx, x, y, 2, 1, scenery.ray);
         }
       }
       // Sparse drifting plankton squares.
       for (let i = 0; i < 24; i += 1) {
         const px = (i * 53 + tick) % BW;
         const py = (i * 37) % sandTop;
-        if (((px + py) & 3) === 0) R(ctx, px, py, 1, 1, "#d1fae5");
+        if (((px + py) & 3) === 0) R(ctx, px, py, 1, 1, scenery.plankton);
       }
     };
 
@@ -418,25 +627,25 @@ export default function ContributionGrass() {
       for (let x = 0; x < BW; x += 1) {
         const dune = Math.round(Math.sin(x / 18) * 2 + Math.sin(x / 7) * 1);
         const top = sandTop + dune;
-        R(ctx, x, top, 1, 1, "#fff7d6");
-        R(ctx, x, top + 1, 1, BH - top, "#e8d49a");
+        R(ctx, x, top, 1, 1, scenery.sandDark);
+        R(ctx, x, top + 1, 1, BH - top, scenery.sand);
       }
-      R(ctx, 0, sandTop + 5, BW, 1, "#d9b96a");
+      R(ctx, 0, sandTop + 5, BW, 1, scenery.sandLine);
       speckles.forEach((s) => {
-        R(ctx, s.nx * BW, sandTop + 7 + s.yFrac * (BH - sandTop - 9), 1, 1, s.light ? "#fff7d6" : "#c49a52");
+        R(ctx, s.nx * BW, sandTop + 7 + s.yFrac * (BH - sandTop - 9), 1, 1, s.light ? scenery.speckleLight : scenery.speckleDark);
       });
       // Seaweed blobs + kelp + corals + a tiny hut, like the reference.
       kelpSpots.forEach((k, i) => {
         const sway = (tick % 4 < 2 ? 1 : -1) * (i % 2 === 0 ? 1 : 0);
-        drawKelp(ctx, k.nx * BW, BH - 4, k.h, sway, "#22c55e");
+        drawKelp(ctx, k.nx * BW, BH - 4, k.h, sway, scenery.kelp, scenery.kelpDark);
       });
       coralSpots.forEach((c, i) => {
         const sway = tick % 4 < 2 ? 1 : 0;
         drawCoral(ctx, c.nx * BW, BH - 3, c.color, c.tall, i % 2 === 0 ? sway : -sway);
-        R(ctx, c.nx * BW - 3, BH - 3, 7, 2, "#8d7b68");
+        R(ctx, c.nx * BW - 3, BH - 3, 7, 2, scenery.rock);
       });
-      // Hut ruin.
-      const hx = Math.floor(BW * 0.3);
+      // Hut ruin (drifts along the sand year to year).
+      const hx = Math.floor(BW * hutNx);
       const hy = BH - 4;
       R(ctx, hx - 12, hy - 12, 24, 2, "#7c4a21");
       R(ctx, hx - 10, hy - 10, 20, 8, "#a9743c");
@@ -746,21 +955,59 @@ export default function ContributionGrass() {
       observer.disconnect();
       resizeObserver.disconnect();
     };
-  }, [calendar]);
+  }, [calendar, selectedYear]);
+
+  const displayYear = selectedYear ?? yearFromCalendar(calendar);
+  const activeDays = calendar.weeks.flatMap((w) => w.contributionDays).filter((d) => d.contributionCount > 0).length;
+  const sceneryName = sceneryFor(displayYear).name;
 
   return (
     <div className="github-grass-card">
       <div className="github-grass-heading">
-        <span>Contribution aquarium</span>
+        <span>Contribution aquarium · {displayYear} reef</span>
         <a href={`https://github.com/${username}`} target="_blank" rel="noopener noreferrer">
           @{username}
         </a>
       </div>
       <div className="contribution-aquarium">
+        {years.length > 1 && selectedYear !== null && (
+          <div className="aquarium-year" ref={yearBoxRef}>
+            <button
+              type="button"
+              className="aquarium-feed-btn aquarium-year-toggle"
+              aria-expanded={yearOpen}
+              aria-haspopup="listbox"
+              onClick={() => setYearOpen((open) => !open)}
+              title="Show reefs from past years"
+            >
+              {displayYear} {yearOpen ? "▾" : "▸"}
+            </button>
+            {yearOpen && (
+              <ul className="aquarium-year-list" role="listbox" aria-label="Select aquarium year">
+                {years.map((meta) => (
+                  <li key={meta.year}>
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={meta.year === selectedYear}
+                      className={meta.year === selectedYear ? "aquarium-year-option aquarium-year-option--active" : "aquarium-year-option"}
+                      onClick={() => {
+                        selectYear(meta.year);
+                        setYearOpen(false);
+                      }}
+                    >
+                      {meta.year} · {meta.activeDays} fish
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
         <canvas
           ref={canvasRef}
           className="contribution-aquarium-canvas"
-          aria-label={`${calendar.totalContributions} GitHub contributions visualized as pixel fish. Activate the Drop feed button or click the tank to feed them.`}
+          aria-label={`${calendar.totalContributions} GitHub contributions in ${displayYear} visualized as pixel fish in the ${sceneryName} reef. Activate the Drop feed button or click the tank to feed them.`}
           title="Click to drop fish feed"
         />
         <button
@@ -783,8 +1030,8 @@ export default function ContributionGrass() {
       </noscript>
       <p>
         {hasLiveData
-          ? `Live GitHub activity as pixel fish — ${calendar.totalContributions} contributions, bigger fish mean busier days. Hover a fish, or click the water to drop feed and watch them swarm it.`
-          : "Demo school shown locally; live GitHub activity refreshes daily after the workflow runs. Click the water to drop feed."}
+          ? `${displayYear} ${sceneryName} reef — ${activeDays} active ${activeDays === 1 ? "day" : "days"} = ${Math.min(activeDays, MAX_FISH)} fish, ${calendar.totalContributions} contributions. The tank resets every January with new scenery; pick a year to revisit its reef. Hover a fish, or click the water to drop feed and watch them swarm it.`
+          : "Demo reefs shown locally — use the year toggle in the tank to preview past years. Live GitHub activity refreshes daily after the workflow runs. Click the water to drop feed."}
       </p>
     </div>
   );
