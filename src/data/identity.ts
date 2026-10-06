@@ -1,7 +1,9 @@
 import type { IconKey } from "../lib/iconRegistry";
 
 export const identity = {
-  name: "Tine Mosqueda",
+  name: "Christine Mosqueda",
+  alias: "Tine Mosqueda",
+  moniker: "Rocket Puncher",
   tagline: "Turning validated workflows into buildable product systems.",
   cvHref: "/docu/Christine-Mosqueda_resume.pdf",
   systemLabel: "@cmosqueda",

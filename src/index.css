@@ -135,6 +135,8 @@
 .aquarium-feed-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #0b1e2d; }
 .aquarium-feed-btn--overlay { position: absolute; top: 8px; right: 8px; z-index: 2; }
 .aquarium-feed-btn--overlay:active { transform: translate(1px, 1px); }
+.aquarium-feed-btn:disabled { opacity: .65; cursor: wait; }
+.aquarium-loading { position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center; background: rgb(13 58 110 / .55); color: #fff8dc; font-family: ui-monospace, Menlo, monospace; font-size: .75rem; font-weight: 700; letter-spacing: .04em; pointer-events: none; }
 .github-experience-list { display: grid; width: 100%; gap: .75rem; }
 .github-experience-item { border: 1px solid var(--gh-border); border-radius: 6px; padding: 1rem; }
 .github-experience-item h3 { color: var(--gh-text); font-size: .95rem; font-weight: 600; }
@@ -602,6 +604,11 @@
 .github-activity-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .75rem; padding: .9rem 1rem; border-bottom: 1px solid var(--gh-border); color: var(--gh-muted); font-size: .8rem; }
 .github-activity-item:last-child { border-bottom: 0; }.github-activity-item svg { color: var(--gh-link); }.github-activity-item strong { color: var(--gh-text); font-weight: 600; }.github-activity-item time { color: var(--gh-muted); font-size: .72rem; }
 .github-footer { margin-top: 0; border-top: 1px solid var(--gh-border); background: var(--gh-subtle); }
+/* Bleed out of the padded <main> scroll container so the footer background
+   touches the viewport edges left/right/bottom instead of showing gaps. */
+.github-footer--bleed { margin-left: -1rem; margin-right: -1rem; margin-bottom: 0; }
+@media (min-width: 640px) { .github-footer--bleed { margin-left: -1.5rem; margin-right: -1.5rem; } }
+@media (min-width: 768px) { .github-footer--bleed { margin-bottom: -2.5rem; } }
 .github-footer-inner { display: flex; max-width: 1120px; margin: 0 auto; align-items: center; justify-content: space-between; gap: 1rem; padding: 2rem 1.5rem; color: var(--gh-muted); font-size: .75rem; }
 .github-footer-brand, .github-footer-links { display: flex; align-items: center; gap: 1rem; }.github-footer-links { flex-wrap: wrap; justify-content: flex-end; }.github-footer a:hover { color: var(--gh-link); text-decoration: underline; }
 .github-footer-favicon { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }

@@ -9,11 +9,20 @@ export default memo(function MobileProfileCard() {
         <ProfilePhotoPreview sizeClassName="github-avatar h-20 w-20 shrink-0" />
         <div className="min-w-0 pt-1">
           <p className="text-xl font-semibold tracking-tight">{identity.name}</p>
-          <p className="github-muted text-sm">{identity.systemLabel}</p>
+          <p className="github-muted text-sm">
+            {identity.systemLabel} · {identity.moniker}
+          </p>
           <p className="mt-3 text-sm leading-relaxed">{identity.tagline}</p>
         </div>
       </div>
-      <a href={identity.cvHref} target="_blank" rel="noopener noreferrer" className="github-button mt-4 block w-full px-3 py-1.5 text-center text-sm font-medium">View résumé</a>
+      <a
+        href={identity.cvHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="github-button mt-4 block w-full px-3 py-1.5 text-center text-sm font-medium"
+      >
+        View résumé
+      </a>
     </aside>
   );
 });

@@ -28,7 +28,7 @@ export default function ProfilePhotoPreview({ sizeClassName }: Props) {
       <motion.button
         type="button"
         onClick={() => setIsPreviewOpen(true)}
-        aria-label="View Tine Mosqueda's full profile picture"
+        aria-label="View Christine Mosqueda's full profile picture"
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -37,7 +37,7 @@ export default function ProfilePhotoPreview({ sizeClassName }: Props) {
         <div
           className={`neo-card relative ${sizeClassName} flex items-center justify-center overflow-hidden rounded-2xl`}
         >
-          <img src={profilePic} alt="Tine Mosqueda" className="h-full w-full object-cover" />
+          <img src={profilePic} alt="Christine Mosqueda, known as Tine Mosqueda and Rocket Puncher" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-[color:var(--md-scrim)]/55 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <span className="text-[9px] font-semibold tracking-widest text-white">View photo</span>
           </div>
@@ -68,7 +68,7 @@ export default function ProfilePhotoPreview({ sizeClassName }: Props) {
               </button>
               <img
                 src={profilePic}
-                alt="Tine Mosqueda profile preview"
+                alt="Christine Mosqueda profile preview"
                 onClick={(event) => event.stopPropagation()}
                 className="neo-card max-h-[85vh] max-w-[85vw] rounded-3xl object-contain p-1"
               />

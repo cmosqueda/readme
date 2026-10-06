@@ -25,7 +25,7 @@ export default function NavigationBar({ active, onNavigate }: Props) {
       <header className="github-topbar hidden md:block">
         <div className="github-topbar-inner">
           <button onClick={() => handleNavigate("profile")} className="github-wordmark w-[9rem]" aria-label="Go to profile overview">
-            <span className="github-mark">◉</span> {activeLabel === "profile" ? "Overview" : "Tine Mosqueda"}
+            <span className="github-mark">◉</span> {activeLabel === "profile" ? "Overview" : "Christine Mosqueda"}
           </button>
           <nav className="github-tabs" aria-label="Portfolio sections">
         {sections.filter((section) => section.showInNav !== false).map(({ id, label }) => {

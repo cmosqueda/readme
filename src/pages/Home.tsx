@@ -10,6 +10,7 @@ import ExperienceSection from "../components/ExperienceSection";
 import ContactSection from "../components/ContactSection";
 import BlogSection from "../components/BlogSection";
 import { sections } from "../data/navigation";
+import { setPageSeo } from "../lib/seo";
 
 const sectionComponents: Record<string, React.ReactNode> = {
   profile: <ProfileSection />,
@@ -24,6 +25,15 @@ export default function Home() {
   const scrollRootRef = useRef<HTMLElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setPageSeo({
+      title: "Christine Mosqueda | Product Systems Analyst Portfolio",
+      description:
+        "Christine Mosqueda, known as Tine Mosqueda and Rocket Puncher — Product Systems Analyst portfolio featuring user research, workflow design, system requirements, QA validation, and product delivery.",
+      path: "/",
+    });
+  }, []);
 
   useEffect(() => {
     const id = location.hash.slice(1);

@@ -1,11 +1,11 @@
 import type { IconKey } from "../lib/iconRegistry";
 
 export const profile = {
-  eyebrow: "Business Operations. System Design.",
+  eyebrow: "System Analyst. AI/ML Enthusiast. Product Designer.",
   titleLine1: "Product Systems",
   titleAccent: "Analyst",
   bioParagraphs: [
-    "I research how people, teams, and businesses work before helping shape the product around them. By validating user needs and mapping real workflows, I turn ambiguous problems into practical requirements, system designs, and delivery plans.",
+    "I'm Christine Mosqueda (also goes by the alyas Rocket Puncher), a System Analyst based in the Philippines. I research how people, teams, and businesses work before helping shape the product around them. By validating user needs and mapping real workflows, I turn ambiguous problems into practical requirements, system designs, and delivery plans.",
     "My work sits between product and engineering: I partner with product leads on direction, translate findings for technical teams, and support quality validation so what ships reflects the original user need.",
   ],
   focusLine: "// Focus: User research, workflow design, product requirements, system mapping, and QA validation.",

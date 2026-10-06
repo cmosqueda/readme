@@ -9,7 +9,7 @@ import { setPageSeo } from "../lib/seo";
 export default function ProjectPage() {
   const { slug } = useParams<{ slug: string }>();
   const project = getAllProjects().find((item) => item.slug === slug);
-  useEffect(() => { if (project) setPageSeo({ title: `${project.title} Case Study | Tine Mosqueda`, description: project.description, path: `/projects/${project.slug}`, type: "article" }); }, [project]);
+  useEffect(() => { if (project) setPageSeo({ title: `${project.title} Case Study | Christine Mosqueda`, description: project.description, path: `/projects/${project.slug}`, type: "article" }); }, [project]);
   if (!project) return <main className="app-shell flex min-h-screen items-center justify-center p-8"><Link to="/" className="github-link">Return to portfolio</Link></main>;
 
   return <main className="app-shell github-detail min-h-screen px-4 py-8 md:py-12">
@@ -19,6 +19,7 @@ export default function ProjectPage() {
         <div className="github-file-bar"><BookOpen size={16} /><span>cmosqueda / {project.slug}</span><span className="github-badge">{project.status}</span></div>
         <h1 className="github-detail-title mt-5">{project.title}</h1>
         <p className="github-detail-description">{project.description}</p>
+        <p className="github-muted mt-3 text-xs">Case study by Christine Mosqueda · {project.role}</p>
         <div className="mt-5 flex flex-wrap gap-2">{project.tools.map((tool) => <span className="github-topic" key={tool}>{tool}</span>)}</div>
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">

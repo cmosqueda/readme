@@ -373,6 +373,9 @@ export default function ContributionGrass() {
   const [calendars, setCalendars] = useState<Record<number, ContributionCalendar>>({});
   const [hasLiveData, setHasLiveData] = useState(false);
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
+  /** True while the manifest or a newly picked year is still fetching. */
+  const [yearLoading, setYearLoading] = useState(true);
+  const requestRef = useRef(0);
   /** Random pinch of feed for the button / keyboard users. */
   const feedRef = useRef<() => void>(() => {});
   const calendarsRef = useRef<Record<number, ContributionCalendar>>({});
@@ -403,13 +406,16 @@ export default function ContributionGrass() {
   useEffect(() => {
     const controller = new AbortController();
     const cacheKey = new Date().toISOString().slice(0, 10);
+    setYearLoading(true);
     const loadYear = (year: number, signal: AbortSignal) =>
       fetch(`${yearDataUrl(year)}?v=${cacheKey}`, { signal })
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`No data for ${year}`))))
         .then((data: ContributionCalendar) => {
+          if (signal.aborted) return;
           setCalendars((prev) => ({ ...prev, [year]: data }));
           setCalendar(data);
           setHasLiveData(true);
+          setYearLoading(false);
         });
     fetch(`${yearsUrl}?v=${cacheKey}`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error("No year manifest"))))
@@ -426,6 +432,7 @@ export default function ContributionGrass() {
         fetch(`${dataUrl}?v=${cacheKey}`, { signal: controller.signal })
           .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Contribution data is unavailable"))))
           .then((data: ContributionCalendar) => {
+            if (controller.signal.aborted) return;
             const year = yearFromCalendar(data);
             const activeDays = data.weeks.flatMap((w) => w.contributionDays).filter((d) => d.contributionCount > 0).length;
             setYears([{ year, totalContributions: data.totalContributions, activeDays }]);
@@ -433,6 +440,7 @@ export default function ContributionGrass() {
             setCalendars({ [year]: data });
             setCalendar(data);
             setHasLiveData(true);
+            setYearLoading(false);
           })
           .catch((error: unknown) => {
             if (!(error instanceof DOMException && error.name === "AbortError")) {
@@ -452,6 +460,7 @@ export default function ContributionGrass() {
               setCalendars(demoCalendars);
               setCalendar(demoCalendars[nowYear] ?? createDemoCalendar());
               setHasLiveData(false);
+              setYearLoading(false);
             }
           });
       });
@@ -459,23 +468,34 @@ export default function ContributionGrass() {
   }, []);
 
   // Switching years swaps in that year's preserved reef (cached after load).
+  // Uncached years keep showing the current reef with a loading overlay until
+  // the fetch resolves, so the year label, scenery, and fish swap atomically.
   const selectYear = (year: number) => {
-    setSelectedYear(year);
-    setTooltip(null);
+    if (yearLoading || year === selectedYear) return;
     const cached = calendarsRef.current[year];
     if (cached) {
+      setSelectedYear(year);
+      setTooltip(null);
       setCalendar(cached);
       return;
     }
+    const requestId = requestRef.current + 1;
+    requestRef.current = requestId;
+    setYearLoading(true);
+    setTooltip(null);
     const cacheKey = new Date().toISOString().slice(0, 10);
     fetch(`${yearDataUrl(year)}?v=${cacheKey}`)
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`No data for ${year}`))))
       .then((data: ContributionCalendar) => {
+        if (requestRef.current !== requestId) return;
         setCalendars((prev) => ({ ...prev, [year]: data }));
         setCalendar(data);
+        setSelectedYear(year);
+        setYearLoading(false);
       })
       .catch(() => {
         // Keep the current reef on failure; the selector stays put.
+        if (requestRef.current === requestId) setYearLoading(false);
       });
   };
 
@@ -979,10 +999,11 @@ export default function ContributionGrass() {
               aria-haspopup="listbox"
               onClick={() => setYearOpen((open) => !open)}
               title="Show reefs from past years"
+              disabled={yearLoading}
             >
-              {displayYear} {yearOpen ? "▾" : "▸"}
+              {yearLoading ? "Loading…" : `${displayYear} ${yearOpen ? "▾" : "▸"}`}
             </button>
-            {yearOpen && (
+            {yearOpen && !yearLoading && (
               <ul className="aquarium-year-list" role="listbox" aria-label="Select aquarium year">
                 {[...years].reverse().map((meta) => (
                   <li key={meta.year}>
@@ -1002,6 +1023,11 @@ export default function ContributionGrass() {
                 ))}
               </ul>
             )}
+          </div>
+        )}
+        {yearLoading && (
+          <div className="aquarium-loading" role="status" aria-live="polite">
+            <span>Loading {selectedYear ? `${selectedYear} ` : ""}reef…</span>
           </div>
         )}
         <canvas

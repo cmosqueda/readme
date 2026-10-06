@@ -52,7 +52,7 @@ export default function BlogPostPage() {
   useEffect(() => {
     if (!blog) {
       setPageSeo({
-        title: "Article not found | Tine Mosqueda",
+        title: "Article not found | Christine Mosqueda",
         description: "The requested portfolio article could not be found.",
         path: "/",
       });
@@ -60,7 +60,7 @@ export default function BlogPostPage() {
     }
 
     setPageSeo({
-      title: `${blog.title} | Tine Mosqueda`,
+      title: `${blog.title} | Christine Mosqueda`,
       description: blog.summary,
       path: `/blogs/${blog.slug}`,
       type: "article",
@@ -152,6 +152,9 @@ export default function BlogPostPage() {
             {blog.title}
           </h1>
           <div className="github-detail-meta mt-4 flex items-center gap-4 text-xs">
+            <span className="flex items-center gap-1.5">
+              By Christine Mosqueda
+            </span>
             <span className="flex items-center gap-1.5">
               <Calendar size={13} /> {blog.date}
             </span>
