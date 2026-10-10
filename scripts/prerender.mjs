@@ -90,7 +90,8 @@ async function writePage(relativePath, html) {
 }
 
 const template = await readFile(path.join(dist, "index.html"), "utf8");
-const [blogs, projects] = await Promise.all([getContent("blogs"), getContent("projects")]);
+const [allBlogs, projects] = await Promise.all([getContent("blogs"), getContent("projects")]);
+const blogs = allBlogs.filter((blog) => blog.draft !== true);
 const person = {
   "@type": "Person", "@id": `${siteUrl}/#person`, name: "Christine Mosqueda",
   alternateName: ["Tine Mosqueda", "Rocket Puncher", "Christine Reisa Mosqueda", "cmosqueda"],
@@ -114,7 +115,8 @@ await writeFile(path.join(dist, "index.html"), pageHtml(template, {
 
 for (const blog of blogs) {
   const pathname = `/blogs/${blog.slug}`;
-  const schema = { "@context": "https://schema.org", "@type": "BlogPosting", headline: blog.title, description: blog.summary, datePublished: blog.date, author: person, mainEntityOfPage: `${siteUrl}${pathname}`, image: `${siteUrl}/og-image.png`, keywords: blog.tags };
+  const image = blog.coverImage ? `${siteUrl}${blog.coverImage}` : `${siteUrl}/og-image.png`;
+  const schema = { "@context": "https://schema.org", "@type": "BlogPosting", headline: blog.title, description: blog.summary, datePublished: blog.date, dateModified: blog.updatedAt ?? blog.date, author: person, mainEntityOfPage: `${siteUrl}${pathname}`, image, keywords: blog.tags };
   await writePage(path.join("blogs", blog.slug), pageHtml(template, {
     title: `${blog.title} | Christine Mosqueda`, description: blog.summary, pathname, type: "article", publishedTime: blog.date,
     body: `<main><article><p>QA and product systems note by <a href="/">Christine Mosqueda</a></p><h1>${escapeHtml(blog.title)}</h1><p>${escapeHtml(blog.summary)}</p><p>By Christine Mosqueda · Published ${escapeHtml(blog.date)} · ${escapeHtml(blog.readTime)}</p>${markdownToHtml(blog.content)}<p>More from <a href="/">Christine Mosqueda</a> — <a href="https://www.linkedin.com/in/christine-mosqueda-ba202b333/" rel="me">LinkedIn</a> · <a href="https://github.com/cmosqueda" rel="me">GitHub</a></p></article></main>`, schema,

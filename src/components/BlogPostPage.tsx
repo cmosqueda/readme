@@ -164,6 +164,14 @@ export default function BlogPostPage() {
           </div>
         </header>
 
+        {blog.coverImage && (
+          <img
+            src={blog.coverImage}
+            alt=""
+            className="mb-8 aspect-[2/1] w-full rounded-xl border border-[color:var(--md-outline-variant)] object-cover"
+          />
+        )}
+
         {/* EXTRACTED MARKDOWN TEXT MARKUP */}
         <article className="github-markdown max-w-none pb-16">
           <ReactMarkdown components={blogMarkdownComponents}>

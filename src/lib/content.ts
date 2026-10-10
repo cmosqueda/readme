@@ -23,9 +23,12 @@ export interface BlogPost {
   title: string;
   category: string;
   date: string;
+  updatedAt?: string;
   readTime: string;
   summary: string;
   tags: string[];
+  coverImage?: string;
+  draft: boolean;
   content: string;
 }
 
@@ -75,12 +78,16 @@ const blogPosts: BlogPost[] = Object.entries(blogFiles)
       title: data.title ?? slug,
       category: data.category ?? "",
       date: data.date ?? "",
+      updatedAt: data.updatedAt,
       readTime: data.readTime ?? "",
       summary: data.summary ?? "",
       tags: data.tags ?? [],
+      coverImage: data.coverImage,
+      draft: data.draft === true,
       content,
     };
   })
+  .filter((post) => !post.draft)
   .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 
 export function getAllProjects(): ProjectData[] {

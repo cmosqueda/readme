@@ -1,69 +1,31 @@
-# React + TypeScript + Vite
+# Christine Mosqueda Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + Vite portfolio with Markdown articles and a Git-backed editor.
 
-Currently, two official plugins are available:
+## Publishing an article
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+After the one-time configuration below, open `https://cmosqueda.vercel.app/admin`, sign in with the GitHub account that can write to `cmosqueda/readme`, then create or edit an article. Publishing creates a commit on `main`; Vercel deploys that commit automatically.
 
-## Expanding the ESLint configuration
+New articles are saved in `src/content/blogs`. A checked **Save as draft** field keeps an article out of the website, sitemap, and SEO output while preserving it in Git.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## One-time CMS setup
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. In GitHub, create an OAuth App. Its Authorization callback URL must be `https://cmosqueda.vercel.app/api/callback`.
+2. In the Vercel project's Production environment, add these variables:
+   - `CMS_SITE_URL=https://cmosqueda.vercel.app`
+   - `GITHUB_OAUTH_CLIENT_ID` — the OAuth App client ID
+   - `GITHUB_OAUTH_CLIENT_SECRET` — the OAuth App client secret
+3. Deploy this branch. Visit `/admin` and sign in with GitHub.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+If the public site moves to a custom domain, update `CMS_SITE_URL`, the GitHub callback URL, and the `base_url` / `site_domain` values in `public/admin/config.yml` together.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Development
+
+```bash
+npm install
+npm run dev
+npm run validate:content
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+`npm run build` validates blog frontmatter, builds the Vite app, prerenders blog and project routes, and generates the sitemap.

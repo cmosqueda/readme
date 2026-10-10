@@ -1,0 +1,33 @@
+backend:
+  name: github
+  repo: cmosqueda/readme
+  branch: main
+  base_url: https://cmosqueda.vercel.app
+  auth_endpoint: api/auth
+  site_domain: cmosqueda.vercel.app
+  auth_scope: repo
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: blogs
+    label: Blog articles
+    label_singular: Blog article
+    folder: src/content/blogs
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    preview_path: "blogs/{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Publish date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Category, name: category, widget: string }
+      - { label: Reading time, name: readTime, widget: string, hint: "For example: 6 min read" }
+      - { label: Summary, name: summary, widget: text }
+      - { label: Tags, name: tags, widget: list, field: { label: Tag, name: tag, widget: string } }
+      - { label: Cover image, name: coverImage, widget: image, required: false }
+      - { label: Updated date, name: updatedAt, widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Save as draft, name: draft, widget: boolean, default: false, required: false, hint: "Drafts are committed but are not published to the portfolio or sitemap." }
+      - { label: Article, name: body, widget: markdown }
