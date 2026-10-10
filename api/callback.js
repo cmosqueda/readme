@@ -17,7 +17,13 @@ function matchesState(expected, received) {
 
 function popupResponse(response, origin, status, message) {
   const payload = JSON.stringify(message).replace(/</g, "\\u003c");
-  response.status(status).setHeader("Content-Type", "text/html; charset=utf-8").send(`<!doctype html><title>Portfolio editor</title><script>window.opener&&window.opener.postMessage(${payload}, ${JSON.stringify(origin)});window.close();</script><p>You can close this window.</p>`);
+  const targetOrigin = JSON.stringify(origin);
+  const success = message.startsWith("authorization:github:success:");
+  const script = success
+    ? `const parentWindow=window.opener;if(parentWindow){const completeAuthorization=(event)=>{if(event.origin!==${targetOrigin}||event.source!==parentWindow)return;parentWindow.postMessage(${payload},event.origin);window.close();};window.addEventListener("message",completeAuthorization,false);parentWindow.postMessage("authorizing:github",${targetOrigin});}`
+    : `if(window.opener){window.opener.postMessage(${payload},${targetOrigin});}window.close();`;
+
+  response.status(status).setHeader("Content-Type", "text/html; charset=utf-8").send(`<!doctype html><title>Portfolio editor</title><script>${script}</script><p>You can close this window.</p>`);
 }
 
 export default async function handler(request, response) {
