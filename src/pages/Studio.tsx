@@ -342,7 +342,13 @@ export default function Studio() {
      means unsaved work. guardNav() wraps every in-studio exit (tabs, file
      select, new entry, sign-out) and useBlocker covers router exits. */
   const baselineRef = useRef<string | null>(null);
-  const pendingNavRef = useRef<null | (() => void | Promise<void>)>(null);
+  type PendingNav =
+    | { kind: "studio"; run: () => void | Promise<void> }
+    | { kind: "router"; run: () => void; dest: string };
+  const pendingNavRef = useRef<PendingNav | null>(null);
+  // Bridges the dialog handoff: while set, neither guardNav nor the
+  // blocker effect may reopen the dialog (kills reopen races outright).
+  const suppressRef = useRef(false);
   const [unsavedOpen, setUnsavedOpen] = useState(false);
   const unsavedOpenRef = useRef(false);
   unsavedOpenRef.current = unsavedOpen;
@@ -357,11 +363,11 @@ export default function Studio() {
   dirtyRef.current = dirty;
 
   const guardNav = (action: () => void | Promise<void>) => {
-    if (!dirtyRef.current || busy) {
+    if (suppressRef.current || !dirtyRef.current || busy) {
       void action();
       return;
     }
-    pendingNavRef.current = action;
+    pendingNavRef.current = { kind: "studio", run: action };
     setUnsavedOpen(true);
   };
 
@@ -373,14 +379,20 @@ export default function Studio() {
   navigateRef.current = navigate;
 
   useEffect(() => {
-    // Router exit (portfolio links, back button). Ignored while the dialog
-    // is already open for an in-studio exit — dismissing handles the reset.
+    // Router exit (portfolio links, back button). Ignored while suppressed
+    // or while the dialog is already open for an in-studio exit —
+    // dismissing handles the reset.
+    if (suppressRef.current) return;
     if (blocker.state === "blocked" && !unsavedOpenRef.current) {
       const dest = `${blocker.location.pathname}${blocker.location.search}${blocker.location.hash}`;
-      pendingNavRef.current = () => {
-        const current = blockerRef.current;
-        if (current.state === "blocked") current.proceed();
-        else navigateRef.current(dest);
+      pendingNavRef.current = {
+        kind: "router",
+        dest,
+        run: () => {
+          const current = blockerRef.current;
+          if (current.state === "blocked") current.proceed();
+          else navigateRef.current(dest);
+        },
       };
       setUnsavedOpen(true);
     }
@@ -408,19 +420,41 @@ export default function Studio() {
     return () => document.removeEventListener("keydown", onKey);
   }, [unsavedOpen, busy]);
 
+  const releaseSuppress = () => {
+    window.setTimeout(() => {
+      suppressRef.current = false;
+    }, 100);
+  };
+
   const cancelUnsaved = () => {
     if (busy) return;
+    suppressRef.current = true;
     blockerRef.current.reset?.();
     pendingNavRef.current = null;
     setUnsavedOpen(false);
+    releaseSuppress();
   };
 
   const discardUnsaved = () => {
     if (busy) return;
-    const action = pendingNavRef.current;
+    suppressRef.current = true;
+    const pending = pendingNavRef.current;
     pendingNavRef.current = null;
     setUnsavedOpen(false);
-    void action?.();
+    try {
+      if (pending?.kind === "router") {
+        // Router exits must proceed, never reset-then-run (reset would
+        // strand the navigation and leave the dialog's job undone).
+        pending.run();
+      } else {
+        // Studio exits: clear any stale router block first so it can
+        // never resurface as a phantom dialog.
+        blockerRef.current.reset?.();
+        void pending?.run();
+      }
+    } finally {
+      releaseSuppress();
+    }
   };
 
   const saveDraftAndContinue = async () => {
@@ -442,10 +476,19 @@ export default function Studio() {
       else if (flaggedProject) await persistProject(flaggedProject);
       // The blocker is still engaged (dialog open), so a router
       // destination proceeds; in-studio actions just run.
-      const action = pendingNavRef.current;
+      suppressRef.current = true;
+      const pending = pendingNavRef.current;
       pendingNavRef.current = null;
       setUnsavedOpen(false);
-      void action?.();
+      try {
+        if (pending?.kind === "router") pending.run();
+        else {
+          blockerRef.current.reset?.();
+          void pending?.run();
+        }
+      } finally {
+        releaseSuppress();
+      }
     } catch (caught) {
       // Keep the dialog open so no work is lost; the error shows behind it.
       setError(caught instanceof Error ? caught.message : "Could not save.");
