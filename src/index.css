@@ -733,7 +733,7 @@
 
 .studio-alert { display: flex; align-items: center; gap: .6rem; border: 1px solid color-mix(in srgb, var(--gh-danger) 45%, var(--gh-border)); background: color-mix(in srgb, var(--gh-danger) 8%, var(--gh-canvas)); color: var(--gh-text); border-radius: 6px; padding: .7rem .9rem; font-size: .82rem; margin-bottom: 1rem; }
 .studio-alert svg { color: var(--gh-danger); flex-shrink: 0; }
-.studio-alert button { margin-left: auto; color: var(--gh-muted); display: inline-flex; }
+.studio-alert button { margin-left: auto; flex-shrink: 0; color: var(--gh-muted); display: inline-flex; }
 .studio-alert button:hover { color: var(--gh-text); }
 
 .studio-grid { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
@@ -864,6 +864,7 @@
 .studio-preview h3 { font-size: 1.1rem; font-weight: 700; }
 .studio-preview-summary { color: var(--gh-muted); font-size: .85rem; line-height: 1.6; border-left: 3px solid var(--gh-border); padding-left: .8rem; }
 .studio-preview-card { padding: 1rem; display: grid; gap: .6rem; }
+.studio-preview-card .github-badge { justify-self: start; }
 .studio-preview-card p { font-size: .82rem; }
 .studio-preview-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
 .studio-preview-top { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 70; display: flex; align-items: center; gap: .5rem; padding: .55rem .8rem; font-size: .74rem; font-weight: 600; opacity: 0; transform: translateY(.75rem); pointer-events: none; transition: opacity .2s ease, transform .2s ease; }

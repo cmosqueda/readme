@@ -218,10 +218,16 @@ export default function Studio() {
     setBusy(true);
     setError("");
     try {
-      await request("/api/studio/blogs", {
+      // originalSlug lets the API tell an in-place update apart from a
+      // deliberate rename (slug field edited on an existing file).
+      const originalPost = editingPost.sha
+        ? posts.find((p) => p.sha === editingPost.sha)
+        : undefined;
+      const saveResult = await request("/api/studio/blogs", {
         method: "PUT",
         body: JSON.stringify({
           slug: editingPost.slug,
+          originalSlug: originalPost?.slug ?? editingPost.slug,
           data: editingPost,
           body: editingPost.body,
           sha: editingPost.sha,
@@ -230,6 +236,7 @@ export default function Studio() {
       await load();
       setEditingPost(null);
       setPreview(false);
+      if (saveResult?.warning) setError(saveResult.warning);
       void refreshDeploy();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save.");
@@ -247,10 +254,14 @@ export default function Studio() {
     setBusy(true);
     setError("");
     try {
-      await request("/api/studio/projects", {
+      const originalProject = editingProject.sha
+        ? projects.find((p) => p.sha === editingProject.sha)
+        : undefined;
+      const projectResult = await request("/api/studio/projects", {
         method: "PUT",
         body: JSON.stringify({
           slug: editingProject.slug,
+          originalSlug: originalProject?.slug ?? editingProject.slug,
           data: editingProject,
           body: editingProject.body,
           sha: editingProject.sha,
@@ -259,6 +270,7 @@ export default function Studio() {
       await load();
       setEditingProject(null);
       setPreview(false);
+      if (projectResult?.warning) setError(projectResult.warning);
       void refreshDeploy();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save.");
@@ -695,7 +707,10 @@ export default function Studio() {
             <p id="studio-delete-desc">
               <strong>{pendingDelete.title}</strong>
               <span className="studio-modal-path">{pendingDelete.slug}.md</span>
-              This removes the file from <code>main</code> permanently. This action cannot be undone.
+              <span>
+                This removes the file from <code>main</code> permanently. This
+                action cannot be undone.
+              </span>
             </p>
             <div className="studio-modal-actions">
               <button
@@ -1228,7 +1243,14 @@ function BlogEditor({
   remove: () => void;
 }) {
   const update = <K extends keyof Post>(key: K, value: Post[K]) => {
-    if (key === "title" && (!post.slug || post.slug === slugify(post.title))) {
+    // Auto-derive the slug from the title for new files only. Existing
+    // files keep a stable path so edits update in place instead of
+    // creating a duplicate (deliberate renames go through originalSlug).
+    if (
+      key === "title" &&
+      !post.sha &&
+      (!post.slug || post.slug === slugify(post.title))
+    ) {
       setPost({ ...post, title: value as string, slug: slugify(value as string) });
       return;
     }
@@ -1273,7 +1295,7 @@ function BlogEditor({
                   placeholder="e.g. How I map messy workflows"
                 />
               </Field>
-              <Field label="Slug" hint="auto from title">
+              <Field label="Slug" hint={post.sha ? "renames the file on save" : "auto from title"}>
                 <input
                   className={`${inputCls} studio-mono-input`}
                   value={post.slug}
@@ -1379,7 +1401,7 @@ function ProjectEditor({
   const update = <K extends keyof Project>(key: K, value: Project[K]) => setProject({ ...project, [key]: value });
 
   const updateTitle = (value: string) => {
-    if (!project.slug || project.slug === slugify(project.title)) {
+    if (!project.sha && (!project.slug || project.slug === slugify(project.title))) {
       setProject({ ...project, title: value, slug: slugify(value) });
       return;
     }
@@ -1440,7 +1462,7 @@ function ProjectEditor({
                   placeholder="e.g. Claims triage console"
                 />
               </Field>
-              <Field label="Slug" hint="auto from title">
+              <Field label="Slug" hint={project.sha ? "renames the file on save" : "auto from title"}>
                 <input
                   className={`${inputCls} studio-mono-input`}
                   value={project.slug}

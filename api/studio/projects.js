@@ -45,23 +45,30 @@ export default async function handler(request, response) {
       return response.status(200).json(entries.sort((a, b) => Number(a.order) - Number(b.order)));
     }
 
-    const { slug, data, body, sha } = request.body ?? {};
-    if (!validProject(slug, data, body)) return response.status(400).json({ error: "Complete all project fields, add at least one detail, and use a lowercase kebab-case slug." });
-
-    if (request.method === "PUT") {
-      const payload = {
-        message: `studio: ${sha ? "update" : "publish"} project ${data.title}`,
-        content: Buffer.from(markdown(data, body)).toString("base64"),
-        branch: "main",
-        ...(sha ? { sha } : {}),
-      };
-      await github(`/repos/${owner}/${repo}/contents/${directory}/${slug}.md`, current.token, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      return response.status(200).json({ ok: true });
-    }
-
-    if (request.method === "DELETE" && sha) {
+    const { slug, originalSlug, data, body, sha } = request.body ?? {};
+    // Deletes carry only a file reference — never gate them on content validation.
+    if (request.method === "DELETE") {
+      if (!slugPattern.test(slug ?? "") || !sha) return response.status(400).json({ error: "Missing file reference for deletion." });
       await github(`/repos/${owner}/${repo}/contents/${directory}/${slug}.md`, current.token, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: `studio: delete project ${slug}`, sha, branch: "main" }) });
       return response.status(204).end();
+    }
+    if (!validProject(slug, data, body) || (originalSlug !== undefined && !slugPattern.test(originalSlug ?? ""))) return response.status(400).json({ error: "Complete all project fields, add at least one detail, and use a lowercase kebab-case slug." });
+
+    if (request.method === "PUT") {
+      const renaming = Boolean(sha && originalSlug && originalSlug !== slug);
+      const payload = {
+        message: `studio: ${renaming ? "rename" : sha ? "update" : "publish"} project ${data.title}`,
+        content: Buffer.from(markdown(data, body)).toString("base64"),
+        branch: "main",
+        ...(sha && !renaming ? { sha } : {}),
+      };
+      await github(`/repos/${owner}/${repo}/contents/${directory}/${slug}.md`, current.token, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      if (renaming) {
+        try {
+          await github(`/repos/${owner}/${repo}/contents/${directory}/${originalSlug}.md`, current.token, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: `studio: rename project ${originalSlug} to ${slug}`, sha, branch: "main" }) });
+        } catch (cleanupError) { console.error("Studio projects rename cleanup failed", cleanupError); return response.status(200).json({ ok: true, warning: "Saved under the new slug, but the old file could not be removed. Delete it manually." }); }
+      }
+      return response.status(200).json({ ok: true });
     }
 
     return response.status(405).end();
