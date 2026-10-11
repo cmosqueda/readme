@@ -123,10 +123,7 @@ const request = async (url: string, init?: RequestInit) => {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   });
-  if (!response.ok)
-    throw new Error(
-      (await response.json().catch(() => ({}))).error || "Request failed.",
-    );
+  if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || "Request failed.");
   return response.status === 204 ? null : response.json();
 };
 
@@ -159,9 +156,7 @@ export default function Studio() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [preview, setPreview] = useState(false);
   const [deploy, setDeploy] = useState<DeployInfo>(null);
-  const [deployState, setDeployState] = useState<"idle" | "checking" | "error">(
-    "idle",
-  );
+  const [deployState, setDeployState] = useState<"idle" | "checking" | "error">("idle");
   const deployBusy = useRef(false);
 
   const refreshDeploy = async () => {
@@ -201,9 +196,7 @@ export default function Studio() {
       description: "Private portfolio content editor.",
       path: "/studio",
     });
-    document
-      .querySelector('meta[name="robots"]')
-      ?.setAttribute("content", "noindex, nofollow");
+    document.querySelector('meta[name="robots"]')?.setAttribute("content", "noindex, nofollow");
     void load();
   }, []);
 
@@ -371,12 +364,9 @@ export default function Studio() {
   }, [projects, query, statusFilter]);
 
   const draftCount =
-    workspace === "blogs"
-      ? posts.filter((p) => p.draft).length
-      : projects.filter((p) => p.draft).length;
+    workspace === "blogs" ? posts.filter((p) => p.draft).length : projects.filter((p) => p.draft).length;
   const totalCount = workspace === "blogs" ? posts.length : projects.length;
-  const activeSlug =
-    workspace === "blogs" ? editingPost?.slug : editingProject?.slug;
+  const activeSlug = workspace === "blogs" ? editingPost?.slug : editingProject?.slug;
 
   if (checkingSession) {
     return (
@@ -407,16 +397,13 @@ export default function Studio() {
             </p>
             <h1>Portfolio Studio</h1>
             <p className="github-muted">
-              The portfolio-branded editor for articles and featured projects.
-              Sign in with the authorized GitHub account to commit straight to{" "}
-              <code>main</code>.
+              The portfolio-branded editor for articles and featured projects. Sign in with the authorized GitHub
+              account to commit straight to <code>main</code>.
             </p>
             <a href="/api/studio/auth" className="github-btn-primary">
               Sign in with GitHub
             </a>
-            <p className="studio-signin-note">
-              Restricted area · robots noindex · OAuth via /api/studio/callback
-            </p>
+            <p className="studio-signin-note">Restricted area · robots noindex · OAuth via /api/studio/callback</p>
           </section>
         </div>
       </main>
@@ -479,10 +466,8 @@ export default function Studio() {
                 portfolio-content <span>/</span> {isBlogs ? "articles" : "projects"}
               </p>
               <p className="github-muted studio-repo-sub">
-                {isBlogs
-                  ? "Markdown articles committed to main"
-                  : "Featured case studies committed to main"}{" "}
-                · signed in as <strong>{login}</strong>
+                {isBlogs ? "Markdown articles committed to main" : "Featured case studies committed to main"} · signed
+                in as <strong>{login}</strong>
               </p>
             </div>
           </div>
@@ -520,9 +505,7 @@ export default function Studio() {
           </div>
           <div className="github-info-card studio-stat studio-stat-wide">
             <FileCode2 size={14} />
-            <span className="github-muted">
-              {isBlogs ? "content/blogs/*.md" : "content/projects/*.md"}
-            </span>
+            <span className="github-muted">{isBlogs ? "content/blogs/*.md" : "content/projects/*.md"}</span>
           </div>
         </div>
 
@@ -595,9 +578,7 @@ export default function Studio() {
                         <FileCode2 size={15} />
                       </span>
                       <span className="studio-file-main">
-                        <span className="studio-file-title">
-                          {post.title || "(untitled)"}
-                        </span>
+                        <span className="studio-file-title">{post.title || "(untitled)"}</span>
                         <span className="github-muted studio-file-meta">
                           {post.slug}.md · {post.draft ? "draft" : post.date || "published"}
                         </span>
@@ -629,12 +610,9 @@ export default function Studio() {
                       <FileCode2 size={15} />
                     </span>
                     <span className="studio-file-main">
-                      <span className="studio-file-title">
-                        {project.title || "(untitled)"}
-                      </span>
+                      <span className="studio-file-title">{project.title || "(untitled)"}</span>
                       <span className="github-muted studio-file-meta">
-                        {project.slug}.md · #{project.order} ·{" "}
-                        {project.draft ? "draft" : project.status}
+                        {project.slug}.md · #{project.order} · {project.draft ? "draft" : project.status}
                       </span>
                     </span>
                     <StatusBadge draft={project.draft} />
@@ -655,12 +633,9 @@ export default function Studio() {
                 <span className="studio-empty-icon">
                   {isBlogs ? <BookOpen size={20} /> : <FolderKanban size={20} />}
                 </span>
-                <h2>
-                  {isBlogs ? "Select an article" : "Select a project"} to edit
-                </h2>
+                <h2>{isBlogs ? "Select an article" : "Select a project"} to edit</h2>
                 <p className="github-muted">
-                  Pick a file on the left, or create a new{" "}
-                  {isBlogs ? "article" : "featured project"}. Saves commit
+                  Pick a file on the left, or create a new {isBlogs ? "article" : "featured project"}. Saves commit
                   Markdown directly to <code>main</code>.
                 </p>
                 <button onClick={newEntry} className="github-btn-primary">
@@ -693,8 +668,7 @@ export default function Studio() {
 
         <footer className="github-muted studio-foot">
           <span>
-            studio · commits as <strong>{login}</strong> to branch{" "}
-            <code>main</code>
+            studio · commits as <strong>{login}</strong> to branch <code>main</code>
           </span>
           <a href="/">← back to portfolio</a>
         </footer>
@@ -717,16 +691,11 @@ export default function Studio() {
             <span className="studio-modal-icon" aria-hidden="true">
               <Trash2 size={18} />
             </span>
-            <h2 id="studio-delete-title">
-              Delete {pendingDelete.type === "blogs" ? "article" : "project"}?
-            </h2>
+            <h2 id="studio-delete-title">Delete {pendingDelete.type === "blogs" ? "article" : "project"}?</h2>
             <p id="studio-delete-desc">
               <strong>{pendingDelete.title}</strong>
-              <span className="studio-modal-path">
-                {pendingDelete.slug}.md
-              </span>
-              This removes the file from <code>main</code> permanently. This
-              action cannot be undone.
+              <span className="studio-modal-path">{pendingDelete.slug}.md</span>
+              This removes the file from <code>main</code> permanently. This action cannot be undone.
             </p>
             <div className="studio-modal-actions">
               <button
@@ -759,13 +728,7 @@ export default function Studio() {
 
 /* ── Bits ─────────────────────────────────────────────────── */
 
-function ProfileMenu({
-  login,
-  onSignOut,
-}: {
-  login: string;
-  onSignOut: () => Promise<void>;
-}) {
+function ProfileMenu({ login, onSignOut }: { login: string; onSignOut: () => Promise<void> }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -783,7 +746,7 @@ function ProfileMenu({
       document.removeEventListener("pointerdown", onPointer);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open ]);
+  }, [open]);
 
   return (
     <div className="studio-profile" ref={wrapRef}>
@@ -799,10 +762,7 @@ function ProfileMenu({
         <span className="studio-avatar" aria-hidden="true">
           {login.slice(0, 1).toUpperCase()}
         </span>
-        <ChevronDown
-          size={14}
-          className={`studio-profile-caret ${open ? "studio-profile-caret-open" : ""}`}
-        />
+        <ChevronDown size={14} className={`studio-profile-caret ${open ? "studio-profile-caret-open" : ""}`} />
       </button>
       {open && (
         <div className="studio-menu" role="menu" aria-label="Profile">
@@ -863,15 +823,11 @@ function DeployStatus({
       document.removeEventListener("pointerdown", onPointer);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open ]);
+  }, [open]);
 
-  const vercelState =
-    deploy?.vercel && "state" in deploy.vercel
-      ? (deploy.vercel.state ?? null)
-      : null;
+  const vercelState = deploy?.vercel && "state" in deploy.vercel ? (deploy.vercel.state ?? null) : null;
   const isDeploying = vercelState === "QUEUED" || vercelState === "BUILDING";
-  const isFailed =
-    (vercelState === "ERROR" || vercelState === "CANCELED") && !deploy?.inSync;
+  const isFailed = (vercelState === "ERROR" || vercelState === "CANCELED") && !deploy?.inSync;
 
   let tone: "live" | "deploying" | "behind" | "failed" | "unknown" = "unknown";
   let label = "Unknown";
@@ -914,10 +870,7 @@ function DeployStatus({
         {state === "checking" ? (
           <Loader2 size={11} className="studio-spin" aria-hidden="true" />
         ) : (
-          <span
-            className={`studio-dot studio-deploy-dot studio-dot-${tone}`}
-            aria-hidden="true"
-          />
+          <span className={`studio-dot studio-deploy-dot studio-dot-${tone}`} aria-hidden="true" />
         )}
         {label}
       </button>
@@ -939,11 +892,7 @@ function DeployStatus({
             </div>
             <div>
               <dt>Deployed site</dt>
-              <dd>
-                {deploy?.deployed?.short ??
-                  deploy?.manifestError ??
-                  "No build yet"}
-              </dd>
+              <dd>{deploy?.deployed?.short ?? deploy?.manifestError ?? "No build yet"}</dd>
             </div>
             <div>
               <dt>Deployed at</dt>
@@ -951,22 +900,12 @@ function DeployStatus({
             </div>
             <div>
               <dt>Vercel</dt>
-              <dd>
-                {vercelState ??
-                  deploy?.vercel?.error ??
-                  "Not connected"}
-              </dd>
+              <dd>{vercelState ?? deploy?.vercel?.error ?? "Not connected"}</dd>
             </div>
           </dl>
           <div className="studio-deploy-foot">
-            <span className="github-muted">
-              Checked {formatTime(deploy?.checkedAt ?? null)}
-            </span>
-            <button
-              type="button"
-              className="github-button studio-mini-btn"
-              onClick={onRefresh}
-            >
+            <span className="github-muted">Checked {formatTime(deploy?.checkedAt ?? null)}</span>
+            <button type="button" className="github-button studio-mini-btn" onClick={onRefresh}>
               <RefreshCw size={13} /> Refresh
             </button>
           </div>
@@ -1073,7 +1012,7 @@ function EditorChrome({
         <div className="studio-doc-file">
           <FileCode2 size={15} />
           <span className="studio-doc-path">
-            {kind} <ChevronRight size={12} /> {(fileName || "untitled")}.md
+            {kind} <ChevronRight size={12} /> {fileName || "untitled"}.md
           </span>
           <StatusBadge draft={draft} />
         </div>
@@ -1109,9 +1048,7 @@ function EditorChrome({
       </div>
 
       <div className="studio-doc-title">
-        <p className="github-muted studio-kicker">
-          {isNew ? "New file · uncommitted" : "Editing file on main"}
-        </p>
+        <p className="github-muted studio-kicker">{isNew ? "New file · uncommitted" : "Editing file on main"}</p>
         <h2>{title || "(untitled)"}</h2>
       </div>
 
@@ -1119,15 +1056,9 @@ function EditorChrome({
 
       <div className="studio-doc-foot">
         <p className="github-muted">
-          {isNew
-            ? "Saving creates a new Markdown file on main."
-            : "Saving commits an update to main."}
+          {isNew ? "Saving creates a new Markdown file on main." : "Saving commits an update to main."}
         </p>
-        <button
-          onClick={save}
-          disabled={busy}
-          className="github-btn-primary studio-save"
-        >
+        <button onClick={save} disabled={busy} className="github-btn-primary studio-save">
           <Save size={15} /> {busy ? "Committing…" : isNew ? "Publish file" : "Commit changes"}
         </button>
       </div>
@@ -1178,9 +1109,7 @@ function TokenInput({
   const [text, setText] = useState("");
 
   const commit = (raw: string) => {
-    const parts = csv(raw).filter(
-      (part) => !values.some((v) => v.toLowerCase() === part.toLowerCase()),
-    );
+    const parts = csv(raw).filter((part) => !values.some((v) => v.toLowerCase() === part.toLowerCase()));
     if (parts.length) onChange([...values, ...parts]);
     setText("");
   };
@@ -1235,13 +1164,7 @@ function TokenInput({
 
 /* Prominent publish/draft selector. Draft is a real frontmatter value for
    both articles and projects — this surfaces it instead of burying it. */
-function VisibilityControl({
-  draft,
-  onChange,
-}: {
-  draft?: boolean;
-  onChange: (draft: boolean) => void;
-}) {
+function VisibilityControl({ draft, onChange }: { draft?: boolean; onChange: (draft: boolean) => void }) {
   const isDraft = draft === true;
   return (
     <div className="studio-section">
@@ -1331,9 +1254,7 @@ function BlogEditor({
           <h3>{post.title || "(untitled)"}</h3>
           {post.summary && <p className="studio-preview-summary">{post.summary}</p>}
           <div className="github-markdown">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {post.body || "_Nothing to preview yet._"}
-            </ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body || "_Nothing to preview yet._"}</ReactMarkdown>
           </div>
           <PreviewBackToTop />
         </div>
@@ -1414,10 +1335,7 @@ function BlogEditor({
             </div>
           </div>
 
-          <VisibilityControl
-            draft={post.draft}
-            onChange={(draft) => update("draft", draft)}
-          />
+          <VisibilityControl draft={post.draft} onChange={(draft) => update("draft", draft)} />
 
           <div className="studio-section">
             <h3>
@@ -1458,8 +1376,7 @@ function ProjectEditor({
   setPreview: (v: boolean) => void;
   remove: () => void;
 }) {
-  const update = <K extends keyof Project>(key: K, value: Project[K]) =>
-    setProject({ ...project, [key]: value });
+  const update = <K extends keyof Project>(key: K, value: Project[K]) => setProject({ ...project, [key]: value });
 
   const updateTitle = (value: string) => {
     if (!project.slug || project.slug === slugify(project.title)) {
@@ -1504,9 +1421,7 @@ function ProjectEditor({
             </div>
           </div>
           <div className="github-markdown">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {project.body || "_Nothing to preview yet._"}
-            </ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.body || "_Nothing to preview yet._"}</ReactMarkdown>
           </div>
           <PreviewBackToTop />
         </div>
@@ -1559,11 +1474,7 @@ function ProjectEditor({
                 />
               </Field>
               <Field label="Status">
-                <select
-                  className={inputCls}
-                  value={project.status}
-                  onChange={(e) => update("status", e.target.value)}
-                >
+                <select className={inputCls} value={project.status} onChange={(e) => update("status", e.target.value)}>
                   <option>Planning</option>
                   <option>In Progress</option>
                   <option>Completed</option>
@@ -1607,18 +1518,13 @@ function ProjectEditor({
             </div>
           </div>
 
-          <VisibilityControl
-            draft={project.draft}
-            onChange={(draft) => update("draft", draft)}
-          />
+          <VisibilityControl draft={project.draft} onChange={(draft) => update("draft", draft)} />
 
           <div className="studio-section">
             <h3>
-              <BookMarked size={14} /> Statistics
+              <BookMarked size={14} /> Stats
               <button
-                onClick={() =>
-                  update("stats", [...project.stats, { label: "", value: "" }])
-                }
+                onClick={() => update("stats", [...project.stats, { label: "", value: "" }])}
                 className="github-button studio-mini-btn"
                 type="button"
               >
