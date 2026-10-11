@@ -7,7 +7,7 @@ status: "Stable"
 description: "An AI-powered study-helper platform shaped through educational research, quality validation, and iterative user-experience testing."
 tools: ["Gemini 2.5/2.0", "AHP", "Postman", "Jest"]
 workflow: ["ISO/IEC 25010", "SUS Testing", "AHP Framework"]
-stats:
+details:
   - label: "AHP Top Model"
     value: "Gemini 2.5 Flash"
   - label: "Reliability"

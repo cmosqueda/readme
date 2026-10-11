@@ -7,7 +7,7 @@ status: "Live"
 description: "A private, GitHub-authenticated CMS that lets me manage portfolio articles and featured projects as Markdown, then publish them through the same Vercel deployment pipeline as the site."
 tools: ["React", "TypeScript", "Vite", "GitHub OAuth", "GitHub Contents API", "Vercel"]
 workflow: ["Git-backed content", "OAuth access control", "Markdown rendering", "Continuous deployment"]
-stats:
+details:
   - label: "Authentication"
     value: "Github OAuth"
   - label: "File types"
@@ -27,7 +27,7 @@ As the site grew, I wanted it to do more than present static work. I enjoy writi
 
 ## The Foundation: Markdown Content
 
-During school, I worked with Docusaurus and appreciated how Markdown and MDX make documentation-style content straightforward to author and maintain. I carried that lesson into this portfolio by building a Markdown rendering pipeline: each article and project case study lives in its own `.md` file, with frontmatter for structured metadata such as title, category, tags, statistics, and publishing state.
+During school, I worked with Docusaurus and appreciated how Markdown and MDX make documentation-style content straightforward to author and maintain. I carried that lesson into this portfolio by building a Markdown rendering pipeline: each article and project case study lives in its own `.md` file, with frontmatter for structured metadata such as title, category, tags, details, and publishing state.
 
 That separated content from presentation and meant new pages did not need to be hardcoded into React components. However, the workflow still had friction: publishing meant opening my IDE, creating and formatting a file in the repository, committing it, and pushing the change.
 
@@ -56,7 +56,7 @@ The result is a familiar editing experience without a separate database, migrati
 
 - **Private GitHub authentication** restricted to the portfolio owner.
 - **Article management** with titles, dates, categories, summaries, tags, draft state, cover-image paths, and Markdown content.
-- **Featured-project management** with roles, status, display order, tools, workflow highlights, statistics, draft state, and long-form case studies.
+- **Featured-project management** with roles, status, display order, tools, workflow highlights, details, draft state, and long-form case studies.
 - **Git-native publishing** that creates or updates Markdown files directly in the repository.
 - **Automatic deployment** through the existing GitHub-to-Vercel integration.
 

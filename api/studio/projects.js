@@ -8,10 +8,10 @@ const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const quote = (value) => JSON.stringify(String(value ?? ""));
 const list = (values) => (Array.isArray(values) ? values : []).map((value) => `  - ${quote(value)}`).join("\n");
-const stats = (values) => (Array.isArray(values) ? values : []).map((stat) => `  - label: ${quote(stat.label)}\n    value: ${quote(stat.value)}`).join("\n");
+const details = (values) => (Array.isArray(values) ? values : []).map((detail) => `  - label: ${quote(detail.label)}\n    value: ${quote(detail.value)}`).join("\n");
 
 function markdown(data, body) {
-  return `---\ntitle: ${quote(data.title)}\ncategory: ${quote(data.category)}\nrole: ${quote(data.role)}\nstatus: ${quote(data.status)}\ndescription: ${quote(data.description)}\ntools:\n${list(data.tools)}\nworkflow:\n${list(data.workflow)}\nstats:\n${stats(data.stats)}\norder: ${Number(data.order)}\n${data.coverImage ? `coverImage: ${quote(data.coverImage)}\n` : ""}draft: ${data.draft === true}\n---\n\n${body.trim()}\n`;
+  return `---\ntitle: ${quote(data.title)}\ncategory: ${quote(data.category)}\nrole: ${quote(data.role)}\nstatus: ${quote(data.status)}\ndescription: ${quote(data.description)}\ntools:\n${list(data.tools)}\nworkflow:\n${list(data.workflow)}\ndetails:\n${details(data.details)}\norder: ${Number(data.order)}\n${data.coverImage ? `coverImage: ${quote(data.coverImage)}\n` : ""}draft: ${data.draft === true}\n---\n\n${body.trim()}\n`;
 }
 
 function decoded(item) {
@@ -25,8 +25,8 @@ function validProject(slug, data, body) {
     && data?.title && data?.category && data?.role && data?.status && data?.description
     && Array.isArray(data.tools) && data.tools.length > 0
     && Array.isArray(data.workflow) && data.workflow.length > 0
-    && Array.isArray(data.stats) && data.stats.length > 0
-    && data.stats.every((stat) => stat?.label && stat?.value)
+    && Array.isArray(data.details) && data.details.length > 0
+    && data.details.every((detail) => detail?.label && detail?.value)
     && Number.isInteger(Number(data.order)) && Number(data.order) >= 0
     && body?.trim();
 }
@@ -46,7 +46,7 @@ export default async function handler(request, response) {
     }
 
     const { slug, data, body, sha } = request.body ?? {};
-    if (!validProject(slug, data, body)) return response.status(400).json({ error: "Complete all project fields, add at least one stat, and use a lowercase kebab-case slug." });
+    if (!validProject(slug, data, body)) return response.status(400).json({ error: "Complete all project fields, add at least one detail, and use a lowercase kebab-case slug." });
 
     if (request.method === "PUT") {
       const payload = {

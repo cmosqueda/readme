@@ -63,7 +63,7 @@ export default function ProjectPage() {
         </article>
         <aside className="space-y-4">
           <div className="github-detail-aside"><h2>About this project</h2><p className="github-muted mt-3 text-sm leading-relaxed">{project.role}</p><div className="mt-4 flex items-center gap-2 text-sm github-link"><ShieldCheck size={16} /> Product role</div></div>
-          <div className="github-detail-aside"><h2>Project details</h2><dl className="mt-4 space-y-4">{project.stats.map((stat) => <div key={stat.label}><dt>{stat.label}</dt><dd>{stat.value}</dd></div>)}</dl></div>
+          <div className="github-detail-aside"><h2>Project details</h2><dl className="mt-4 space-y-4">{project.details.map((detail) => <div key={detail.label}><dt>{detail.label}</dt><dd>{detail.value}</dd></div>)}</dl></div>
         </aside>
       </div>
       <ProjectPagination previousSlug={previousSlug} nextSlug={nextSlug} />

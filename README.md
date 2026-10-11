@@ -21,7 +21,7 @@ New articles are saved in `src/content/blogs`; featured projects are saved in `s
 
 ## Custom Studio
 
-`/studio` is the portfolio-branded editor for blog articles and featured projects, with separate **Articles** and **Projects** workspaces. Project editing includes metadata, display order, tools, workflow highlights, editable statistics, draft state, an optional cover-image path, and the Markdown case study. Each save commits directly to `main`, triggering the normal Vercel deployment.
+`/studio` is the portfolio-branded editor for blog articles and featured projects, with separate **Articles** and **Projects** workspaces. Project editing includes metadata, display order, tools, workflow highlights, editable details, draft state, an optional cover-image path, and the Markdown case study. Each save commits directly to `main`, triggering the normal Vercel deployment.
 
 The repo header carries a deploy-status pill (`/api/studio/status`, session-guarded). Every build writes `dist/content-manifest.json` with its commit SHA, so the Studio can compare repo `main` against what's actually deployed: **Live** (SHAs match), **Behind** (Vercel hasn't finished), **Deploying…** / **Failed** (only when the optional `VERCEL_TOKEN` + `VERCEL_PROJECT_ID` variables are set — plus `VERCEL_TEAM_ID` for team projects). It refreshes after every save or delete, polls every 30 seconds, and the pill opens a popover with the repo SHA, latest content commit, deployed SHA and build time.
 

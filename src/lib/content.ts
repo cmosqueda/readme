@@ -13,7 +13,7 @@ export interface ProjectData {
   description: string;
   tools: string[];
   workflow: string[];
-  stats: { label: string; value: string }[];
+  details: { label: string; value: string }[];
   order: number;
   coverImage?: string;
   draft: boolean;
@@ -64,7 +64,7 @@ const projects: ProjectData[] = Object.entries(projectFiles)
       description: data.description ?? "",
       tools: data.tools ?? [],
       workflow: data.workflow ?? [],
-      stats: data.stats ?? [],
+      details: data.details ?? [],
       order: data.order ?? 0,
       coverImage: data.coverImage,
       draft: data.draft === true,

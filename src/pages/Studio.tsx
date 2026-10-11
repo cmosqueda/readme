@@ -55,7 +55,7 @@ type Project = {
   description: string;
   tools: string[];
   workflow: string[];
-  stats: { label: string; value: string }[];
+  details: { label: string; value: string }[];
   order: number;
   body: string;
   draft?: boolean;
@@ -112,7 +112,7 @@ const blankProject = (): Project => ({
   description: "",
   tools: [],
   workflow: [],
-  stats: [{ label: "", value: "" }],
+  details: [{ label: "", value: "" }],
   order: 0,
   body: "",
   draft: true,
@@ -489,21 +489,21 @@ export default function Studio() {
           </div>
         </header>
 
-        {/* ── Stat strip ────────────────────────────────────── */}
-        <div className="studio-stats" role="status">
-          <div className="github-info-card studio-stat">
+        {/* ── Workspace summary ─────────────────────────────── */}
+        <div className="studio-summary" role="status">
+          <div className="github-info-card studio-summary-item">
             <span className="github-muted">Total</span>
             <strong>{totalCount}</strong>
           </div>
-          <div className="github-info-card studio-stat">
+          <div className="github-info-card studio-summary-item">
             <span className="github-muted">Drafts</span>
             <strong>{draftCount}</strong>
           </div>
-          <div className="github-info-card studio-stat">
+          <div className="github-info-card studio-summary-item">
             <span className="github-muted">Published</span>
             <strong>{totalCount - draftCount}</strong>
           </div>
-          <div className="github-info-card studio-stat studio-stat-wide">
+          <div className="github-info-card studio-summary-item studio-summary-wide">
             <FileCode2 size={14} />
             <span className="github-muted">{isBlogs ? "content/blogs/*.md" : "content/projects/*.md"}</span>
           </div>
@@ -1386,10 +1386,10 @@ function ProjectEditor({
     setProject({ ...project, title: value });
   };
 
-  const updateStat = (index: number, key: "label" | "value", value: string) =>
+  const updateDetail = (index: number, key: "label" | "value", value: string) =>
     update(
-      "stats",
-      project.stats.map((stat, i) => (i === index ? { ...stat, [key]: value } : stat)),
+      "details",
+      project.details.map((detail, i) => (i === index ? { ...detail, [key]: value } : detail)),
     );
 
   return (
@@ -1522,40 +1522,40 @@ function ProjectEditor({
 
           <div className="studio-section">
             <h3>
-              <BookMarked size={14} /> Stats
+              <BookMarked size={14} /> Details
               <button
-                onClick={() => update("stats", [...project.stats, { label: "", value: "" }])}
+                onClick={() => update("details", [...project.details, { label: "", value: "" }])}
                 className="github-button studio-mini-btn"
                 type="button"
               >
                 <Plus size={13} /> Add
               </button>
             </h3>
-            <div className="studio-stats-edit">
-              {project.stats.map((stat, index) => (
-                <div key={index} className="studio-stat-row">
+            <div className="studio-details-edit">
+              {project.details.map((detail, index) => (
+                <div key={index} className="studio-detail-row">
                   <input
                     className={inputCls}
-                    value={stat.label}
+                    value={detail.label}
                     placeholder="Label"
-                    onChange={(e) => updateStat(index, "label", e.target.value)}
+                    onChange={(e) => updateDetail(index, "label", e.target.value)}
                   />
                   <input
                     className={inputCls}
-                    value={stat.value}
+                    value={detail.value}
                     placeholder="Value"
-                    onChange={(e) => updateStat(index, "value", e.target.value)}
+                    onChange={(e) => updateDetail(index, "value", e.target.value)}
                   />
                   <button
                     onClick={() =>
                       update(
-                        "stats",
-                        project.stats.filter((_, i) => i !== index),
+                        "details",
+                        project.details.filter((_, i) => i !== index),
                       )
                     }
-                    disabled={project.stats.length === 1}
+                    disabled={project.details.length === 1}
                     className="github-icon-button"
-                    aria-label="Remove statistic"
+                    aria-label="Remove detail"
                     type="button"
                   >
                     <Trash2 size={14} />

@@ -61,12 +61,12 @@ const projects = await getEntries("projects");
 for (const entry of projects) {
   const { data } = entry;
   const label = validateCommon(entry);
-  requireFields(data, ["title", "category", "role", "status", "description", "tools", "workflow", "stats"], label);
+  requireFields(data, ["title", "category", "role", "status", "description", "tools", "workflow", "details"], label);
 
   if (present(data.tools) && !validTextList(data.tools)) errors.push(`${label}: tools must be a non-empty list of text values.`);
   if (present(data.workflow) && !validTextList(data.workflow)) errors.push(`${label}: workflow must be a non-empty list of text values.`);
-  if (present(data.stats) && (!Array.isArray(data.stats) || data.stats.length === 0 || data.stats.some((stat) => !stat || typeof stat.label !== "string" || !stat.label.trim() || typeof stat.value !== "string" || !stat.value.trim()))) {
-    errors.push(`${label}: stats must be a non-empty list of label/value pairs.`);
+  if (present(data.details) && (!Array.isArray(data.details) || data.details.length === 0 || data.details.some((detail) => !detail || typeof detail.label !== "string" || !detail.label.trim() || typeof detail.value !== "string" || !detail.value.trim()))) {
+    errors.push(`${label}: details must be a non-empty list of label/value pairs.`);
   }
   if (present(data.order) && (!Number.isInteger(data.order) || data.order < 0)) errors.push(`${label}: order must be a whole number greater than or equal to zero.`);
 }
