@@ -25,6 +25,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useBlocker, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ThemeToggle from "../components/ThemeToggle";
@@ -209,35 +210,40 @@ export default function Studio() {
     return () => clearInterval(timer);
   }, [login]);
 
+  // Throws on failure so callers (Save button, unsaved-changes dialog)
+  // can decide whether to proceed.
+  const persistPost = async (post: Post) => {
+    if (!post.title.trim() || !post.slug.trim()) {
+      throw new Error("Title and slug are required before saving.");
+    }
+    // originalSlug lets the API tell an in-place update apart from a
+    // deliberate rename (slug field edited on an existing file).
+    const originalPost = post.sha
+      ? posts.find((p) => p.sha === post.sha)
+      : undefined;
+    const saveResult = await request("/api/studio/blogs", {
+      method: "PUT",
+      body: JSON.stringify({
+        slug: post.slug,
+        originalSlug: originalPost?.slug ?? post.slug,
+        data: post,
+        body: post.body,
+        sha: post.sha,
+      }),
+    });
+    await load();
+    setEditingPost(null);
+    setPreview(false);
+    if (saveResult?.warning) setError(saveResult.warning);
+    void refreshDeploy();
+  };
+
   const savePost = async () => {
     if (!editingPost || busy) return;
-    if (!editingPost.title.trim() || !editingPost.slug.trim()) {
-      setError("Title and slug are required before saving.");
-      return;
-    }
     setBusy(true);
     setError("");
     try {
-      // originalSlug lets the API tell an in-place update apart from a
-      // deliberate rename (slug field edited on an existing file).
-      const originalPost = editingPost.sha
-        ? posts.find((p) => p.sha === editingPost.sha)
-        : undefined;
-      const saveResult = await request("/api/studio/blogs", {
-        method: "PUT",
-        body: JSON.stringify({
-          slug: editingPost.slug,
-          originalSlug: originalPost?.slug ?? editingPost.slug,
-          data: editingPost,
-          body: editingPost.body,
-          sha: editingPost.sha,
-        }),
-      });
-      await load();
-      setEditingPost(null);
-      setPreview(false);
-      if (saveResult?.warning) setError(saveResult.warning);
-      void refreshDeploy();
+      await persistPost(editingPost);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save.");
     } finally {
@@ -245,33 +251,36 @@ export default function Studio() {
     }
   };
 
+  const persistProject = async (project: Project) => {
+    if (!project.title.trim() || !project.slug.trim()) {
+      throw new Error("Project title and slug are required before saving.");
+    }
+    const originalProject = project.sha
+      ? projects.find((p) => p.sha === project.sha)
+      : undefined;
+    const projectResult = await request("/api/studio/projects", {
+      method: "PUT",
+      body: JSON.stringify({
+        slug: project.slug,
+        originalSlug: originalProject?.slug ?? project.slug,
+        data: project,
+        body: project.body,
+        sha: project.sha,
+      }),
+    });
+    await load();
+    setEditingProject(null);
+    setPreview(false);
+    if (projectResult?.warning) setError(projectResult.warning);
+    void refreshDeploy();
+  };
+
   const saveProject = async () => {
     if (!editingProject || busy) return;
-    if (!editingProject.title.trim() || !editingProject.slug.trim()) {
-      setError("Project title and slug are required before saving.");
-      return;
-    }
     setBusy(true);
     setError("");
     try {
-      const originalProject = editingProject.sha
-        ? projects.find((p) => p.sha === editingProject.sha)
-        : undefined;
-      const projectResult = await request("/api/studio/projects", {
-        method: "PUT",
-        body: JSON.stringify({
-          slug: editingProject.slug,
-          originalSlug: originalProject?.slug ?? editingProject.slug,
-          data: editingProject,
-          body: editingProject.body,
-          sha: editingProject.sha,
-        }),
-      });
-      await load();
-      setEditingProject(null);
-      setPreview(false);
-      if (projectResult?.warning) setError(projectResult.warning);
-      void refreshDeploy();
+      await persistProject(editingProject);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save.");
     } finally {
@@ -328,19 +337,161 @@ export default function Studio() {
     return () => document.removeEventListener("keydown", onKey);
   }, [pendingDelete, busy]);
 
-  const selectWorkspace = (next: Workspace) => {
-    setWorkspace(next);
+  /* ── Unsaved-changes guard ────────────────────────────────
+     baselineRef snapshots the item when its editor opens; any deviation
+     means unsaved work. guardNav() wraps every in-studio exit (tabs, file
+     select, new entry, sign-out) and useBlocker covers router exits. */
+  const baselineRef = useRef<string | null>(null);
+  const pendingNavRef = useRef<null | (() => void | Promise<void>)>(null);
+  const [unsavedOpen, setUnsavedOpen] = useState(false);
+  const unsavedOpenRef = useRef(false);
+  unsavedOpenRef.current = unsavedOpen;
+
+  const activeItem: Post | Project | null =
+    workspace === "blogs" ? editingPost : editingProject;
+  const dirty =
+    activeItem !== null && baselineRef.current !== null
+      ? JSON.stringify(activeItem) !== baselineRef.current
+      : false;
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
+
+  const guardNav = (action: () => void | Promise<void>) => {
+    if (!dirtyRef.current || busy) {
+      void action();
+      return;
+    }
+    pendingNavRef.current = action;
+    setUnsavedOpen(true);
+  };
+
+  const blocker = useBlocker(dirty || unsavedOpen);
+  const blockerRef = useRef(blocker);
+  blockerRef.current = blocker;
+  const navigate = useNavigate();
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
+
+  useEffect(() => {
+    // Router exit (portfolio links, back button). Ignored while the dialog
+    // is already open for an in-studio exit — dismissing handles the reset.
+    if (blocker.state === "blocked" && !unsavedOpenRef.current) {
+      const dest = `${blocker.location.pathname}${blocker.location.search}${blocker.location.hash}`;
+      pendingNavRef.current = () => {
+        const current = blockerRef.current;
+        if (current.state === "blocked") current.proceed();
+        else navigateRef.current(dest);
+      };
+      setUnsavedOpen(true);
+    }
+  }, [blocker]);
+
+  // Page refresh / tab close: browsers only allow the native prompt here.
+  useEffect(() => {
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (dirtyRef.current) event.preventDefault();
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, []);
+
+  useEffect(() => {
+    if (!unsavedOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) {
+        blockerRef.current.reset?.();
+        pendingNavRef.current = null;
+        setUnsavedOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [unsavedOpen, busy]);
+
+  const cancelUnsaved = () => {
+    if (busy) return;
+    blockerRef.current.reset?.();
+    pendingNavRef.current = null;
+    setUnsavedOpen(false);
+  };
+
+  const discardUnsaved = () => {
+    if (busy) return;
+    const action = pendingNavRef.current;
+    pendingNavRef.current = null;
+    setUnsavedOpen(false);
+    void action?.();
+  };
+
+  const saveDraftAndContinue = async () => {
+    if (busy) return;
+    const flaggedPost =
+      editingPost !== null ? { ...editingPost, draft: true } : null;
+    const flaggedProject =
+      editingPost === null && editingProject !== null
+        ? { ...editingProject, draft: true }
+        : null;
+    if (!flaggedPost && !flaggedProject) {
+      cancelUnsaved();
+      return;
+    }
+    setBusy(true);
     setError("");
-    setQuery("");
-    setStatusFilter("all");
+    try {
+      if (flaggedPost) await persistPost(flaggedPost);
+      else if (flaggedProject) await persistProject(flaggedProject);
+      // The blocker is still engaged (dialog open), so a router
+      // destination proceeds; in-studio actions just run.
+      const action = pendingNavRef.current;
+      pendingNavRef.current = null;
+      setUnsavedOpen(false);
+      void action?.();
+    } catch (caught) {
+      // Keep the dialog open so no work is lost; the error shows behind it.
+      setError(caught instanceof Error ? caught.message : "Could not save.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const selectWorkspace = (next: Workspace) => {
+    guardNav(() => {
+      setWorkspace(next);
+      setError("");
+      setQuery("");
+      setStatusFilter("all");
+      setPreview(false);
+    });
+  };
+
+  const openPost = (post: Post) => {
+    setEditingPost(post);
+    baselineRef.current = JSON.stringify(post);
     setPreview(false);
+    setError("");
+  };
+
+  const openProject = (project: Project) => {
+    setEditingProject(project);
+    baselineRef.current = JSON.stringify(project);
+    setPreview(false);
+    setError("");
   };
 
   const newEntry = () => {
-    setError("");
-    setPreview(false);
-    if (workspace === "blogs") setEditingPost(blankPost());
-    else setEditingProject(blankProject());
+    guardNav(() => {
+      setError("");
+      setPreview(false);
+      if (workspace === "blogs") {
+        const fresh = blankPost();
+        setEditingPost(fresh);
+        baselineRef.current = JSON.stringify(fresh);
+      } else {
+        const fresh = blankProject();
+        setEditingProject(fresh);
+        baselineRef.current = JSON.stringify(fresh);
+      }
+    });
   };
 
   const filteredPosts = useMemo(() => {
@@ -430,12 +581,12 @@ export default function Studio() {
       {/* ── Top bar ─────────────────────────────────────────── */}
       <div className="github-topbar">
         <div className="github-topbar-inner studio-topbar">
-          <a href="/" className="github-wordmark" aria-label="Back to portfolio">
+          <Link to="/" className="github-wordmark" aria-label="Back to portfolio">
             <span className="github-mark">◉</span>
             <span className="studio-crumb">
               cmosqueda <span>/</span> <strong>studio</strong>
             </span>
-          </a>
+          </Link>
           <nav className="github-tabs studio-tabs" aria-label="Studio workspaces">
             <button
               onClick={() => selectWorkspace("blogs")}
@@ -458,8 +609,10 @@ export default function Studio() {
             <ProfileMenu
               login={login}
               onSignOut={async () => {
-                await request("/api/studio/session", { method: "DELETE" });
-                setLogin(null);
+                guardNav(async () => {
+                  await request("/api/studio/session", { method: "DELETE" });
+                  setLogin(null);
+                });
               }}
             />
           </div>
@@ -579,11 +732,7 @@ export default function Studio() {
                   filteredPosts.map((post) => (
                     <button
                       key={post.slug}
-                      onClick={() => {
-                        setEditingPost(post);
-                        setPreview(false);
-                        setError("");
-                      }}
+                      onClick={() => guardNav(() => openPost(post))}
                       className={`studio-file ${activeSlug === post.slug ? "studio-file-active" : ""}`}
                     >
                       <span className="studio-file-icon">
@@ -609,13 +758,9 @@ export default function Studio() {
                 />
               ) : (
                 filteredProjects.map((project) => (
-                  <button
-                    key={project.slug}
-                    onClick={() => {
-                      setEditingProject(project);
-                      setPreview(false);
-                      setError("");
-                    }}
+                    <button
+                      key={project.slug}
+                      onClick={() => guardNav(() => openProject(project))}
                     className={`studio-file ${activeSlug === project.slug ? "studio-file-active" : ""}`}
                   >
                     <span className="studio-file-icon">
@@ -682,7 +827,7 @@ export default function Studio() {
           <span>
             studio · commits as <strong>{login}</strong> to branch <code>main</code>
           </span>
-          <a href="/">← back to portfolio</a>
+          <Link to="/">← back to portfolio</Link>
         </footer>
       </div>
 
@@ -732,6 +877,73 @@ export default function Studio() {
               >
                 <Trash2 size={14} aria-hidden="true" />
                 {busy ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {unsavedOpen && (
+        <div
+          className="studio-modal-overlay"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) cancelUnsaved();
+          }}
+        >
+          <div
+            className="studio-modal"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="studio-unsaved-title"
+            aria-describedby="studio-unsaved-desc"
+          >
+            <span
+              className="studio-modal-icon studio-modal-icon-warn"
+              aria-hidden="true"
+            >
+              <TriangleAlert size={18} />
+            </span>
+            <h2 id="studio-unsaved-title">Unsaved changes</h2>
+            <p id="studio-unsaved-desc">
+              <strong>
+                {(activeItem?.title ?? "").trim() ||
+                  activeItem?.slug ||
+                  "Untitled"}
+              </strong>
+              <span>
+                Your draft {workspace === "blogs" ? "article" : "project"} is
+                not saved yet. Do you want to save it as a draft first?
+                Discarding will lose all your temporary changes.
+              </span>
+            </p>
+            <div className="studio-modal-actions">
+              <button
+                type="button"
+                className="github-button"
+                onClick={cancelUnsaved}
+                disabled={busy}
+                autoFocus
+              >
+                Keep editing
+              </button>
+              <button
+                type="button"
+                className="github-btn-danger-outline"
+                onClick={discardUnsaved}
+                disabled={busy}
+              >
+                Discard changes
+              </button>
+              <button
+                type="button"
+                className="github-btn-primary"
+                onClick={() => {
+                  void saveDraftAndContinue();
+                }}
+                disabled={busy}
+              >
+                <Save size={14} aria-hidden="true" />
+                {busy ? "Saving…" : "Save as draft"}
               </button>
             </div>
           </div>
