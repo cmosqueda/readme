@@ -9,10 +9,12 @@ import {
   FileCode2,
   FilePlus2,
   FolderKanban,
+  Loader2,
   LogOut,
   Newspaper,
   Pencil,
   Plus,
+  RefreshCw,
   Save,
   Search,
   Trash2,
@@ -60,6 +62,32 @@ type Project = {
 
 type Workspace = "blogs" | "projects";
 type StatusFilter = "all" | "published" | "draft";
+
+type DeployInfo = {
+  head: { sha: string; short: string } | null;
+  contentCommit: {
+    sha: string;
+    short: string;
+    message: string;
+    date: string | null;
+  } | null;
+  deployed: {
+    commit: string | null;
+    short: string | null;
+    builtAt: string | null;
+  } | null;
+  manifestError: string | null;
+  vercel: {
+    configured?: boolean;
+    state?: string;
+    commit?: string | null;
+    url?: string | null;
+    createdAt?: string | null;
+    error?: string;
+  } | null;
+  inSync: boolean;
+  checkedAt: string;
+} | null;
 
 const blankPost = (): Post => ({
   slug: "",
@@ -128,6 +156,25 @@ export default function Studio() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [preview, setPreview] = useState(false);
+  const [deploy, setDeploy] = useState<DeployInfo>(null);
+  const [deployState, setDeployState] = useState<"idle" | "checking" | "error">(
+    "idle",
+  );
+  const deployBusy = useRef(false);
+
+  const refreshDeploy = async () => {
+    if (deployBusy.current) return;
+    deployBusy.current = true;
+    setDeployState("checking");
+    try {
+      setDeploy(await request("/api/studio/status"));
+      setDeployState("idle");
+    } catch {
+      setDeployState("error");
+    } finally {
+      deployBusy.current = false;
+    }
+  };
 
   const load = async () => {
     try {
@@ -158,6 +205,15 @@ export default function Studio() {
     void load();
   }, []);
 
+  useEffect(() => {
+    if (!login) return;
+    void refreshDeploy();
+    const timer = setInterval(() => {
+      void refreshDeploy();
+    }, 30000);
+    return () => clearInterval(timer);
+  }, [login]);
+
   const savePost = async () => {
     if (!editingPost || busy) return;
     if (!editingPost.title.trim() || !editingPost.slug.trim()) {
@@ -179,6 +235,7 @@ export default function Studio() {
       await load();
       setEditingPost(null);
       setPreview(false);
+      void refreshDeploy();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save.");
     } finally {
@@ -207,6 +264,7 @@ export default function Studio() {
       await load();
       setEditingProject(null);
       setPreview(false);
+      void refreshDeploy();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save.");
     } finally {
@@ -233,6 +291,7 @@ export default function Studio() {
       if (type === "blogs") setEditingPost(null);
       else setEditingProject(null);
       setPreview(false);
+      void refreshDeploy();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not delete.");
     } finally {
@@ -404,6 +463,13 @@ export default function Studio() {
             </div>
           </div>
           <div className="studio-repohead-right">
+            <DeployStatus
+              deploy={deploy}
+              state={deployState}
+              onRefresh={() => {
+                void refreshDeploy();
+              }}
+            />
             <span className="github-badge">
               <span className="studio-dot" /> main
             </span>
@@ -687,6 +753,145 @@ function ProfileMenu({
             <LogOut size={15} />
             <span>Log out</span>
           </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeployStatus({
+  deploy,
+  state,
+  onRefresh,
+}: {
+  deploy: DeployInfo;
+  state: "idle" | "checking" | "error";
+  onRefresh: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (!wrapRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open ]);
+
+  const vercelState =
+    deploy?.vercel && "state" in deploy.vercel
+      ? (deploy.vercel.state ?? null)
+      : null;
+  const isDeploying = vercelState === "QUEUED" || vercelState === "BUILDING";
+  const isFailed =
+    (vercelState === "ERROR" || vercelState === "CANCELED") && !deploy?.inSync;
+
+  let tone: "live" | "deploying" | "behind" | "failed" | "unknown" = "unknown";
+  let label = "Unknown";
+  if (deploy?.inSync) {
+    tone = "live";
+    label = "Live";
+  } else if (isDeploying) {
+    tone = "deploying";
+    label = "Deploying…";
+  } else if (isFailed) {
+    tone = "failed";
+    label = "Failed";
+  } else if (deploy && deploy.deployed) {
+    tone = "behind";
+    label = "Behind";
+  } else if (state === "checking") {
+    tone = "deploying";
+    label = "Checking…";
+  } else if (state === "error") {
+    tone = "unknown";
+    label = "Unknown";
+  }
+
+  const formatTime = (iso: string | null) => {
+    if (!iso) return "—";
+    const date = new Date(iso);
+    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString();
+  };
+
+  return (
+    <div className="studio-deploy" ref={wrapRef}>
+      <button
+        type="button"
+        className={`github-badge studio-deploy-pill studio-deploy-${tone}`}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        title="Compare the deployed site against repo HEAD"
+      >
+        {state === "checking" ? (
+          <Loader2 size={11} className="studio-spin" aria-hidden="true" />
+        ) : (
+          <span
+            className={`studio-dot studio-deploy-dot studio-dot-${tone}`}
+            aria-hidden="true"
+          />
+        )}
+        {label}
+      </button>
+      {open && (
+        <div className="studio-deploy-pop" role="dialog" aria-label="Deploy status">
+          <p className="studio-deploy-head">Deploy status</p>
+          <dl className="studio-deploy-rows">
+            <div>
+              <dt>Repo main</dt>
+              <dd>{deploy?.head?.short ?? "—"}</dd>
+            </div>
+            <div>
+              <dt>Latest content change</dt>
+              <dd title={deploy?.contentCommit?.message ?? ""}>
+                {deploy?.contentCommit
+                  ? `${deploy.contentCommit.short} · ${deploy.contentCommit.message || "(no message)"}`
+                  : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt>Deployed site</dt>
+              <dd>
+                {deploy?.deployed?.short ??
+                  deploy?.manifestError ??
+                  "No build yet"}
+              </dd>
+            </div>
+            <div>
+              <dt>Deployed at</dt>
+              <dd>{formatTime(deploy?.deployed?.builtAt ?? null)}</dd>
+            </div>
+            <div>
+              <dt>Vercel</dt>
+              <dd>
+                {vercelState ??
+                  deploy?.vercel?.error ??
+                  "Not connected"}
+              </dd>
+            </div>
+          </dl>
+          <div className="studio-deploy-foot">
+            <span className="github-muted">
+              Checked {formatTime(deploy?.checkedAt ?? null)}
+            </span>
+            <button
+              type="button"
+              className="github-button studio-mini-btn"
+              onClick={onRefresh}
+            >
+              <RefreshCw size={13} /> Refresh
+            </button>
+          </div>
         </div>
       )}
     </div>

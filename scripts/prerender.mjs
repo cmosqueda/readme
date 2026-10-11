@@ -142,3 +142,12 @@ const sitemapEntries = [
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries.map(({ pathname, lastmod }) => `  <url><loc>${siteUrl}${pathname}</loc><lastmod>${lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
 await writeFile(path.join(dist, "sitemap.xml"), sitemap);
+
+// Deployment fingerprint for the Studio status checker: the commit this
+// build was made from (Vercel injects VERCEL_GIT_COMMIT_SHA automatically)
+// so /studio can tell whether the deployed site already includes repo HEAD.
+const manifest = {
+  commit: process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA ?? null,
+  builtAt: new Date().toISOString(),
+};
+await writeFile(path.join(dist, "content-manifest.json"), `${JSON.stringify(manifest)}\n`);

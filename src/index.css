@@ -706,6 +706,25 @@
 .studio-repohead-right .github-badge, .studio-signin .github-badge, .studio-doc-file .github-badge, .studio-file .github-badge { display: inline-flex; align-items: center; justify-content: center; gap: .32rem; line-height: 1; }
 .studio-dot { width: .55rem; height: .55rem; flex-shrink: 0; border-radius: 50%; background: var(--gh-success); display: inline-block; align-self: center; }
 .studio-dot-draft { background: var(--gh-attention); }
+.studio-spin { animation: studio-spin 1s linear infinite; }
+@keyframes studio-spin { to { transform: rotate(360deg); } }
+.studio-deploy { position: relative; }
+.studio-deploy-pill { cursor: pointer; font-weight: 700; }
+.studio-deploy-live { color: var(--gh-success); border-color: color-mix(in srgb, var(--gh-success) 45%, var(--gh-border)); }
+.studio-deploy-deploying, .studio-deploy-behind { color: var(--gh-attention); border-color: color-mix(in srgb, var(--gh-attention) 45%, var(--gh-border)); }
+.studio-deploy-failed { color: var(--gh-danger); border-color: color-mix(in srgb, var(--gh-danger) 50%, var(--gh-border)); }
+.studio-deploy-unknown { color: var(--gh-muted); }
+.studio-dot-live { background: var(--gh-success); }
+.studio-dot-deploying, .studio-dot-behind { background: var(--gh-attention); animation: studio-pulse 1.2s ease-in-out infinite; }
+.studio-dot-failed { background: var(--gh-danger); }
+.studio-dot-unknown { background: var(--gh-muted); }
+.studio-deploy-pop { position: absolute; right: 0; top: calc(100% + .6rem); z-index: 70; width: max-content; max-width: min(20rem, calc(100vw - 2rem)); border: 1px solid var(--gh-border); border-radius: 8px; background: var(--gh-canvas); box-shadow: 0 8px 24px rgb(31 35 40 / .16); padding: .8rem .9rem; animation: studio-menu-in .14s ease; }
+.studio-deploy-head { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gh-muted); margin-bottom: .55rem; }
+.studio-deploy-rows { display: grid; gap: .5rem; }
+.studio-deploy-rows > div { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: .6rem; font-size: .74rem; }
+.studio-deploy-rows dt { color: var(--gh-muted); }
+.studio-deploy-rows dd { color: var(--gh-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+.studio-deploy-foot { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: .7rem; padding-top: .7rem; border-top: 1px solid var(--gh-border); font-size: .7rem; }
 
 .studio-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 2fr); gap: .6rem; margin: 1.25rem 0; }
 .studio-stat { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem .9rem; font-size: .78rem; }
@@ -742,6 +761,7 @@
 .studio-badge-draft { color: var(--gh-attention); border-color: color-mix(in srgb, var(--gh-attention) 45%, var(--gh-border)); }
 .studio-badge-live { color: var(--gh-success); border-color: color-mix(in srgb, var(--gh-success) 45%, var(--gh-border)); }
 .studio-badge-live svg { display: block; flex-shrink: 0; align-self: center; }
+.studio-deploy-pill svg { display: block; flex-shrink: 0; align-self: center; }
 .studio-files-new { width: calc(100% - 1.5rem); margin: .75rem; justify-content: center; display: inline-flex; align-items: center; gap: .45rem; padding: .55rem; font-size: .8rem; font-weight: 600; }
 .studio-file-empty { padding: 2rem 1.25rem; text-align: center; display: grid; gap: .5rem; justify-items: center; color: var(--gh-text); }
 .studio-file-empty p { font-size: .78rem; }
