@@ -342,6 +342,10 @@ export default function Studio() {
      means unsaved work. guardNav() wraps every in-studio exit (tabs, file
      select, new entry, sign-out) and useBlocker covers router exits. */
   const baselineRef = useRef<string | null>(null);
+  // Object twin of baselineRef so Discard can restore content, not just
+  // close the dialog (otherwise the dirty editor survives and the guard
+  // fires again on the very next exit).
+  const baselineItemRef = useRef<Post | Project | null>(null);
   type PendingNav =
     | { kind: "studio"; run: () => void | Promise<void> }
     | { kind: "router"; run: () => void; dest: string };
@@ -441,6 +445,9 @@ export default function Studio() {
     const pending = pendingNavRef.current;
     pendingNavRef.current = null;
     setUnsavedOpen(false);
+    // Revert first: abandoning edits must leave a clean editor behind,
+    // otherwise the guard refires on the next exit and the dialog persists.
+    revertToBaseline();
     try {
       if (pending?.kind === "router") {
         // Router exits must proceed, never reset-then-run (reset would
@@ -510,6 +517,7 @@ export default function Studio() {
   const openPost = (post: Post) => {
     setEditingPost(post);
     baselineRef.current = JSON.stringify(post);
+    baselineItemRef.current = post;
     setPreview(false);
     setError("");
   };
@@ -517,6 +525,7 @@ export default function Studio() {
   const openProject = (project: Project) => {
     setEditingProject(project);
     baselineRef.current = JSON.stringify(project);
+    baselineItemRef.current = project;
     setPreview(false);
     setError("");
   };
@@ -529,12 +538,30 @@ export default function Studio() {
         const fresh = blankPost();
         setEditingPost(fresh);
         baselineRef.current = JSON.stringify(fresh);
+        baselineItemRef.current = fresh;
       } else {
         const fresh = blankProject();
         setEditingProject(fresh);
         baselineRef.current = JSON.stringify(fresh);
+        baselineItemRef.current = fresh;
       }
     });
+  };
+
+  // Abandon unsaved edits: existing files revert to their last-saved
+  // snapshot, brand-new entries close outright.
+  const revertToBaseline = () => {
+    const snapshot = baselineItemRef.current;
+    const restored = snapshot
+      ? (JSON.parse(JSON.stringify(snapshot)) as Post & Project)
+      : null;
+    if (workspace === "blogs") {
+      setEditingPost(restored && restored.sha ? (restored as Post) : null);
+    } else {
+      setEditingProject(
+        restored && restored.sha ? (restored as Project) : null,
+      );
+    }
   };
 
   const filteredPosts = useMemo(() => {
