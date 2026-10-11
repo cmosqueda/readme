@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import BlogPostPage from "./components/BlogPostPage";
 import ProjectPage from "./components/ProjectPage";
+import Studio from "./pages/Studio";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         {/* Dynamic routing matching individual markdown logs */}
         <Route path="/blogs/:slug" element={<BlogPostPage />} />
         <Route path="/projects/:slug" element={<ProjectPage />} />
+        <Route path="/studio" element={<Studio />} />
       </Routes>
     </BrowserRouter>
   );

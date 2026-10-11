@@ -31,3 +31,31 @@ collections:
       - { label: Updated date, name: updatedAt, widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
       - { label: Save as draft, name: draft, widget: boolean, default: false, required: false, hint: "Drafts are committed but are not published to the portfolio or sitemap." }
       - { label: Article, name: body, widget: markdown }
+
+  - name: projects
+    label: Featured projects
+    label_singular: Featured project
+    folder: src/content/projects
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    preview_path: "projects/{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Category, name: category, widget: string, hint: "For example: EdTech • AI Validation" }
+      - { label: Your role, name: role, widget: string }
+      - { label: Status, name: status, widget: select, options: [Planning, In progress, Stable, Completed, Archived] }
+      - { label: Short description, name: description, widget: text }
+      - { label: Display order, name: order, widget: number, value_type: int, min: 0, default: 0, hint: "Lower numbers appear first." }
+      - { label: Tools, name: tools, widget: list, field: { label: Tool, name: tool, widget: string } }
+      - { label: Workflow highlights, name: workflow, widget: list, field: { label: Highlight, name: highlight, widget: string } }
+      - label: Project statistics
+        name: stats
+        widget: list
+        fields:
+          - { label: Label, name: label, widget: string }
+          - { label: Value, name: value, widget: string }
+      - { label: Cover image, name: coverImage, widget: image, required: false }
+      - { label: Save as draft, name: draft, widget: boolean, default: false, required: false, hint: "Drafts are committed but are not published to the portfolio or sitemap." }
+      - { label: Case study, name: body, widget: markdown }

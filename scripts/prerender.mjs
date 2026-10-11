@@ -90,8 +90,9 @@ async function writePage(relativePath, html) {
 }
 
 const template = await readFile(path.join(dist, "index.html"), "utf8");
-const [allBlogs, projects] = await Promise.all([getContent("blogs"), getContent("projects")]);
+const [allBlogs, allProjects] = await Promise.all([getContent("blogs"), getContent("projects")]);
 const blogs = allBlogs.filter((blog) => blog.draft !== true);
+const projects = allProjects.filter((project) => project.draft !== true);
 const person = {
   "@type": "Person", "@id": `${siteUrl}/#person`, name: "Christine Mosqueda",
   alternateName: ["Tine Mosqueda", "Rocket Puncher", "Christine Reisa Mosqueda", "cmosqueda"],
@@ -125,10 +126,11 @@ for (const blog of blogs) {
 
 for (const project of projects) {
   const pathname = `/projects/${project.slug}`;
-  const schema = { "@context": "https://schema.org", "@type": "CreativeWork", name: project.title, description: project.description, author: person, url: `${siteUrl}${pathname}`, image: `${siteUrl}/og-image.png`, keywords: project.tools };
+  const image = project.coverImage ? `${siteUrl}${project.coverImage}` : `${siteUrl}/og-image.png`;
+  const schema = { "@context": "https://schema.org", "@type": "CreativeWork", name: project.title, description: project.description, author: person, url: `${siteUrl}${pathname}`, image, keywords: project.tools };
   await writePage(path.join("projects", project.slug), pageHtml(template, {
     title: `${project.title} Case Study | Christine Mosqueda`, description: project.description, pathname,
-    body: `<main><article><p>Case study by <a href="/">Christine Mosqueda</a> · ${escapeHtml(project.category)}</p><h1>${escapeHtml(project.title)}</h1><p>${escapeHtml(project.description)}</p><h2>Role</h2><p>${escapeHtml(project.role)}</p>${markdownToHtml(project.content)}</article></main>`, schema,
+    body: `<main><article><p>Case study by <a href="/">Christine Mosqueda</a> · ${escapeHtml(project.category)}</p><h1>${escapeHtml(project.title)}</h1><p>${escapeHtml(project.description)}</p>${project.coverImage ? `<img src="${escapeHtml(project.coverImage)}" alt="" />` : ""}<h2>Role</h2><p>${escapeHtml(project.role)}</p>${markdownToHtml(project.content)}</article></main>`, schema,
   }));
 }
 

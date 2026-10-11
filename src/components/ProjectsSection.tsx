@@ -31,6 +31,13 @@ function ProjectCard({ project }: { project: ProjectData }) {
       <Link to={`/projects/${project.slug}`} className="github-repo-card group relative block h-full p-5 text-left outline-none">
         <div className="flex h-full flex-col">
           <div className="min-w-0 flex-1 space-y-4">
+            {project.coverImage && (
+              <img
+                src={project.coverImage}
+                alt=""
+                className="aspect-[2/1] w-full rounded-lg border border-[color:var(--md-outline-variant)] object-cover"
+              />
+            )}
             <div className="flex items-center justify-between gap-3">
               <span className="github-repo-name">⌘ {project.title}</span>
               <span className="github-badge">{project.status}</span>

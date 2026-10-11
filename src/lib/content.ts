@@ -15,6 +15,8 @@ export interface ProjectData {
   workflow: string[];
   stats: { label: string; value: string }[];
   order: number;
+  coverImage?: string;
+  draft: boolean;
   content: string;
 }
 
@@ -64,9 +66,12 @@ const projects: ProjectData[] = Object.entries(projectFiles)
       workflow: data.workflow ?? [],
       stats: data.stats ?? [],
       order: data.order ?? 0,
+      coverImage: data.coverImage,
+      draft: data.draft === true,
       content,
     };
   })
+  .filter((project) => !project.draft)
   .sort((a, b) => a.order - b.order);
 
 const blogPosts: BlogPost[] = Object.entries(blogFiles)

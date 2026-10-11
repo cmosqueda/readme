@@ -22,6 +22,7 @@ export default function ProjectPage() {
         <p className="github-muted mt-3 text-xs">Case study by Christine Mosqueda · {project.role}</p>
         <div className="mt-5 flex flex-wrap gap-2">{project.tools.map((tool) => <span className="github-topic" key={tool}>{tool}</span>)}</div>
       </div>
+      {project.coverImage && <img src={project.coverImage} alt="" className="mt-6 aspect-[2/1] w-full rounded-xl border border-[color:var(--md-outline-variant)] object-cover" />}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
         <article className="github-markdown github-file-content">
           <div className="github-file-bar"><span>▤</span><span>CASE_STUDY.md</span></div>
