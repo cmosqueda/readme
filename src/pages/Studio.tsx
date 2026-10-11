@@ -1,7 +1,9 @@
 import {
+  ArrowUp,
   BookMarked,
   BookOpen,
   Check,
+  ChevronDown,
   ChevronRight,
   Eye,
   FileCode2,
@@ -15,9 +17,10 @@ import {
   Search,
   Trash2,
   TriangleAlert,
+  UserRound,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ThemeToggle from "../components/ThemeToggle";
@@ -370,21 +373,13 @@ export default function Studio() {
             </button>
           </nav>
           <div className="studio-topbar-actions">
-            <ThemeToggle className="github-theme-toggle" />
-            <span className="studio-avatar" title={login}>
-              {login.slice(0, 1).toUpperCase()}
-            </span>
-            <button
-              className="github-icon-button studio-signout"
-              onClick={async () => {
+            <ProfileMenu
+              login={login}
+              onSignOut={async () => {
                 await request("/api/studio/session", { method: "DELETE" });
                 setLogin(null);
               }}
-              aria-label="Sign out"
-              title={`Sign out (${login})`}
-            >
-              <LogOut size={15} />
-            </button>
+            />
           </div>
         </div>
       </div>
@@ -620,6 +615,113 @@ export default function Studio() {
 
 /* ── Bits ─────────────────────────────────────────────────── */
 
+function ProfileMenu({
+  login,
+  onSignOut,
+}: {
+  login: string;
+  onSignOut: () => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (!wrapRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open ]);
+
+  return (
+    <div className="studio-profile" ref={wrapRef}>
+      <button
+        type="button"
+        className="studio-profile-btn"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={`Profile menu for ${login}`}
+        title={login}
+      >
+        <span className="studio-avatar" aria-hidden="true">
+          {login.slice(0, 1).toUpperCase()}
+        </span>
+        <ChevronDown
+          size={14}
+          className={`studio-profile-caret ${open ? "studio-profile-caret-open" : ""}`}
+        />
+      </button>
+      {open && (
+        <div className="studio-menu" role="menu" aria-label="Profile">
+          <div className="studio-menu-head">
+            <span className="studio-avatar studio-avatar-sm" aria-hidden="true">
+              <UserRound size={14} />
+            </span>
+            <span className="studio-menu-identity">
+              <strong>{login}</strong>
+              <span className="github-muted">Signed in</span>
+            </span>
+          </div>
+          <div className="studio-menu-row">
+            <span className="studio-menu-label">Appearance</span>
+            <ThemeToggle className="github-theme-toggle studio-menu-theme" />
+          </div>
+          <button
+            type="button"
+            role="menuitem"
+            className="studio-menu-row studio-menu-action"
+            onClick={() => {
+              setOpen(false);
+              void onSignOut();
+            }}
+          >
+            <LogOut size={15} />
+            <span>Log out</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PreviewBackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const toTop = () => {
+    const editor = document.querySelector(".studio-editor");
+    if (editor) editor.scrollIntoView({ behavior: "smooth", block: "start" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toTop}
+      aria-label="Back to top of preview"
+      className={`github-back-to-top studio-preview-top ${visible ? "studio-preview-top-visible" : ""}`}
+    >
+      <ArrowUp size={14} />
+      <span className="studio-preview-top-label">Back to top</span>
+    </button>
+  );
+}
+
 function StatusBadge({ draft }: { draft?: boolean }) {
   return draft ? (
     <span className="github-badge studio-badge-draft">
@@ -826,6 +928,7 @@ function BlogEditor({
               {post.body || "_Nothing to preview yet._"}
             </ReactMarkdown>
           </div>
+          <PreviewBackToTop />
         </div>
       ) : (
         <>
@@ -1004,6 +1107,7 @@ function ProjectEditor({
               {project.body || "_Nothing to preview yet._"}
             </ReactMarkdown>
           </div>
+          <PreviewBackToTop />
         </div>
       ) : (
         <>
