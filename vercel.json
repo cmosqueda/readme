@@ -8,10 +8,6 @@
     {
       "source": "/studio",
       "destination": "/"
-    },
-    {
-      "source": "/admin",
-      "destination": "/admin/index"
     }
   ],
   "headers": [
