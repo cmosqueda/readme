@@ -9,7 +9,7 @@ tags:
   - "Software Engineering"
   - "Scaling Solutions"
   - "System Architecture"
-draft: true
+draft: false
 ---
 
 ## What is system design?
