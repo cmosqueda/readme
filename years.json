@@ -1,0 +1,9 @@
+[
+  {"year": 2020, "totalContributions": 0, "activeDays": 0},
+  {"year": 2021, "totalContributions": 0, "activeDays": 0},
+  {"year": 2022, "totalContributions": 1, "activeDays": 1},
+  {"year": 2023, "totalContributions": 13, "activeDays": 6},
+  {"year": 2024, "totalContributions": 21, "activeDays": 11},
+  {"year": 2025, "totalContributions": 256, "activeDays": 80},
+  {"year": 2026, "totalContributions": 433, "activeDays": 114}
+]
