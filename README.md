@@ -19,12 +19,12 @@ New articles are saved in `src/content/blogs`; featured projects are saved in `s
 
 ## Custom Studio
 
-`/studio` is the portfolio-branded editor for blog articles. It uses the same GitHub OAuth App, but requires an additional callback URL of `https://cmosqueda.vercel.app/api/studio/callback` and these Vercel variables:
+`/studio` is the portfolio-branded editor for blog articles and featured projects. It uses the same GitHub OAuth App, but requires an additional callback URL of `https://cmosqueda.vercel.app/api/studio/callback` and these Vercel variables:
 
 - `CMS_ADMIN_GITHUB_LOGIN=cmosqueda`
 - `CMS_SESSION_SECRET` — a long, randomly generated secret
 
-The studio commits directly to `main`, so each saved article triggers the normal Vercel deployment. Decap remains available at `/admin` as a fallback during the transition.
+The Studio has separate **Articles** and **Projects** workspaces. Project editing includes metadata, display order, tools, workflow highlights, editable statistics, draft state, an optional cover-image path, and the Markdown case study. Each save commits directly to `main`, triggering the normal Vercel deployment. Decap remains available at `/admin` as a fallback during the transition.
 
 If the public site moves to a custom domain, update `CMS_SITE_URL`, the GitHub callback URL, and the `base_url` / `site_domain` values in `public/admin/config.yml` together.
 
