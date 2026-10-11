@@ -72,8 +72,4 @@ The result is a familiar editing experience without a separate database, migrati
 
 ## Outcome
 
-Portfolio CMS turns publishing into a focused content task rather than an IDE task. I can now draft, revise, and publish articles or projects from a single dashboard while preserving an auditable Git history and the Markdown workflow that already fits the portfolio.
-
-## Next Iterations
-
-The next improvements I would explore are media uploads and richer revision feedback. The foundation is intentionally lightweight: the content stays portable, the site stays database-free, and the publishing flow remains easy to understand.
+Portfolio CMS turns publishing into a focused content task rather than an IDE task. I can now draft, revise, and publish articles or projects from a single dashboard while preserving an auditable Git history and the Markdown workflow that already fits the portfolio. The foundation is intentionally lightweight: the content stays portable, the site stays database-free, and the publishing flow remains easy to understand.
