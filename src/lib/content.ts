@@ -99,6 +99,20 @@ export function getAllProjects(): ProjectData[] {
   return projects;
 }
 
+export function getProjectBySlug(slug: string | undefined): ProjectData | undefined {
+  return projects.find((project) => project.slug === slug);
+}
+
+export function getProjectPosition(slug: string | undefined) {
+  const currentIndex = slug ? projects.findIndex((project) => project.slug === slug) : -1;
+
+  return {
+    currentIndex,
+    previousSlug: currentIndex > 0 ? projects[currentIndex - 1].slug : null,
+    nextSlug: currentIndex >= 0 && currentIndex < projects.length - 1 ? projects[currentIndex + 1].slug : null,
+  };
+}
+
 export function getAllBlogPosts(): BlogPost[] {
   return blogPosts;
 }

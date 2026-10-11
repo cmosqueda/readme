@@ -807,15 +807,58 @@
 .studio-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; line-height: 1.65; }
 .studio-section > .studio-mono { border: 0; border-radius: 0; box-shadow: none; }
 .studio-section > .studio-mono:focus { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--gh-link) 40%, transparent); }
-.studio-check { display: flex; gap: .6rem; align-items: flex-start; border: 1px dashed var(--gh-border); border-radius: 6px; padding: .65rem .8rem; font-size: .8rem; font-weight: 600; cursor: pointer; }
-.studio-check input { margin-top: .2rem; accent-color: var(--gh-btn-green); width: 1rem; height: 1rem; }
-.studio-check em { display: block; font-style: normal; font-weight: 400; color: var(--gh-muted); font-size: .72rem; }
 .studio-mini-btn { display: inline-flex; align-items: center; gap: .3rem; margin-left: auto; padding: .3rem .6rem; font-size: .7rem; font-weight: 600; }
 .studio-stats-edit { display: grid; gap: .5rem; padding: .9rem; }
 .studio-stat-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: .5rem; }
 .studio-stat-row .github-icon-button { width: 36px; display: inline-flex; align-items: center; justify-content: center; }
 .studio-stat-row .github-icon-button:disabled { opacity: .35; }
-.studio-section .studio-check { margin: 0 .9rem .9rem; }
+
+/* Chip input for comma-separated values. */
+.studio-tokens { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; width: 100%; border: 1px solid var(--gh-border); border-radius: 6px; background: var(--gh-canvas); color: var(--gh-text); padding: .4rem .55rem; min-height: 2.5rem; cursor: text; box-shadow: inset 0 1px 0 rgb(31 35 40 / .04); }
+.studio-tokens:focus-within { border-color: var(--gh-link); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gh-link) 22%, transparent); }
+.studio-token { display: inline-flex; align-items: center; gap: .3rem; }
+.studio-token button { display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; padding: 0; color: inherit; opacity: .65; cursor: pointer; border-radius: 4px; }
+.studio-token button:hover { opacity: 1; }
+.studio-tokens input { flex: 1; min-width: 8rem; background: transparent; border: 0; outline: 0; color: var(--gh-text); font-size: .83rem; padding: .15rem 0; }
+.studio-tokens input::placeholder { color: var(--gh-muted); opacity: .8; }
+
+/* Prominent visibility selector. */
+.studio-visibility-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; padding: .9rem; }
+.studio-visibility-option { display: flex; align-items: center; gap: .65rem; text-align: left; border: 1px solid var(--gh-border); border-radius: 6px; background: var(--gh-canvas); color: var(--gh-text); padding: .75rem .85rem; cursor: pointer; transition: border-color .12s, background .12s; }
+.studio-visibility-option:hover { border-color: var(--gh-link); }
+.studio-visibility-option > svg:first-child { color: var(--gh-muted); flex-shrink: 0; }
+.studio-visibility-option > span { flex: 1; min-width: 0; display: grid; gap: .1rem; }
+.studio-visibility-option strong { font-size: .82rem; }
+.studio-visibility-option em { font-style: normal; font-size: .7rem; color: var(--gh-muted); line-height: 1.45; }
+.studio-visibility-selected-live { border-color: color-mix(in srgb, var(--gh-success) 60%, var(--gh-border)); background: color-mix(in srgb, var(--gh-success) 7%, var(--gh-canvas)); }
+.studio-visibility-selected-live > svg:first-child { color: var(--gh-success); }
+.studio-visibility-selected-live > svg:last-child { color: var(--gh-success); }
+.studio-visibility-selected-draft { border-color: color-mix(in srgb, var(--gh-attention) 60%, var(--gh-border)); background: color-mix(in srgb, var(--gh-attention) 8%, var(--gh-canvas)); }
+.studio-visibility-selected-draft > svg:first-child { color: var(--gh-attention); }
+.studio-visibility-selected-draft > svg:last-child { color: var(--gh-attention); }
+.studio-visibility-live { color: var(--gh-success); }
+.studio-visibility-draft { color: var(--gh-attention); }
+@media (max-width: 767px) { .studio-visibility-grid { grid-template-columns: 1fr; } }
+
+/* Custom confirm modal (replaces the native alert). */
+.studio-modal-overlay { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgb(31 35 40 / .55); animation: studio-fade-in .14s ease; }
+:root[data-theme="dark"] .studio-modal-overlay { background: rgb(1 4 9 / .75); }
+@keyframes studio-fade-in { from { opacity: 0; } }
+.studio-modal { width: 100%; max-width: 26rem; border: 1px solid var(--gh-border); border-radius: 12px; background: var(--gh-canvas); color: var(--gh-text); padding: 1.4rem; box-shadow: 0 16px 48px rgb(0 0 0 / .28); animation: studio-modal-in .16s ease; }
+@keyframes studio-modal-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+.studio-modal-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: color-mix(in srgb, var(--gh-danger) 12%, transparent); color: var(--gh-danger); margin-bottom: .8rem; }
+.studio-modal h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; }
+.studio-modal p { margin-top: .55rem; font-size: .83rem; line-height: 1.6; color: var(--gh-muted); display: grid; gap: .45rem; }
+.studio-modal p strong { color: var(--gh-text); }
+.studio-modal code { background: var(--gh-subtle); border-radius: 4px; padding: .1rem .35rem; font-size: .78em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.studio-modal-path { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .74rem; color: var(--gh-text); }
+.studio-modal-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.2rem; }
+.studio-modal-actions .github-button { padding: .55rem 1rem; font-size: .82rem; font-weight: 600; }
+.github-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; background: #cf222e; color: #fff; border: 1px solid rgb(31 35 40 / .15); border-radius: 6px; padding: .55rem 1rem; font-size: .82rem; font-weight: 600; box-shadow: 0 1px 0 rgb(31 35 40 / .1); cursor: pointer; white-space: nowrap; transition: background .15s; }
+.github-btn-danger:hover { background: #a40e26; }
+.github-btn-danger:disabled { opacity: .6; cursor: wait; }
+:root[data-theme="dark"] .github-btn-danger { background: #da3633; }
+:root[data-theme="dark"] .github-btn-danger:hover { background: #f85149; }
 
 .studio-preview { padding: 1.25rem; display: grid; gap: .9rem; }
 .studio-preview h3 { font-size: 1.1rem; font-weight: 700; }

@@ -16,6 +16,7 @@ stats:
     value: "77.95"
   - label: "Test Coverage"
     value: "Iterative/Regression"
+order: 1
 ---
 
 # Problem & Quality Strategy

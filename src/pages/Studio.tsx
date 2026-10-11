@@ -6,9 +6,11 @@ import {
   ChevronDown,
   ChevronRight,
   Eye,
+  EyeOff,
   FileCode2,
   FilePlus2,
   FolderKanban,
+  Globe,
   Loader2,
   LogOut,
   Newspaper,
@@ -272,25 +274,38 @@ export default function Studio() {
     }
   };
 
-  const remove = async (type: Workspace, item: Post | Project) => {
-    if (
-      !item.sha ||
-      !confirm(
-        `Delete this ${type === "blogs" ? "article" : "project"} permanently?`,
-      )
-    )
-      return;
+  const [pendingDelete, setPendingDelete] = useState<{
+    type: Workspace;
+    slug: string;
+    title: string;
+    sha: string;
+  } | null>(null);
+
+  const askDelete = (type: Workspace, item: Post | Project) => {
+    if (!item.sha || busy) return;
+    setPendingDelete({
+      type,
+      slug: item.slug,
+      title: item.title || "(untitled)",
+      sha: item.sha,
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete || busy) return;
+    const { type, slug, sha } = pendingDelete;
     setBusy(true);
     setError("");
     try {
       await request(`/api/studio/${type}`, {
         method: "DELETE",
-        body: JSON.stringify({ slug: item.slug, sha: item.sha }),
+        body: JSON.stringify({ slug, sha }),
       });
       await load();
       if (type === "blogs") setEditingPost(null);
       else setEditingProject(null);
       setPreview(false);
+      setPendingDelete(null);
       void refreshDeploy();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not delete.");
@@ -298,6 +313,15 @@ export default function Studio() {
       setBusy(false);
     }
   };
+
+  useEffect(() => {
+    if (!pendingDelete) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) setPendingDelete(null);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [pendingDelete, busy]);
 
   const selectWorkspace = (next: Workspace) => {
     setWorkspace(next);
@@ -651,7 +675,7 @@ export default function Studio() {
                 busy={busy}
                 preview={preview}
                 setPreview={setPreview}
-                remove={() => remove("blogs", editingPost)}
+                remove={() => askDelete("blogs", editingPost)}
               />
             ) : !isBlogs && editingProject ? (
               <ProjectEditor
@@ -661,7 +685,7 @@ export default function Studio() {
                 busy={busy}
                 preview={preview}
                 setPreview={setPreview}
-                remove={() => remove("projects", editingProject)}
+                remove={() => askDelete("projects", editingProject)}
               />
             ) : null}
           </section>
@@ -675,6 +699,60 @@ export default function Studio() {
           <a href="/">← back to portfolio</a>
         </footer>
       </div>
+
+      {pendingDelete && (
+        <div
+          className="studio-modal-overlay"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !busy) setPendingDelete(null);
+          }}
+        >
+          <div
+            className="studio-modal"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="studio-delete-title"
+            aria-describedby="studio-delete-desc"
+          >
+            <span className="studio-modal-icon" aria-hidden="true">
+              <Trash2 size={18} />
+            </span>
+            <h2 id="studio-delete-title">
+              Delete {pendingDelete.type === "blogs" ? "article" : "project"}?
+            </h2>
+            <p id="studio-delete-desc">
+              <strong>{pendingDelete.title}</strong>
+              <span className="studio-modal-path">
+                {pendingDelete.slug}.md
+              </span>
+              This removes the file from <code>main</code> permanently. This
+              action cannot be undone.
+            </p>
+            <div className="studio-modal-actions">
+              <button
+                type="button"
+                className="github-button"
+                onClick={() => setPendingDelete(null)}
+                disabled={busy}
+                autoFocus
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="github-btn-danger"
+                onClick={() => {
+                  void confirmDelete();
+                }}
+                disabled={busy}
+              >
+                <Trash2 size={14} aria-hidden="true" />
+                {busy ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
@@ -986,7 +1064,7 @@ function EditorChrome({
   preview: boolean;
   setPreview: (v: boolean) => void;
   save: () => void;
-  remove: () => Promise<void>;
+  remove: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -1083,6 +1161,130 @@ const inputCls = "studio-input";
 const areaCls = "studio-input studio-area";
 const monoCls = "studio-input studio-area studio-mono";
 
+/* Chip input for comma-separated values. Typing never reformats the text,
+   so commas and spaces behave normally; tokens commit on Enter, comma,
+   or blur, and clicking Save blurs first so nothing is lost. */
+function TokenInput({
+  values,
+  onChange,
+  placeholder,
+  ariaLabel,
+}: {
+  values: string[];
+  onChange: (values: string[]) => void;
+  placeholder?: string;
+  ariaLabel: string;
+}) {
+  const [text, setText] = useState("");
+
+  const commit = (raw: string) => {
+    const parts = csv(raw).filter(
+      (part) => !values.some((v) => v.toLowerCase() === part.toLowerCase()),
+    );
+    if (parts.length) onChange([...values, ...parts]);
+    setText("");
+  };
+
+  return (
+    <div
+      className="studio-tokens"
+      onClick={(e) => {
+        const input = e.currentTarget.querySelector("input");
+        input?.focus();
+      }}
+    >
+      {values.map((token) => (
+        <span key={token} className="github-topic studio-token">
+          {token}
+          <button
+            type="button"
+            aria-label={`Remove ${token}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange(values.filter((v) => v !== token));
+            }}
+          >
+            <X size={12} />
+          </button>
+        </span>
+      ))}
+      <input
+        value={text}
+        aria-label={ariaLabel}
+        placeholder={values.length ? "Add another…" : placeholder}
+        onChange={(e) => {
+          const next = e.target.value;
+          if (next.includes(",")) commit(next);
+          else setText(next);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commit(text);
+          } else if (e.key === "Backspace" && !text && values.length) {
+            onChange(values.slice(0, -1));
+          }
+        }}
+        onBlur={() => {
+          if (text.trim()) commit(text);
+        }}
+      />
+    </div>
+  );
+}
+
+/* Prominent publish/draft selector. Draft is a real frontmatter value for
+   both articles and projects — this surfaces it instead of burying it. */
+function VisibilityControl({
+  draft,
+  onChange,
+}: {
+  draft?: boolean;
+  onChange: (draft: boolean) => void;
+}) {
+  const isDraft = draft === true;
+  return (
+    <div className="studio-section">
+      <h3>
+        <Eye size={14} /> Visibility
+        <span className={isDraft ? "studio-visibility-draft" : "studio-visibility-live"}>
+          {isDraft ? "Draft — hidden" : "Published — live after deploy"}
+        </span>
+      </h3>
+      <div className="studio-visibility-grid" role="radiogroup" aria-label="Visibility">
+        <button
+          type="button"
+          role="radio"
+          aria-checked={!isDraft}
+          onClick={() => onChange(false)}
+          className={`studio-visibility-option ${!isDraft ? "studio-visibility-selected-live" : ""}`}
+        >
+          <Globe size={17} aria-hidden="true" />
+          <span>
+            <strong>Published</strong>
+            <em>Visible on the portfolio after deploy.</em>
+          </span>
+          {!isDraft && <Check size={15} aria-hidden="true" />}
+        </button>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={isDraft}
+          onClick={() => onChange(true)}
+          className={`studio-visibility-option ${isDraft ? "studio-visibility-selected-draft" : ""}`}
+        >
+          <EyeOff size={17} aria-hidden="true" />
+          <span>
+            <strong>Draft</strong>
+            <em>Hidden from the portfolio, kept in Git.</em>
+          </span>
+          {isDraft && <Check size={15} aria-hidden="true" />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ── Blog editor ──────────────────────────────────────────── */
 
 function BlogEditor({
@@ -1100,7 +1302,7 @@ function BlogEditor({
   busy: boolean;
   preview: boolean;
   setPreview: (v: boolean) => void;
-  remove: () => Promise<void>;
+  remove: () => void;
 }) {
   const update = <K extends keyof Post>(key: K, value: Post[K]) => {
     if (key === "title" && (!post.slug || post.slug === slugify(post.title))) {
@@ -1201,27 +1403,21 @@ function BlogEditor({
                   placeholder="One or two sentences shown on the article card."
                 />
               </Field>
-              <Field label="Tags" hint="comma separated" span>
-                <input
-                  className={inputCls}
-                  value={post.tags.join(", ")}
-                  onChange={(e) => update("tags", csv(e.target.value))}
+              <Field label="Tags" hint="type, then Enter" span>
+                <TokenInput
+                  values={post.tags}
+                  onChange={(tags) => update("tags", tags)}
                   placeholder="systems, research, qa"
+                  ariaLabel="Article tags"
                 />
               </Field>
-              <label className="studio-check studio-field-span">
-                <input
-                  type="checkbox"
-                  checked={post.draft === true}
-                  onChange={(e) => update("draft", e.target.checked)}
-                />
-                <span>
-                  Save as draft
-                  <em>Drafts stay hidden on the portfolio.</em>
-                </span>
-              </label>
             </div>
           </div>
+
+          <VisibilityControl
+            draft={post.draft}
+            onChange={(draft) => update("draft", draft)}
+          />
 
           <div className="studio-section">
             <h3>
@@ -1260,7 +1456,7 @@ function ProjectEditor({
   busy: boolean;
   preview: boolean;
   setPreview: (v: boolean) => void;
-  remove: () => Promise<void>;
+  remove: () => void;
 }) {
   const update = <K extends keyof Project>(key: K, value: Project[K]) =>
     setProject({ ...project, [key]: value });
@@ -1392,24 +1588,29 @@ function ProjectEditor({
                   placeholder="One or two sentences shown on the project card."
                 />
               </Field>
-              <Field label="Tools" hint="comma separated">
-                <input
-                  className={inputCls}
-                  value={project.tools.join(", ")}
-                  onChange={(e) => update("tools", csv(e.target.value))}
+              <Field label="Tools" hint="type, then Enter">
+                <TokenInput
+                  values={project.tools}
+                  onChange={(tools) => update("tools", tools)}
                   placeholder="Figma, SQL, Playwright"
+                  ariaLabel="Project tools"
                 />
               </Field>
-              <Field label="Workflow" hint="comma separated">
-                <input
-                  className={inputCls}
-                  value={project.workflow.join(", ")}
-                  onChange={(e) => update("workflow", csv(e.target.value))}
+              <Field label="Workflow" hint="type, then Enter">
+                <TokenInput
+                  values={project.workflow}
+                  onChange={(workflow) => update("workflow", workflow)}
                   placeholder="Research, Mapping, Validation"
+                  ariaLabel="Workflow highlights"
                 />
               </Field>
             </div>
           </div>
+
+          <VisibilityControl
+            draft={project.draft}
+            onChange={(draft) => update("draft", draft)}
+          />
 
           <div className="studio-section">
             <h3>
@@ -1456,17 +1657,6 @@ function ProjectEditor({
                 </div>
               ))}
             </div>
-            <label className="studio-check">
-              <input
-                type="checkbox"
-                checked={project.draft === true}
-                onChange={(e) => update("draft", e.target.checked)}
-              />
-              <span>
-                Save as draft
-                <em>Drafts stay hidden on the portfolio.</em>
-              </span>
-            </label>
           </div>
 
           <div className="studio-section">
