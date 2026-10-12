@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import profilePic from "../assets/me-img.jpg";
+import profilePic from "../assets/glorious-goat.jpg";
 import { fadeScale } from "../lib/motion";
 
 type Props = {
@@ -37,7 +37,11 @@ export default function ProfilePhotoPreview({ sizeClassName }: Props) {
         <div
           className={`neo-card relative ${sizeClassName} flex items-center justify-center overflow-hidden rounded-2xl`}
         >
-          <img src={profilePic} alt="Christine Mosqueda, known as Tine Mosqueda and Rocket Puncher" className="h-full w-full object-cover" />
+          <img
+            src={profilePic}
+            alt="Christine Mosqueda, known as Tine Mosqueda and Rocket Puncher"
+            className="h-full w-full object-cover"
+          />
           <div className="absolute inset-0 bg-[color:var(--md-scrim)]/55 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <span className="text-[9px] font-semibold tracking-widest text-white">View photo</span>
           </div>
