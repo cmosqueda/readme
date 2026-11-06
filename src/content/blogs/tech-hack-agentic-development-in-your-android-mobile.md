@@ -1,5 +1,5 @@
 ---
-title: "Tech hack: Agentic development in your android mobile"
+title: "Agentic Dev on an Android Tablet: Because My Laptop Was Busy"
 date: "2026-11-06"
 category: "Agentic Development"
 readTime: "5 min read"
