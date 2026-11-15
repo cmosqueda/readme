@@ -1698,9 +1698,6 @@ export default function ContributionGrass() {
         const fx = Math.round(fish.nx * BW);
         const fy = Math.round(6 + fish.yFrac * (sandTop - 22) + Math.round(Math.sin(time / 800 + fish.phase) * 1.5));
         const bounds = getFishBounds(fish.species, fish.tier);
-        // Depth shadow tailored to fish size
-        const shadowW = Math.max(8, Math.round(bounds.hitR * 1.2));
-        R(ctx, fx - Math.floor(shadowW / 2), fy + bounds.maxLy + 3, shadowW, 1, "#0a2e4a");
         const excited = seeking.has(i) || fish.eatT > 0;
         const frame = Math.floor(time / (excited ? 130 : 260) + fish.phase) % 2 === 0;
         drawFish(ctx, fx, fy, fish.tier, fish.species, fish.dir, frame, i === hovered.index);
