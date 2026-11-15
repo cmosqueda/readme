@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
 type ContributionDay = { contributionCount: number; date: string; weekday: number };
 type ContributionCalendar = { totalContributions: number; weeks: Array<{ contributionDays: ContributionDay[] }> };
@@ -115,61 +116,121 @@ type Scenery = {
   kelp: string;
   kelpDark: string;
   rock: string;
+  isNight: boolean;
 };
 
-const SCENERIES: Scenery[] = [
+const SCENERIES_NIGHT: Scenery[] = [
   {
     name: "Coral Galleon",
     theme: "shipwreck",
-    water: ["#5eead4", "#2dd4bf", "#14b8a6", "#0d9488", "#0f766e", "#115e59", "#134e4a", "#0f3835", "#0a2624"],
-    surface: "#a7f3d0", glint: "#ecfdf5", ray: "#5eead4", plankton: "#ccfbf1",
-    sand: "#e8d49a", sandDark: "#fff7d6", sandLine: "#d9b96a",
-    speckleLight: "#fff7d6", speckleDark: "#c49a52",
-    kelp: "#22c55e", kelpDark: "#15803d", rock: "#1e293b",
+    water: ["#1e293b", "#0f172a", "#172554", "#1e1b4b", "#111827", "#090d16", "#050810", "#03050a", "#010205"],
+    surface: "#38bdf8", glint: "#93c5fd", ray: "#38bdf8", plankton: "#38bdf8",
+    sand: "#1e293b", sandDark: "#334155", sandLine: "#0f172a",
+    speckleLight: "#22d3ee", speckleDark: "#020617",
+    kelp: "#0d9488", kelpDark: "#115e59", rock: "#090d16",
+    isNight: true,
   },
   {
     name: "Sunken Temple",
     theme: "temple",
-    water: ["#67e8f9", "#22d3ee", "#06b6d4", "#0891b2", "#0e7490", "#155e75", "#164e63", "#083344", "#04202c"],
-    surface: "#a5f3fc", glint: "#cffafe", ray: "#67e8f9", plankton: "#cffafe",
-    sand: "#cbd5e1", sandDark: "#f1f5f9", sandLine: "#94a3b8",
-    speckleLight: "#f1f5f9", speckleDark: "#64748b",
-    kelp: "#14b8a6", kelpDark: "#0f766e", rock: "#1e293b",
+    water: ["#0f172a", "#082f49", "#0c4a6e", "#075985", "#0369a1", "#024a77", "#023253", "#011e33", "#01101c"],
+    surface: "#67e8f9", glint: "#a5f3fc", ray: "#22d3ee", plankton: "#67e8f9",
+    sand: "#1e293b", sandDark: "#334155", sandLine: "#0f172a",
+    speckleLight: "#38bdf8", speckleDark: "#031d2e",
+    kelp: "#0d9488", kelpDark: "#042f2e", rock: "#0b1322",
+    isNight: true,
   },
   {
     name: "Abyssal Reef",
     theme: "abyss",
-    water: ["#c084fc", "#a855f7", "#9333ea", "#7e22ce", "#6b21a8", "#581c87", "#3b0764", "#240046", "#10002b"],
-    surface: "#f3e8ff", glint: "#faf5ff", ray: "#c084fc", plankton: "#e9d5ff",
-    sand: "#334155", sandDark: "#475569", sandLine: "#1e293b",
-    speckleLight: "#67e8f9", speckleDark: "#0f172a",
-    kelp: "#a855f7", kelpDark: "#6b21a8", rock: "#0f172a",
+    water: ["#1e1b4b", "#2e1065", "#3b0764", "#4a044e", "#37033d", "#28012e", "#1b0020", "#100014", "#08000a"],
+    surface: "#e9d5ff", glint: "#f5d0fe", ray: "#c084fc", plankton: "#f0abfc",
+    sand: "#1e1b4b", sandDark: "#312e81", sandLine: "#0f172a",
+    speckleLight: "#e879f9", speckleDark: "#020617",
+    kelp: "#9333ea", kelpDark: "#581c87", rock: "#020617",
+    isNight: true,
   },
   {
     name: "Kelp Forest",
     theme: "kelp",
-    water: ["#bef264", "#a3e635", "#84cc16", "#65a30d", "#4d7c0f", "#3f6212", "#33520f", "#27420c", "#1a2e05"],
-    surface: "#ecfccb", glint: "#f7fee7", ray: "#d9f99d", plankton: "#ecfccb",
-    sand: "#d6c48f", sandDark: "#fff7d6", sandLine: "#a8894a",
-    speckleLight: "#fff7d6", speckleDark: "#8a7440",
-    kelp: "#16a34a", kelpDark: "#14532d", rock: "#44403c",
+    water: ["#052e16", "#042612", "#021d0d", "#02170b", "#011208", "#010d05", "#010a04", "#000703", "#000401"],
+    surface: "#86efac", glint: "#bbf7d0", ray: "#4ade80", plankton: "#86efac",
+    sand: "#1c1917", sandDark: "#292524", sandLine: "#0c0a09",
+    speckleLight: "#4ade80", speckleDark: "#0c0a09",
+    kelp: "#15803d", kelpDark: "#14532d", rock: "#1c1917",
+    isNight: true,
+  },
+  {
+    name: "Aquarium Park",
+    theme: "aquarium",
+    water: ["#0284c7", "#0369a1", "#075985", "#0c4a6e", "#082f49", "#041e2e", "#021524", "#010e1a", "#000810"],
+    surface: "#38bdf8", glint: "#7dd3fc", ray: "#0ea5e9", plankton: "#38bdf8",
+    sand: "#0f172a", sandDark: "#1e293b", sandLine: "#020617",
+    speckleLight: "#38bdf8", speckleDark: "#020617",
+    kelp: "#059669", kelpDark: "#064e3b", rock: "#0f172a",
+    isNight: true,
+  },
+];
+
+const SCENERIES_DAY: Scenery[] = [
+  {
+    name: "Coral Galleon",
+    theme: "shipwreck",
+    water: ["#99f6e4", "#5eead4", "#2dd4bf", "#14b8a6", "#0d9488", "#0f766e", "#115e59", "#134e4a", "#0f3835"],
+    surface: "#ccfbf1", glint: "#ffffff", ray: "#fef08a", plankton: "#ffffff",
+    sand: "#fde68a", sandDark: "#fffbeb", sandLine: "#f59e0b",
+    speckleLight: "#ffffff", speckleDark: "#d97706",
+    kelp: "#22c55e", kelpDark: "#15803d", rock: "#475569",
+    isNight: false,
+  },
+  {
+    name: "Sunken Temple",
+    theme: "temple",
+    water: ["#7dd3fc", "#38bdf8", "#0ea5e9", "#0284c7", "#0369a1", "#075985", "#0c4a6e", "#082f49", "#04202c"],
+    surface: "#e0f2fe", glint: "#ffffff", ray: "#fef9c3", plankton: "#e0f2fe",
+    sand: "#e2e8f0", sandDark: "#ffffff", sandLine: "#cbd5e1",
+    speckleLight: "#ffffff", speckleDark: "#94a3b8",
+    kelp: "#14b8a6", kelpDark: "#0f766e", rock: "#475569",
+    isNight: false,
+  },
+  {
+    name: "Abyssal Reef",
+    theme: "abyss",
+    water: ["#e9d5ff", "#d8b4fe", "#c084fc", "#a855f7", "#9333ea", "#7e22ce", "#6b21a8", "#4c1d95", "#2e1065"],
+    surface: "#faf5ff", glint: "#ffffff", ray: "#fbcfe8", plankton: "#f5d0fe",
+    sand: "#e2e8f0", sandDark: "#ffffff", sandLine: "#cbd5e1",
+    speckleLight: "#ffffff", speckleDark: "#a855f7",
+    kelp: "#c084fc", kelpDark: "#9333ea", rock: "#475569",
+    isNight: false,
+  },
+  {
+    name: "Kelp Forest",
+    theme: "kelp",
+    water: ["#d9f99d", "#bef264", "#a3e635", "#84cc16", "#65a30d", "#4d7c0f", "#3f6212", "#27420c", "#1a2e05"],
+    surface: "#f7fee7", glint: "#ffffff", ray: "#fef08a", plankton: "#f7fee7",
+    sand: "#fef08a", sandDark: "#ffffff", sandLine: "#eab308",
+    speckleLight: "#ffffff", speckleDark: "#ca8a04",
+    kelp: "#16a34a", kelpDark: "#14532d", rock: "#57534e",
+    isNight: false,
   },
   {
     name: "Aquarium Park",
     theme: "aquarium",
     water: ["#7dd3fc", "#38bdf8", "#0ea5e9", "#0284c7", "#0369a1", "#075985", "#0c4a6e", "#082f49", "#041e2e"],
-    surface: "#bae6fd", glint: "#e0f2fe", ray: "#7dd3fc", plankton: "#e0f2fe",
+    surface: "#bae6fd", glint: "#ffffff", ray: "#fef9c3", plankton: "#e0f2fe",
     sand: "#fef3c7", sandDark: "#ffffff", sandLine: "#fde68a",
     speckleLight: "#ffffff", speckleDark: "#d4b46a",
-    kelp: "#10b981", kelpDark: "#047857", rock: "#334155",
+    kelp: "#10b981", kelpDark: "#047857", rock: "#475569",
+    isNight: false,
   },
 ];
 
-function sceneryFor(year: number): Scenery {
+function sceneryFor(year: number, isDark = true): Scenery {
   const baseYear = 2026;
-  const idx = (((year - baseYear) % SCENERIES.length) + SCENERIES.length) % SCENERIES.length;
-  const found = SCENERIES[idx];
-  return found ?? SCENERIES[0]!;
+  const list = isDark ? SCENERIES_NIGHT : SCENERIES_DAY;
+  const idx = (((year - baseYear) % list.length) + list.length) % list.length;
+  const found = list[idx];
+  return found ?? list[0]!;
 }
 
 const CORAL_POOL = ["#d90429", "#ff5d8f", "#e9c46a", "#ef476f", "#ff9e00", "#8338ec", "#3a86ff"];
@@ -787,14 +848,18 @@ function drawTubeSponges(ctx: CanvasRenderingContext2D, x: number, baseY: number
   R(ctx, x0 + 4, y0 - 7, 3, 1, "#422006");
 }
 
-function drawCoralShelves(ctx: CanvasRenderingContext2D, BW: number, sandTop: number, tick: number) {
+function drawCoralShelves(ctx: CanvasRenderingContext2D, BW: number, sandTop: number, tick: number, isNight = true) {
+  const rockDark = isNight ? "#1e293b" : "#475569";
+  const rockLight = isNight ? "#475569" : "#64748b";
+  const sandCap = isNight ? "#d9b96a" : "#fde68a";
+
   const leftW = 34;
-  R(ctx, 0, sandTop - 8, leftW, 14, "#1e293b");
-  R(ctx, 0, sandTop - 8, leftW - 2, 2, "#475569");
-  R(ctx, 2, sandTop - 7, leftW - 6, 1, "#d9b96a");
-  R(ctx, 0, sandTop - 22, leftW - 12, 15, "#1e293b");
-  R(ctx, 0, sandTop - 22, leftW - 14, 2, "#475569");
-  R(ctx, 1, sandTop - 21, leftW - 18, 1, "#d9b96a");
+  R(ctx, 0, sandTop - 8, leftW, 14, rockDark);
+  R(ctx, 0, sandTop - 8, leftW - 2, 2, rockLight);
+  R(ctx, 2, sandTop - 7, leftW - 6, 1, sandCap);
+  R(ctx, 0, sandTop - 22, leftW - 12, 15, rockDark);
+  R(ctx, 0, sandTop - 22, leftW - 14, 2, rockLight);
+  R(ctx, 1, sandTop - 21, leftW - 18, 1, sandCap);
 
   drawBranchingCoral(ctx, 10, sandTop - 22, "#be185d", "#f472b6", 11, tick % 4 < 2 ? 1 : 0);
   drawBranchingCoral(ctx, 22, sandTop - 8, "#ea580c", "#fb923c", 9, tick % 4 < 2 ? 0 : 1);
@@ -802,11 +867,11 @@ function drawCoralShelves(ctx: CanvasRenderingContext2D, BW: number, sandTop: nu
 
   const rightW = 32;
   const rightX = BW - rightW;
-  R(ctx, rightX, sandTop - 12, rightW, 18, "#1e293b");
-  R(ctx, rightX + 2, sandTop - 12, rightW - 2, 2, "#475569");
-  R(ctx, rightX + 4, sandTop - 11, rightW - 6, 1, "#d9b96a");
-  R(ctx, rightX + 12, sandTop - 24, rightW - 12, 13, "#1e293b");
-  R(ctx, rightX + 14, sandTop - 24, rightW - 14, 2, "#475569");
+  R(ctx, rightX, sandTop - 12, rightW, 18, rockDark);
+  R(ctx, rightX + 2, sandTop - 12, rightW - 2, 2, rockLight);
+  R(ctx, rightX + 4, sandTop - 11, rightW - 6, 1, sandCap);
+  R(ctx, rightX + 12, sandTop - 24, rightW - 12, 13, rockDark);
+  R(ctx, rightX + 14, sandTop - 24, rightW - 14, 2, rockLight);
 
   drawBranchingCoral(ctx, BW - 18, sandTop - 24, "#8b5cf6", "#c4b5fd", 10, tick % 4 < 2 ? -1 : 0);
   drawBranchingCoral(ctx, BW - 8, sandTop - 12, "#e11d48", "#fda4af", 8, tick % 4 < 2 ? 0 : -1);
@@ -825,96 +890,96 @@ function drawStarfish(ctx: CanvasRenderingContext2D, x: number, y: number, color
   R(ctx, x0 + 1, y0 + 2, 1, 1, color);
 }
 
-function drawShipwreck(ctx: CanvasRenderingContext2D, x: number, y: number, tick: number) {
+function drawShipwreck(ctx: CanvasRenderingContext2D, x: number, y: number, tick: number, isNight = true) {
   const x0 = Math.round(x);
   const y0 = Math.round(y);
 
   // Distant rear yardarm / mast shadows
-  R(ctx, x0 - 18, y0 - 36, 2, 28, "#1a0f0a");
-  R(ctx, x0 - 24, y0 - 30, 16, 2, "#1a0f0a");
+  R(ctx, x0 - 18, y0 - 36, 2, 28, isNight ? "#1a0f0a" : "#2d1b10");
+  R(ctx, x0 - 24, y0 - 30, 16, 2, isNight ? "#1a0f0a" : "#2d1b10");
 
   // Stern Castle (Tilted Quarterdeck on the right)
-  R(ctx, x0 + 10, y0 - 22, 16, 12, "#1c110a");
-  R(ctx, x0 + 11, y0 - 21, 14, 10, "#3d2213");
-  R(ctx, x0 + 12, y0 - 20, 12, 2, "#5a341c");
-  R(ctx, x0 + 13, y0 - 17, 3, 3, "#0b1220");
-  R(ctx, x0 + 14, y0 - 16, 1, 1, "#1e3a8a");
-  R(ctx, x0 + 19, y0 - 17, 3, 3, "#0b1220");
-  R(ctx, x0 + 20, y0 - 16, 1, 1, "#1e3a8a");
-  R(ctx, x0 + 10, y0 - 24, 16, 2, "#6e4023");
-  R(ctx, x0 + 11, y0 - 22, 1, 2, "#1c110a");
-  R(ctx, x0 + 17, y0 - 22, 1, 2, "#1c110a");
-  R(ctx, x0 + 24, y0 - 22, 1, 2, "#1c110a");
+  R(ctx, x0 + 10, y0 - 22, 16, 12, isNight ? "#1c110a" : "#382012");
+  R(ctx, x0 + 11, y0 - 21, 14, 10, isNight ? "#3d2213" : "#5a341c");
+  R(ctx, x0 + 12, y0 - 20, 12, 2, isNight ? "#5a341c" : "#784425");
+  R(ctx, x0 + 13, y0 - 17, 3, 3, isNight ? "#0b1220" : "#1e293b");
+  R(ctx, x0 + 14, y0 - 16, 1, 1, isNight ? "#1e3a8a" : "#38bdf8");
+  R(ctx, x0 + 19, y0 - 17, 3, 3, isNight ? "#0b1220" : "#1e293b");
+  R(ctx, x0 + 20, y0 - 16, 1, 1, isNight ? "#1e3a8a" : "#38bdf8");
+  R(ctx, x0 + 10, y0 - 24, 16, 2, isNight ? "#6e4023" : "#854d0e");
+  R(ctx, x0 + 11, y0 - 22, 1, 2, isNight ? "#1c110a" : "#382012");
+  R(ctx, x0 + 17, y0 - 22, 1, 2, isNight ? "#1c110a" : "#382012");
+  R(ctx, x0 + 24, y0 - 22, 1, 2, isNight ? "#1c110a" : "#382012");
 
   // Main deck railing sloping down to the bow
-  R(ctx, x0 - 28, y0 - 12, 38, 2, "#6e4023");
+  R(ctx, x0 - 28, y0 - 12, 38, 2, isNight ? "#6e4023" : "#854d0e");
   for (let rx = x0 - 26; rx < x0 + 10; rx += 6) {
-    R(ctx, rx, y0 - 10, 1, 2, "#1c110a");
+    R(ctx, rx, y0 - 10, 1, 2, isNight ? "#1c110a" : "#382012");
   }
 
   // Curved Bow (Prow) sweeping up on the left
-  R(ctx, x0 - 34, y0 - 12, 6, 3, "#3d2213");
-  R(ctx, x0 - 32, y0 - 9, 6, 3, "#4d2b17");
-  R(ctx, x0 - 40, y0 - 14, 8, 2, "#4d2b17");
-  R(ctx, x0 - 46, y0 - 17, 7, 2, "#3d2213");
-  R(ctx, x0 - 50, y0 - 19, 5, 1, "#27160c");
+  R(ctx, x0 - 34, y0 - 12, 6, 3, isNight ? "#3d2213" : "#5a341c");
+  R(ctx, x0 - 32, y0 - 9, 6, 3, isNight ? "#4d2b17" : "#6e4023");
+  R(ctx, x0 - 40, y0 - 14, 8, 2, isNight ? "#4d2b17" : "#6e4023");
+  R(ctx, x0 - 46, y0 - 17, 7, 2, isNight ? "#3d2213" : "#5a341c");
+  R(ctx, x0 - 50, y0 - 19, 5, 1, isNight ? "#27160c" : "#382012");
 
   // Curved Hull Planking Rows (Tapered from top to keel - NO rectangular box!)
-  R(ctx, x0 - 28, y0 - 8, 46, 3, "#54331d");
-  R(ctx, x0 - 28, y0 - 8, 46, 1, "#784425");
-  R(ctx, x0 - 26, y0 - 5, 42, 3, "#422514");
-  R(ctx, x0 - 22, y0 - 2, 36, 3, "#331b0e");
-  R(ctx, x0 - 16, y0 + 1, 26, 3, "#26140b");
-  R(ctx, x0 - 10, y0 + 4, 15, 3, "#1a0c06");
+  R(ctx, x0 - 28, y0 - 8, 46, 3, isNight ? "#54331d" : "#784425");
+  R(ctx, x0 - 28, y0 - 8, 46, 1, isNight ? "#784425" : "#a16207");
+  R(ctx, x0 - 26, y0 - 5, 42, 3, isNight ? "#422514" : "#5a341c");
+  R(ctx, x0 - 22, y0 - 2, 36, 3, isNight ? "#331b0e" : "#422514");
+  R(ctx, x0 - 16, y0 + 1, 26, 3, isNight ? "#26140b" : "#331b0e");
+  R(ctx, x0 - 10, y0 + 4, 15, 3, isNight ? "#1a0c06" : "#26140b");
 
   // Plank horizontal seam lines & rivets
   R(ctx, x0 - 26, y0 - 5, 42, 1, "#1c0f08");
   R(ctx, x0 - 22, y0 - 2, 36, 1, "#1c0f08");
   R(ctx, x0 - 16, y0 + 1, 26, 1, "#1c0f08");
   for (let px = x0 - 22; px < x0 + 14; px += 7) {
-    R(ctx, px, y0 - 3, 1, 1, "#b45309");
+    R(ctx, px, y0 - 3, 1, 1, isNight ? "#b45309" : "#fbbf24");
   }
 
   // Broken Hull Breach & Curved Wooden Ribs
   R(ctx, x0 - 11, y0 - 5, 10, 6, "#090503");
-  R(ctx, x0 - 9, y0 - 6, 1, 7, "#6e4023");
-  R(ctx, x0 - 5, y0 - 6, 1, 7, "#6e4023");
-  R(ctx, x0 - 1, y0 - 5, 1, 6, "#6e4023");
+  R(ctx, x0 - 9, y0 - 6, 1, 7, isNight ? "#6e4023" : "#854d0e");
+  R(ctx, x0 - 5, y0 - 6, 1, 7, isNight ? "#6e4023" : "#854d0e");
+  R(ctx, x0 - 1, y0 - 5, 1, 6, isNight ? "#6e4023" : "#854d0e");
 
   // Portholes (Gunports)
   R(ctx, x0 + 6, y0 - 4, 3, 3, "#090503");
-  R(ctx, x0 + 5, y0 - 5, 5, 1, "#b45309");
+  R(ctx, x0 + 5, y0 - 5, 5, 1, isNight ? "#b45309" : "#fbbf24");
   R(ctx, x0 - 18, y0 - 3, 3, 3, "#090503");
-  R(ctx, x0 - 19, y0 - 4, 5, 1, "#b45309");
+  R(ctx, x0 - 19, y0 - 4, 5, 1, isNight ? "#b45309" : "#fbbf24");
 
   // Mainmast (tall broken mast tilted slightly right)
   R(ctx, x0 - 3, y0 - 44, 3, 34, "#150d07");
-  R(ctx, x0 - 2, y0 - 43, 2, 33, "#5c341d");
-  R(ctx, x0 - 2, y0 - 43, 1, 33, "#784425");
-  R(ctx, x0 - 3, y0 - 45, 1, 2, "#784425");
-  R(ctx, x0 - 1, y0 - 46, 1, 3, "#784425");
+  R(ctx, x0 - 2, y0 - 43, 2, 33, isNight ? "#5c341d" : "#784425");
+  R(ctx, x0 - 2, y0 - 43, 1, 33, isNight ? "#784425" : "#a16207");
+  R(ctx, x0 - 3, y0 - 45, 1, 2, isNight ? "#784425" : "#a16207");
+  R(ctx, x0 - 1, y0 - 46, 1, 3, isNight ? "#784425" : "#a16207");
 
   // Crow's nest platform
   R(ctx, x0 - 6, y0 - 34, 9, 3, "#150d07");
-  R(ctx, x0 - 5, y0 - 33, 7, 2, "#5c341d");
-  R(ctx, x0 - 6, y0 - 36, 9, 1, "#6e4023");
+  R(ctx, x0 - 5, y0 - 33, 7, 2, isNight ? "#5c341d" : "#784425");
+  R(ctx, x0 - 6, y0 - 36, 9, 1, isNight ? "#6e4023" : "#854d0e");
   R(ctx, x0 - 5, y0 - 35, 1, 1, "#150d07");
   R(ctx, x0 + 2, y0 - 35, 1, 1, "#150d07");
 
   // Mainmast yardarm (crossbar spar)
   R(ctx, x0 - 15, y0 - 31, 25, 2, "#150d07");
-  R(ctx, x0 - 14, y0 - 30, 23, 1, "#5c341d");
+  R(ctx, x0 - 14, y0 - 30, 23, 1, isNight ? "#5c341d" : "#784425");
 
   // Foremast (shorter broken mast)
   R(ctx, x0 - 22, y0 - 29, 3, 18, "#150d07");
-  R(ctx, x0 - 21, y0 - 28, 2, 17, "#4d2b17");
+  R(ctx, x0 - 21, y0 - 28, 2, 17, isNight ? "#4d2b17" : "#6e4023");
   R(ctx, x0 - 27, y0 - 23, 13, 2, "#150d07");
-  R(ctx, x0 - 26, y0 - 22, 11, 1, "#4d2b17");
+  R(ctx, x0 - 26, y0 - 22, 11, 1, isNight ? "#4d2b17" : "#6e4023");
 
   // Rigging ropes (dithered lines)
   for (let s = 0; s < 12; s += 2) {
-    R(ctx, x0 - 14 - Math.floor(s * 1.5), y0 - 30 + s, 1, 1, "#6e594d");
-    R(ctx, x0 + 9 + Math.floor(s * 1.2), y0 - 30 + s, 1, 1, "#6e594d");
+    R(ctx, x0 - 14 - Math.floor(s * 1.5), y0 - 30 + s, 1, 1, isNight ? "#6e594d" : "#a88978");
+    R(ctx, x0 + 9 + Math.floor(s * 1.2), y0 - 30 + s, 1, 1, isNight ? "#6e594d" : "#a88978");
   }
 
   // Clinging seaweed, moss, and corals
@@ -928,20 +993,20 @@ function drawShipwreck(ctx: CanvasRenderingContext2D, x: number, y: number, tick
   R(ctx, x0 - 20, y0 + 1, 3, 2, "#ea580c");
 
   // Soft sandy drift covering the bottom keel so the ship is sunken into the sand
-  R(ctx, x0 - 24, y0 + 2, 44, 2, "#d9b96a");
-  R(ctx, x0 - 20, y0 + 4, 38, 3, "#e8d49a");
+  R(ctx, x0 - 24, y0 + 2, 44, 2, isNight ? "#d9b96a" : "#f59e0b");
+  R(ctx, x0 - 20, y0 + 4, 38, 3, isNight ? "#e8d49a" : "#fde68a");
 
   // Bubble vent rising from the hull breach
   const bPhase = (tick % 24);
   const b1Y = y0 - 6 - bPhase * 2;
   const b1X = x0 - 7 + Math.round(Math.sin((bPhase + tick) * 0.4) * 2);
   if (b1Y > 10) {
-    R(ctx, b1X, b1Y, 2, 2, "#ecfdf5");
+    R(ctx, b1X, b1Y, 2, 2, isNight ? "#38bdf8" : "#ecfdf5");
     R(ctx, b1X, b1Y, 1, 1, "#ffffff");
   }
 }
 
-function drawAquariumPark(ctx: CanvasRenderingContext2D, BW: number, sandTop: number, tick: number) {
+function drawAquariumPark(ctx: CanvasRenderingContext2D, BW: number, sandTop: number, tick: number, isNight = true) {
   const tLeft = Math.floor(BW * 0.10);
   const tRight = Math.floor(BW * 0.90);
   const tW = tRight - tLeft;
@@ -950,12 +1015,14 @@ function drawAquariumPark(ctx: CanvasRenderingContext2D, BW: number, sandTop: nu
   const tunnelH = tunnelFloor - tunnelRoof;
 
   // 1. Transparent Acrylic Glass Tunnel Canopy
-  R(ctx, tLeft, tunnelRoof, tW, tunnelH, "rgba(8, 47, 73, 0.45)");
-  R(ctx, tLeft, tunnelRoof + 3, tW, tunnelH - 5, "rgba(254, 240, 138, 0.08)");
+  const canopyFill = isNight ? "rgba(8, 47, 73, 0.45)" : "rgba(186, 230, 253, 0.28)";
+  const ambientGlow = isNight ? "rgba(254, 240, 138, 0.08)" : "rgba(255, 255, 255, 0.15)";
+  R(ctx, tLeft, tunnelRoof, tW, tunnelH, canopyFill);
+  R(ctx, tLeft, tunnelRoof + 3, tW, tunnelH - 5, ambientGlow);
 
   // Upper curved glass roofline (continuous arched highlight)
-  R(ctx, tLeft, tunnelRoof, tW, 2, "rgba(186, 230, 253, 0.85)");
-  R(ctx, tLeft + 2, tunnelRoof + 2, tW - 4, 1, "rgba(224, 242, 254, 0.45)");
+  R(ctx, tLeft, tunnelRoof, tW, 2, isNight ? "rgba(186, 230, 253, 0.85)" : "rgba(255, 255, 255, 0.95)");
+  R(ctx, tLeft + 2, tunnelRoof + 2, tW - 4, 1, isNight ? "rgba(224, 242, 254, 0.45)" : "rgba(255, 255, 255, 0.65)");
   for (let gx = tLeft + 18; gx < tRight; gx += 44) {
     R(ctx, gx, tunnelRoof + 2, 7, 1, "#ffffff");
     R(ctx, gx + 5, tunnelRoof + 3, 5, 1, "rgba(255, 255, 255, 0.6)");
@@ -964,16 +1031,16 @@ function drawAquariumPark(ctx: CanvasRenderingContext2D, BW: number, sandTop: nu
   // 2. Structural Steel Arch Rings
   const ribSpacing = 24;
   for (let rx = tLeft; rx <= tRight; rx += ribSpacing) {
-    R(ctx, rx - 1, tunnelRoof, 3, tunnelH, "#0f172a");
-    R(ctx, rx, tunnelRoof, 2, tunnelH, "#334155");
-    R(ctx, rx, tunnelRoof, 1, tunnelH, "#64748b");
-    R(ctx, rx, tunnelRoof + 3, 1, 1, "#94a3b8");
-    R(ctx, rx, tunnelFloor - 3, 1, 1, "#94a3b8");
+    R(ctx, rx - 1, tunnelRoof, 3, tunnelH, isNight ? "#0f172a" : "#334155");
+    R(ctx, rx, tunnelRoof, 2, tunnelH, isNight ? "#334155" : "#64748b");
+    R(ctx, rx, tunnelRoof, 1, tunnelH, isNight ? "#64748b" : "#94a3b8");
+    R(ctx, rx, tunnelRoof + 3, 1, 1, "#e2e8f0");
+    R(ctx, rx, tunnelFloor - 3, 1, 1, "#e2e8f0");
   }
 
   // 3. Walkway Floor & Neon Floor Guide Lighting
-  R(ctx, tLeft, tunnelFloor, tW, 3, "#0f172a");
-  const ledGlow = tick % 4 < 2 ? "#38bdf8" : "#0ea5e9";
+  R(ctx, tLeft, tunnelFloor, tW, 3, isNight ? "#0f172a" : "#1e293b");
+  const ledGlow = isNight ? (tick % 4 < 2 ? "#38bdf8" : "#0ea5e9") : (tick % 4 < 2 ? "#0284c7" : "#0ea5e9");
   R(ctx, tLeft, tunnelFloor - 1, tW, 1, ledGlow);
 
   // 4. Sprites of People Walking & Interacting Inside the Tunnel
@@ -1038,16 +1105,17 @@ function drawAquariumPark(ctx: CanvasRenderingContext2D, BW: number, sandTop: nu
   R(ctx, wX + 1, tunnelFloor - 4, 2, wLeg ? 3 : 4, "#1e293b");
 }
 
-function drawSunkenTemple(ctx: CanvasRenderingContext2D, x: number, y: number, _tick: number) {
+function drawSunkenTemple(ctx: CanvasRenderingContext2D, x: number, y: number, _tick: number, isNight = true) {
   const x0 = Math.round(x);
   const y0 = Math.round(y);
 
   const dX = x0 + 52;
   const dY = y0 - 32;
-  R(ctx, dX - 18, dY - 4, 36, 12, "#083344");
-  R(ctx, dX - 3, dY - 26, 2, 22, "#083344");
-  R(ctx, dX - 10, dY - 18, 14, 1, "#083344");
-  R(ctx, dX - 12, dY - 18, 2, 14, "#083344");
+  const domeColor = isNight ? "#083344" : "#38bdf8";
+  R(ctx, dX - 18, dY - 4, 36, 12, domeColor);
+  R(ctx, dX - 3, dY - 26, 2, 22, domeColor);
+  R(ctx, dX - 10, dY - 18, 14, 1, domeColor);
+  R(ctx, dX - 12, dY - 18, 2, 14, domeColor);
 
   R(ctx, x0 - 36, y0 + 6, 72, 4, "#1e293b");
   R(ctx, x0 - 34, y0 + 7, 68, 3, "#475569");
@@ -1133,6 +1201,32 @@ export default function ContributionGrass() {
   /** Collapsible year picker overlay inside the tank. */
   const [yearOpen, setYearOpen] = useState(false);
   const yearBoxRef = useRef<HTMLDivElement>(null);
+
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof document !== "undefined") {
+      return (document.documentElement.dataset.theme as "light" | "dark") || "dark";
+    }
+    return "dark";
+  });
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const current = (document.documentElement.dataset.theme as "light" | "dark") || "dark";
+      setTheme(current);
+    };
+    updateTheme();
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === "attributes" && m.attributeName === "data-theme") {
+          updateTheme();
+        }
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const isDark = theme === "dark";
 
   // Close the year picker on outside click or Escape.
   useEffect(() => {
@@ -1265,7 +1359,7 @@ export default function ContributionGrass() {
     // revisited year shows the same reef, while fish are seeded per day so
     // each active day keeps its own fish as the year fills in.
     const year = selectedYear ?? yearFromCalendar(calendar);
-    const scenery = sceneryFor(year);
+    const scenery = sceneryFor(year, isDark);
     const decorRand = mulberry32(year * 97 + 13);
 
     const hovered = { index: -1 };
@@ -1407,18 +1501,20 @@ export default function ContributionGrass() {
 
       // 2. Theme Landmark Centerpiece (Drawn on top of the seabed)
       if (scenery.theme === "shipwreck") {
-        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick);
+        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick, scenery.isNight);
       } else if (scenery.theme === "aquarium") {
-        drawAquariumPark(ctx, BW, sandTop, tick);
+        drawAquariumPark(ctx, BW, sandTop, tick, scenery.isNight);
       } else if (scenery.theme === "temple") {
-        drawSunkenTemple(ctx, Math.floor(BW * 0.44), sandTop + 4, tick);
+        drawSunkenTemple(ctx, Math.floor(BW * 0.44), sandTop + 4, tick, scenery.isNight);
       } else if (scenery.theme === "abyss") {
-        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick);
+        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick, scenery.isNight);
       } else if (scenery.theme === "kelp") {
         const bx = Math.floor(BW * 0.48);
         const by = sandTop + 4;
-        R(ctx, bx - 14, by - 16, 28, 20, "#1c1917");
-        R(ctx, bx - 12, by - 14, 24, 16, "#44403c");
+        const stoneDark = scenery.isNight ? "#1c1917" : "#44403c";
+        const stoneLight = scenery.isNight ? "#44403c" : "#78716c";
+        R(ctx, bx - 14, by - 16, 28, 20, stoneDark);
+        R(ctx, bx - 12, by - 14, 24, 16, stoneLight);
         R(ctx, bx - 5, by - 10, 10, 10, "#0284c7");
         R(ctx, bx - 4, by - 9, 8, 8, "#38bdf8");
         R(ctx, bx - 3, by - 8, 6, 6, "#e0f2fe");
@@ -1426,7 +1522,7 @@ export default function ContributionGrass() {
 
       // 3. Tiered Coral Reef Shelves on Left & Right Flanks
       if (scenery.theme === "shipwreck" || scenery.theme === "abyss" || scenery.theme === "temple" || scenery.theme === "kelp") {
-        drawCoralShelves(ctx, BW, sandTop, tick);
+        drawCoralShelves(ctx, BW, sandTop, tick, scenery.isNight);
       }
 
       // 4. Kelp ribbons + branching corals on the sand
@@ -1615,14 +1711,15 @@ export default function ContributionGrass() {
         const bx = Math.round(b.nx * BW + sway);
         const by = Math.round(4 + b.y * (sandTop - 8) + bob);
         const s = b.s;
-        R(ctx, bx, by, s, 1, "#d1fae5");
-        R(ctx, bx, by + s - 1, s, 1, "#d1fae5");
-        R(ctx, bx, by, 1, s, "#d1fae5");
-        R(ctx, bx + s - 1, by, 1, s, "#d1fae5");
+        const bubbleColor = scenery.isNight ? "#38bdf8" : "#ecfdf5";
+        R(ctx, bx, by, s, 1, bubbleColor);
+        R(ctx, bx, by + s - 1, s, 1, bubbleColor);
+        R(ctx, bx, by, 1, s, bubbleColor);
+        R(ctx, bx + s - 1, by, 1, s, bubbleColor);
       });
 
       if (school.length === 0) {
-        ctx.fillStyle = "#ecfdf5";
+        ctx.fillStyle = scenery.isNight ? "#38bdf8" : "#0f766e";
         ctx.font = "8px monospace";
         ctx.textAlign = "center";
         ctx.fillText("NO CONTRIBUTIONS - QUIET WATER", Math.floor(BW / 2), Math.floor(sandTop / 2));
@@ -1750,16 +1847,21 @@ export default function ContributionGrass() {
       observer.disconnect();
       resizeObserver.disconnect();
     };
-  }, [calendar, selectedYear]);
+  }, [calendar, selectedYear, isDark]);
 
   const displayYear = selectedYear ?? yearFromCalendar(calendar);
   const activeDays = calendar.weeks.flatMap((w) => w.contributionDays).filter((d) => d.contributionCount > 0).length;
-  const sceneryName = sceneryFor(displayYear).name;
+  const sceneryName = sceneryFor(displayYear, isDark).name;
 
   return (
     <div className="github-grass-card">
       <div className="github-grass-heading">
-        <span>Contribution aquarium · {displayYear} reef</span>
+        <span className="inline-flex items-center gap-1.5 flex-wrap">
+          Contribution aquarium · {displayYear} reef
+          <span className="inline-flex items-center gap-1 text-[11px] font-normal text-[var(--gh-muted)]">
+            · {isDark ? <Moon size={11} /> : <Sun size={11} />} {isDark ? "Night" : "Day"}
+          </span>
+        </span>
         <a href={`https://github.com/${username}`} target="_blank" rel="noopener noreferrer">
           @{username}
         </a>
@@ -1808,7 +1910,7 @@ export default function ContributionGrass() {
         <canvas
           ref={canvasRef}
           className="contribution-aquarium-canvas"
-          aria-label={`${calendar.totalContributions} GitHub contributions in ${displayYear} visualized as pixel fish in the ${sceneryName} reef. Activate the Drop feed button or click the tank to feed them.`}
+          aria-label={`${calendar.totalContributions} GitHub contributions in ${displayYear} visualized as pixel fish in the ${isDark ? "night" : "day"} ${sceneryName} reef. Activate the Drop feed button or click the tank to feed them.`}
           title="Click to drop fish feed"
         />
         <button
