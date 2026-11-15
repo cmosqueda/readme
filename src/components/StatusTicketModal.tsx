@@ -4,7 +4,7 @@ import {
   Check,
   Code2,
   Copy,
-  Loader2,
+  ExternalLink,
   Mail,
   MessageSquare,
   Rocket,
@@ -74,9 +74,7 @@ export default function StatusTicketModal({ open, onClose }: StatusTicketModalPr
   const [subject, setSubject] = useState("");
   const [details, setDetails] = useState("");
   const [copied, setCopied] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [submittedDirectly, setSubmittedDirectly] = useState(false);
-  const [submittedWithMailto, setSubmittedWithMailto] = useState(false);
+  const [draftOpened, setDraftOpened] = useState(false);
 
   const directEmail =
     contactLinks.find((l) => l.platform.toLowerCase() === "email")?.value ||
@@ -107,9 +105,15 @@ ${details || "(No additional details provided)"}
 ---
 Sent via ${identity.name}'s Portfolio Status Ticket Portal`;
 
+  const mailSubject = `[${currentType.label}] ${subject || "Commission / Inquiry Ticket"}`;
+
   const mailtoLink = `mailto:${directEmail}?subject=${encodeURIComponent(
-    `[${currentType.label}] ${subject || "New Inquiry"}`
+    mailSubject
   )}&body=${encodeURIComponent(formattedTicket)}`;
+
+  const gmailWebLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+    directEmail
+  )}&su=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(formattedTicket)}`;
 
   const handleCopyTicket = async () => {
     try {
@@ -121,40 +125,11 @@ Sent via ${identity.name}'s Portfolio Status Ticket Portal`;
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
-    setSubmittedDirectly(false);
-    setSubmittedWithMailto(false);
-
-    try {
-      const res = await fetch("/api/ticket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          subject,
-          type: currentType.label,
-          details,
-        }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data?.dispatchedDirectly) {
-        setSubmittedDirectly(true);
-      } else {
-        // Fallback to mailto client
-        setSubmittedWithMailto(true);
-        window.open(mailtoLink, "_blank");
-      }
-    } catch {
-      // Offline or static deployment: launch mailto fallback
-      setSubmittedWithMailto(true);
-      window.open(mailtoLink, "_blank");
-    } finally {
-      setSubmitting(false);
-    }
+    // Open the user's default desktop/mobile email client prefilled
+    window.location.href = mailtoLink;
+    setDraftOpened(true);
   };
 
   return createPortal(
@@ -230,35 +205,43 @@ Sent via ${identity.name}'s Portfolio Status Ticket Portal`;
           </div>
 
           {/* Submission Feedback */}
-          {submittedDirectly && (
-            <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-300 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Check size={16} className="text-emerald-400 shrink-0" />
-                <span>Ticket dispatched directly to Christine&apos;s inbox!</span>
+          {draftOpened && (
+            <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3.5 text-xs text-[var(--gh-text)] space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+                  <Check size={16} className="shrink-0" />
+                  <span>Pre-filled email draft opened in your email client!</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDraftOpened(false)}
+                  className="text-[11px] text-[var(--gh-muted)] hover:text-[var(--gh-text)]"
+                >
+                  Dismiss
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setSubmittedDirectly(false)}
-                className="text-[11px] text-emerald-300 underline underline-offset-2 ml-2 hover:text-white"
-              >
-                Send another
-              </button>
-            </div>
-          )}
-
-          {submittedWithMailto && (
-            <div className="rounded-lg border border-sky-500/40 bg-sky-500/10 p-3 text-xs text-sky-300 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Check size={16} className="text-sky-400 shrink-0" />
-                <span>Opening your email client to send ticket. You can also copy details below.</span>
+              <p className="text-[11px] text-[var(--gh-muted)] leading-relaxed">
+                If your default mail app didn&apos;t open automatically, you can open directly in web Gmail or copy the draft:
+              </p>
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <a
+                  href={gmailWebLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] px-2.5 py-1 text-[11px] font-medium text-[var(--gh-text)] hover:bg-[var(--gh-subtle)] hover:border-[var(--gh-muted)] transition-colors"
+                >
+                  <ExternalLink size={12} className="text-red-400" />
+                  <span>Open in Gmail Web</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={handleCopyTicket}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] px-2.5 py-1 text-[11px] font-medium text-[var(--gh-text)] hover:bg-[var(--gh-subtle)] hover:border-[var(--gh-muted)] transition-colors"
+                >
+                  {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                  <span>{copied ? "Draft Copied!" : "Copy Draft Text"}</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setSubmittedWithMailto(false)}
-                className="text-[11px] text-sky-300 underline underline-offset-2 ml-2 hover:text-white"
-              >
-                Edit
-              </button>
             </div>
           )}
 
@@ -375,31 +358,26 @@ Sent via ${identity.name}'s Portfolio Status Ticket Portal`;
             </div>
 
             {/* Footer Buttons */}
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[var(--gh-border)]">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] px-3.5 py-1.5 text-xs font-medium text-[var(--gh-text)] hover:bg-[var(--gh-subtle)] transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="inline-flex items-center gap-1.5 rounded-md bg-[var(--gh-btn-green,#238636)] hover:bg-[var(--gh-btn-green-hover,#2ea043)] text-white px-4 py-1.5 text-xs font-semibold shadow-xs transition-colors disabled:opacity-60"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 size={13} className="animate-spin" />
-                    <span>Submitting…</span>
-                  </>
-                ) : (
-                  <>
-                    <Send size={13} />
-                    <span>Submit Ticket</span>
-                  </>
-                )}
-              </button>
+            <div className="flex items-center justify-between pt-3 border-t border-[var(--gh-border)]">
+              <span className="text-[11px] text-[var(--gh-muted)] hidden sm:inline">
+                Prefills a ready-to-send draft in your mail app
+              </span>
+              <div className="flex items-center gap-2.5 ml-auto">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] px-3.5 py-1.5 text-xs font-medium text-[var(--gh-text)] hover:bg-[var(--gh-subtle)] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-[var(--gh-btn-green,#238636)] hover:bg-[var(--gh-btn-green-hover,#2ea043)] text-white px-4 py-1.5 text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                >
+                  <Send size={13} />
+                  <span>Open Email Draft</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>
