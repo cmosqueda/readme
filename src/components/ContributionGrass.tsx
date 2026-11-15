@@ -650,10 +650,10 @@ function drawGoldfish(p: PlotFn, tier: 1 | 2 | 3 | 4, frame: boolean) {
   const tailWag = frame ? -1 : 1;
   p(2, -3, 3, 2, OUTLINE);
   p(2, -3, 3, 1, "#dc2626");
-  p(3, -2, 2, 1, "#f87171");
+  p(3, -2, 2, 1, tier >= 3 ? "#fef08a" : "#f87171");
   p(-4, -2, 8, 5, OUTLINE);
   p(-3, -1, 6, 3, "#ea580c");
-  p(-2, -1, 4, 1, "#fb923c");
+  p(-2, -1, 4, 1, tier >= 2 ? "#fed7aa" : "#fb923c");
   p(-3, 1, 6, 1, "#fbbf24");
   p(-5, -2 + tailWag, 2, 4, OUTLINE);
   p(-6, -3 + tailWag, 2, 5, "#f97316");
