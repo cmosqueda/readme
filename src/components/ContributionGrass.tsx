@@ -848,10 +848,16 @@ function drawTubeSponges(ctx: CanvasRenderingContext2D, x: number, baseY: number
   R(ctx, x0 + 4, y0 - 7, 3, 1, "#422006");
 }
 
-function drawCoralShelves(ctx: CanvasRenderingContext2D, BW: number, sandTop: number, tick: number, isNight = true) {
+function drawCoralShelves(
+  ctx: CanvasRenderingContext2D,
+  BW: number,
+  sandTop: number,
+  tick: number,
+  isNight = true,
+  sandCap = isNight ? "#334155" : "#fde68a"
+) {
   const rockDark = isNight ? "#1e293b" : "#475569";
   const rockLight = isNight ? "#475569" : "#64748b";
-  const sandCap = isNight ? "#d9b96a" : "#fde68a";
 
   const leftW = 34;
   R(ctx, 0, sandTop - 8, leftW, 14, rockDark);
@@ -890,7 +896,15 @@ function drawStarfish(ctx: CanvasRenderingContext2D, x: number, y: number, color
   R(ctx, x0 + 1, y0 + 2, 1, 1, color);
 }
 
-function drawShipwreck(ctx: CanvasRenderingContext2D, x: number, y: number, tick: number, isNight = true) {
+function drawShipwreck(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  tick: number,
+  isNight = true,
+  sandLine = isNight ? "#0f172a" : "#f59e0b",
+  sand = isNight ? "#1e293b" : "#fde68a"
+) {
   const x0 = Math.round(x);
   const y0 = Math.round(y);
 
@@ -993,8 +1007,8 @@ function drawShipwreck(ctx: CanvasRenderingContext2D, x: number, y: number, tick
   R(ctx, x0 - 20, y0 + 1, 3, 2, "#ea580c");
 
   // Soft sandy drift covering the bottom keel so the ship is sunken into the sand
-  R(ctx, x0 - 24, y0 + 2, 44, 2, isNight ? "#d9b96a" : "#f59e0b");
-  R(ctx, x0 - 20, y0 + 4, 38, 3, isNight ? "#e8d49a" : "#fde68a");
+  R(ctx, x0 - 24, y0 + 2, 44, 2, sandLine);
+  R(ctx, x0 - 20, y0 + 4, 38, 3, sand);
 
   // Bubble vent rising from the hull breach
   const bPhase = (tick % 24);
@@ -1501,13 +1515,13 @@ export default function ContributionGrass() {
 
       // 2. Theme Landmark Centerpiece (Drawn on top of the seabed)
       if (scenery.theme === "shipwreck") {
-        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick, scenery.isNight);
+        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick, scenery.isNight, scenery.sandLine, scenery.sand);
       } else if (scenery.theme === "aquarium") {
         drawAquariumPark(ctx, BW, sandTop, tick, scenery.isNight);
       } else if (scenery.theme === "temple") {
         drawSunkenTemple(ctx, Math.floor(BW * 0.44), sandTop + 4, tick, scenery.isNight);
       } else if (scenery.theme === "abyss") {
-        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick, scenery.isNight);
+        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick, scenery.isNight, scenery.sandLine, scenery.sand);
       } else if (scenery.theme === "kelp") {
         const bx = Math.floor(BW * 0.48);
         const by = sandTop + 4;
@@ -1522,7 +1536,7 @@ export default function ContributionGrass() {
 
       // 3. Tiered Coral Reef Shelves on Left & Right Flanks
       if (scenery.theme === "shipwreck" || scenery.theme === "abyss" || scenery.theme === "temple" || scenery.theme === "kelp") {
-        drawCoralShelves(ctx, BW, sandTop, tick, scenery.isNight);
+        drawCoralShelves(ctx, BW, sandTop, tick, scenery.isNight, scenery.sandDark);
       }
 
       // 4. Kelp ribbons + branching corals on the sand
