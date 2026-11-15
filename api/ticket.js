@@ -25,7 +25,37 @@ ${details}
 Sent via portfolio status ticket modal.
 `;
 
-  // 1. If Resend API Key is available
+  // 1. If Brevo API Key is available (Free tier: 300 emails/day)
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const senderEmail = process.env.BREVO_SENDER_EMAIL || destination;
+      const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "api-key": process.env.BREVO_API_KEY,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: { name: name ? `${name} (Portfolio Ticket)` : "Portfolio Ticket System", email: senderEmail },
+          to: [{ email: destination, name: "Christine Mosqueda" }],
+          replyTo: { email, name: name || email },
+          subject: title,
+          textContent,
+        }),
+      });
+
+      if (res.ok) {
+        return response.status(200).json({ ok: true, dispatchedDirectly: true });
+      }
+      const errText = await res.text();
+      console.error("Brevo API dispatch failed:", errText);
+    } catch (err) {
+      console.error("Direct email dispatch failed via Brevo:", err);
+    }
+  }
+
+  // 2. If Resend API Key is available
   if (process.env.RESEND_API_KEY) {
     try {
       const res = await fetch("https://api.resend.com/emails", {
