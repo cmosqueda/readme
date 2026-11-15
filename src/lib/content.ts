@@ -34,6 +34,20 @@ export interface BlogPost {
   content: string;
 }
 
+export interface ExperienceData {
+  slug: string;
+  id: string;
+  company: string;
+  role: string;
+  period: string;
+  location: string;
+  order: number;
+  highlights: string[];
+  draft: boolean;
+  description: string;
+  content: string;
+}
+
 const projectFiles = import.meta.glob("/src/content/projects/*.md", {
   eager: true,
   query: "?raw",
@@ -41,6 +55,12 @@ const projectFiles = import.meta.glob("/src/content/projects/*.md", {
 }) as Record<string, string>;
 
 const blogFiles = import.meta.glob("/src/content/blogs/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+}) as Record<string, string>;
+
+const experienceFiles = import.meta.glob("/src/content/experiences/*.md", {
   eager: true,
   query: "?raw",
   import: "default",
@@ -129,4 +149,29 @@ export function getBlogPosition(slug: string | undefined) {
     previousSlug: currentIndex > 0 ? blogPosts[currentIndex - 1].slug : null,
     nextSlug: currentIndex >= 0 && currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1].slug : null,
   };
+}
+
+const experiences: ExperienceData[] = Object.entries(experienceFiles)
+  .map(([path, raw]) => {
+    const slug = slugFromPath(path);
+    const { data, content } = matter(raw);
+    return {
+      slug,
+      id: data.id ?? slug,
+      company: data.company ?? "",
+      role: data.role ?? "",
+      period: data.period ?? "",
+      location: data.location ?? "",
+      order: Number(data.order) || 0,
+      highlights: Array.isArray(data.highlights) ? data.highlights : [],
+      draft: data.draft === true,
+      description: content.trim(),
+      content: content.trim(),
+    };
+  })
+  .filter((exp) => !exp.draft)
+  .sort((a, b) => a.order - b.order);
+
+export function getAllExperiences(): ExperienceData[] {
+  return experiences;
 }

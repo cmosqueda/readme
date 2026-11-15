@@ -2,6 +2,7 @@ import {
   ArrowUp,
   BookMarked,
   BookOpen,
+  BriefcaseBusiness,
   Check,
   ChevronDown,
   ChevronRight,
@@ -13,6 +14,7 @@ import {
   Globe,
   Loader2,
   LogOut,
+  MapPin,
   Newspaper,
   Pencil,
   Plus,
@@ -68,7 +70,20 @@ type Project = {
   coverImage?: string;
 };
 
-type Workspace = "blogs" | "projects";
+type Experience = {
+  slug: string;
+  sha?: string;
+  company: string;
+  role: string;
+  period: string;
+  location: string;
+  order: number;
+  highlights: string[];
+  draft?: boolean;
+  body: string;
+};
+
+type Workspace = "blogs" | "projects" | "experiences";
 type StatusFilter = "all" | "published" | "draft";
 
 type DeployInfo = {
@@ -124,6 +139,18 @@ const blankProject = (): Project => ({
   draft: true,
 });
 
+const blankExperience = (): Experience => ({
+  slug: "",
+  company: "",
+  role: "",
+  period: `${new Date().toLocaleDateString("en-US", { month: "short" })} ${new Date().getFullYear()} — Present`,
+  location: "Cagayan de Oro, PH",
+  order: 1,
+  highlights: [],
+  draft: true,
+  body: "",
+});
+
 const request = async (url: string, init?: RequestInit) => {
   const response = await fetch(url, {
     ...init,
@@ -154,10 +181,12 @@ export default function Studio() {
   const [workspace, setWorkspace] = useState<Workspace>("blogs");
   const [posts, setPosts] = useState<Post[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [profileStatus, updateProfileStatus] = useProfileStatus();
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
@@ -185,13 +214,15 @@ export default function Studio() {
     try {
       const user = await request("/api/studio/session");
       setLogin(user.login);
-      const [nextPosts, nextProjects, statusData] = await Promise.all([
+      const [nextPosts, nextProjects, nextExperiences, statusData] = await Promise.all([
         request("/api/studio/blogs"),
         request("/api/studio/projects"),
+        request("/api/studio/experiences").catch(() => []),
         request("/api/studio/profile-status").catch(() => null),
       ]);
       setPosts(nextPosts);
       setProjects(nextProjects);
+      setExperiences(nextExperiences || []);
       if (statusData && (typeof statusData.emoji === "string" || typeof statusData.message === "string")) {
         updateProfileStatus({
           emoji: statusData.emoji ?? "",
@@ -302,6 +333,43 @@ export default function Studio() {
     }
   };
 
+  const persistExperience = async (experience: Experience) => {
+    if (!experience.role.trim() || !experience.company.trim() || !experience.slug.trim()) {
+      throw new Error("Role, company, and slug are required before saving.");
+    }
+    const originalExperience = experience.sha
+      ? experiences.find((e) => e.sha === experience.sha)
+      : undefined;
+    const expResult = await request("/api/studio/experiences", {
+      method: "PUT",
+      body: JSON.stringify({
+        slug: experience.slug,
+        originalSlug: originalExperience?.slug ?? experience.slug,
+        data: experience,
+        body: experience.body,
+        sha: experience.sha,
+      }),
+    });
+    await load();
+    setEditingExperience(null);
+    setPreview(false);
+    if (expResult?.warning) setError(expResult.warning);
+    void refreshDeploy();
+  };
+
+  const saveExperience = async () => {
+    if (!editingExperience || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await persistExperience(editingExperience);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not save.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const [pendingDelete, setPendingDelete] = useState<{
     type: Workspace;
     slug: string;
@@ -309,12 +377,16 @@ export default function Studio() {
     sha: string;
   } | null>(null);
 
-  const askDelete = (type: Workspace, item: Post | Project) => {
+  const askDelete = (type: Workspace, item: Post | Project | Experience) => {
     if (!item.sha || busy) return;
+    const title =
+      "title" in item
+        ? item.title || "(untitled)"
+        : `${item.role || "Role"} at ${item.company || "Company"}`;
     setPendingDelete({
       type,
       slug: item.slug,
-      title: item.title || "(untitled)",
+      title,
       sha: item.sha,
     });
   };
@@ -331,7 +403,8 @@ export default function Studio() {
       });
       await load();
       if (type === "blogs") setEditingPost(null);
-      else setEditingProject(null);
+      else if (type === "projects") setEditingProject(null);
+      else setEditingExperience(null);
       setPreview(false);
       setPendingDelete(null);
       void refreshDeploy();
@@ -359,7 +432,7 @@ export default function Studio() {
   // Object twin of baselineRef so Discard can restore content, not just
   // close the dialog (otherwise the dirty editor survives and the guard
   // fires again on the very next exit).
-  const baselineItemRef = useRef<Post | Project | null>(null);
+  const baselineItemRef = useRef<Post | Project | Experience | null>(null);
   type PendingNav =
     | { kind: "studio"; run: () => void | Promise<void> }
     | { kind: "router"; run: () => void; dest: string };
@@ -371,8 +444,12 @@ export default function Studio() {
   const unsavedOpenRef = useRef(false);
   unsavedOpenRef.current = unsavedOpen;
 
-  const activeItem: Post | Project | null =
-    workspace === "blogs" ? editingPost : editingProject;
+  const activeItem: Post | Project | Experience | null =
+    workspace === "blogs"
+      ? editingPost
+      : workspace === "projects"
+      ? editingProject
+      : editingExperience;
   const dirty =
     activeItem !== null && baselineRef.current !== null
       ? JSON.stringify(activeItem) !== baselineRef.current
@@ -486,7 +563,11 @@ export default function Studio() {
       editingPost === null && editingProject !== null
         ? { ...editingProject, draft: true }
         : null;
-    if (!flaggedPost && !flaggedProject) {
+    const flaggedExperience =
+      editingPost === null && editingProject === null && editingExperience !== null
+        ? { ...editingExperience, draft: true }
+        : null;
+    if (!flaggedPost && !flaggedProject && !flaggedExperience) {
       cancelUnsaved();
       return;
     }
@@ -495,6 +576,7 @@ export default function Studio() {
     try {
       if (flaggedPost) await persistPost(flaggedPost);
       else if (flaggedProject) await persistProject(flaggedProject);
+      else if (flaggedExperience) await persistExperience(flaggedExperience);
       // The blocker is still engaged (dialog open), so a router
       // destination proceeds; in-studio actions just run.
       suppressRef.current = true;
@@ -544,6 +626,14 @@ export default function Studio() {
     setError("");
   };
 
+  const openExperience = (exp: Experience) => {
+    setEditingExperience(exp);
+    baselineRef.current = JSON.stringify(exp);
+    baselineItemRef.current = exp;
+    setPreview(false);
+    setError("");
+  };
+
   const newEntry = () => {
     guardNav(() => {
       setError("");
@@ -553,9 +643,14 @@ export default function Studio() {
         setEditingPost(fresh);
         baselineRef.current = JSON.stringify(fresh);
         baselineItemRef.current = fresh;
-      } else {
+      } else if (workspace === "projects") {
         const fresh = blankProject();
         setEditingProject(fresh);
+        baselineRef.current = JSON.stringify(fresh);
+        baselineItemRef.current = fresh;
+      } else {
+        const fresh = blankExperience();
+        setEditingExperience(fresh);
         baselineRef.current = JSON.stringify(fresh);
         baselineItemRef.current = fresh;
       }
@@ -567,13 +662,17 @@ export default function Studio() {
   const revertToBaseline = () => {
     const snapshot = baselineItemRef.current;
     const restored = snapshot
-      ? (JSON.parse(JSON.stringify(snapshot)) as Post & Project)
+      ? (JSON.parse(JSON.stringify(snapshot)) as Post & Project & Experience)
       : null;
     if (workspace === "blogs") {
       setEditingPost(restored && restored.sha ? (restored as Post) : null);
-    } else {
+    } else if (workspace === "projects") {
       setEditingProject(
         restored && restored.sha ? (restored as Project) : null,
+      );
+    } else {
+      setEditingExperience(
+        restored && restored.sha ? (restored as Experience) : null,
       );
     }
   };
@@ -610,10 +709,42 @@ export default function Studio() {
       .sort((a, b) => a.order - b.order);
   }, [projects, query, statusFilter]);
 
+  const filteredExperiences = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    return experiences
+      .filter((exp) => {
+        if (statusFilter === "published" && exp.draft) return false;
+        if (statusFilter === "draft" && !exp.draft) return false;
+        if (!q) return true;
+        return (
+          exp.role.toLowerCase().includes(q) ||
+          exp.company.toLowerCase().includes(q) ||
+          exp.location.toLowerCase().includes(q) ||
+          exp.slug.toLowerCase().includes(q) ||
+          exp.highlights.some((h) => h.toLowerCase().includes(q))
+        );
+      })
+      .sort((a, b) => Number(a.order) - Number(b.order));
+  }, [experiences, query, statusFilter]);
+
   const draftCount =
-    workspace === "blogs" ? posts.filter((p) => p.draft).length : projects.filter((p) => p.draft).length;
-  const totalCount = workspace === "blogs" ? posts.length : projects.length;
-  const activeSlug = workspace === "blogs" ? editingPost?.slug : editingProject?.slug;
+    workspace === "blogs"
+      ? posts.filter((p) => p.draft).length
+      : workspace === "projects"
+      ? projects.filter((p) => p.draft).length
+      : experiences.filter((e) => e.draft).length;
+  const totalCount =
+    workspace === "blogs"
+      ? posts.length
+      : workspace === "projects"
+      ? projects.length
+      : experiences.length;
+  const activeSlug =
+    workspace === "blogs"
+      ? editingPost?.slug
+      : workspace === "projects"
+      ? editingProject?.slug
+      : editingExperience?.slug;
 
   if (checkingSession) {
     return (
@@ -658,7 +789,12 @@ export default function Studio() {
   }
 
   const isBlogs = workspace === "blogs";
-  const activeEditor = isBlogs ? editingPost : editingProject;
+  const isProjects = workspace === "projects";
+  const isExperiences = workspace === "experiences";
+  const activeEditor = isBlogs ? editingPost : isProjects ? editingProject : editingExperience;
+
+  const workspaceNoun = isBlogs ? "article" : isProjects ? "project" : "experience";
+  const workspaceTitle = isBlogs ? "articles" : isProjects ? "projects" : "experiences";
 
   return (
     <main className="app-shell min-h-screen">
@@ -682,11 +818,19 @@ export default function Studio() {
             </button>
             <button
               onClick={() => selectWorkspace("projects")}
-              className={`github-tab studio-tab ${!isBlogs ? "github-tab-active" : ""}`}
-              aria-current={!isBlogs ? "page" : undefined}
+              className={`github-tab studio-tab ${isProjects ? "github-tab-active" : ""}`}
+              aria-current={isProjects ? "page" : undefined}
             >
               <FolderKanban size={14} /> Projects
               <span className="github-badge">{projects.length}</span>
+            </button>
+            <button
+              onClick={() => selectWorkspace("experiences")}
+              className={`github-tab studio-tab ${isExperiences ? "github-tab-active" : ""}`}
+              aria-current={isExperiences ? "page" : undefined}
+            >
+              <BriefcaseBusiness size={14} /> Experiences
+              <span className="github-badge">{experiences.length}</span>
             </button>
           </nav>
           <div className="studio-topbar-actions">
@@ -710,15 +854,19 @@ export default function Studio() {
         <header className="studio-repohead">
           <div className="studio-repohead-left">
             <span className="studio-repo-icon">
-              <BookMarked size={17} />
+              {isBlogs ? <BookMarked size={17} /> : isProjects ? <FolderKanban size={17} /> : <BriefcaseBusiness size={17} />}
             </span>
             <div>
               <p className="studio-repo-title">
-                portfolio-content <span>/</span> {isBlogs ? "articles" : "projects"}
+                portfolio-content <span>/</span> {workspaceTitle}
               </p>
               <p className="github-muted studio-repo-sub">
-                {isBlogs ? "Markdown articles committed to main" : "Featured case studies committed to main"} · signed
-                in as <strong>{login}</strong>
+                {isBlogs
+                  ? "Markdown articles committed to main"
+                  : isProjects
+                  ? "Featured case studies committed to main"
+                  : "Career experience entries committed to main"}{" "}
+                · signed in as <strong>{login}</strong>
               </p>
             </div>
           </div>
@@ -746,7 +894,7 @@ export default function Studio() {
             </span>
             <span className="github-badge">Public</span>
             <button onClick={newEntry} className="github-btn-primary studio-new">
-              <Plus size={15} /> New {isBlogs ? "article" : "project"}
+              <Plus size={15} /> New {workspaceNoun}
             </button>
           </div>
         </header>
@@ -767,7 +915,13 @@ export default function Studio() {
           </div>
           <div className="github-info-card studio-summary-item studio-summary-wide">
             <FileCode2 size={14} />
-            <span className="github-muted">{isBlogs ? "content/blogs/*.md" : "content/projects/*.md"}</span>
+            <span className="github-muted">
+              {isBlogs
+                ? "content/blogs/*.md"
+                : isProjects
+                ? "content/projects/*.md"
+                : "content/experiences/*.md"}
+            </span>
           </div>
         </div>
 
@@ -791,7 +945,7 @@ export default function Studio() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={`Search ${isBlogs ? "articles" : "projects"}…`}
+                  placeholder={`Search ${workspaceTitle}…`}
                   aria-label="Search files"
                 />
                 {query && (
@@ -845,38 +999,69 @@ export default function Studio() {
                     </button>
                   ))
                 )
-              ) : filteredProjects.length === 0 ? (
-                <EmptyState
-                  icon={<FolderKanban size={18} />}
-                  title="No projects found"
-                  hint="Try a different search, or pin a new project."
-                  action={newEntry}
-                  actionLabel="New project"
-                />
-              ) : (
-                filteredProjects.map((project) => (
+              ) : isProjects ? (
+                filteredProjects.length === 0 ? (
+                  <EmptyState
+                    icon={<FolderKanban size={18} />}
+                    title="No projects found"
+                    hint="Try a different search, or pin a new project."
+                    action={newEntry}
+                    actionLabel="New project"
+                  />
+                ) : (
+                  filteredProjects.map((project) => (
                     <button
                       key={project.slug}
                       onClick={() => guardNav(() => openProject(project))}
-                    className={`studio-file ${activeSlug === project.slug ? "studio-file-active" : ""}`}
-                  >
-                    <span className="studio-file-icon">
-                      <FileCode2 size={15} />
-                    </span>
-                    <span className="studio-file-main">
-                      <span className="studio-file-title">{project.title || "(untitled)"}</span>
-                      <span className="github-muted studio-file-meta">
-                        {project.slug}.md · #{project.order} · {project.draft ? "draft" : project.status}
+                      className={`studio-file ${activeSlug === project.slug ? "studio-file-active" : ""}`}
+                    >
+                      <span className="studio-file-icon">
+                        <FileCode2 size={15} />
                       </span>
-                    </span>
-                    <StatusBadge draft={project.draft} />
-                  </button>
-                ))
+                      <span className="studio-file-main">
+                        <span className="studio-file-title">{project.title || "(untitled)"}</span>
+                        <span className="github-muted studio-file-meta">
+                          {project.slug}.md · #{project.order} · {project.draft ? "draft" : project.status}
+                        </span>
+                      </span>
+                      <StatusBadge draft={project.draft} />
+                    </button>
+                  ))
+                )
+              ) : (
+                filteredExperiences.length === 0 ? (
+                  <EmptyState
+                    icon={<BriefcaseBusiness size={18} />}
+                    title="No experiences found"
+                    hint="Try a different search, or add a career entry."
+                    action={newEntry}
+                    actionLabel="New experience"
+                  />
+                ) : (
+                  filteredExperiences.map((exp) => (
+                    <button
+                      key={exp.slug}
+                      onClick={() => guardNav(() => openExperience(exp))}
+                      className={`studio-file ${activeSlug === exp.slug ? "studio-file-active" : ""}`}
+                    >
+                      <span className="studio-file-icon">
+                        <BriefcaseBusiness size={15} />
+                      </span>
+                      <span className="studio-file-main">
+                        <span className="studio-file-title">{exp.role || "(untitled role)"}</span>
+                        <span className="github-muted studio-file-meta">
+                          {exp.company} · #{exp.order} · {exp.period}
+                        </span>
+                      </span>
+                      <StatusBadge draft={exp.draft} />
+                    </button>
+                  ))
+                )
               )}
             </div>
 
             <button onClick={newEntry} className="github-button studio-files-new">
-              <FilePlus2 size={15} /> New {isBlogs ? "article" : "project"}
+              <FilePlus2 size={15} /> New {workspaceNoun}
             </button>
           </aside>
 
@@ -885,15 +1070,21 @@ export default function Studio() {
             {!activeEditor ? (
               <div className="studio-empty">
                 <span className="studio-empty-icon">
-                  {isBlogs ? <BookOpen size={20} /> : <FolderKanban size={20} />}
+                  {isBlogs ? (
+                    <BookOpen size={20} />
+                  ) : isProjects ? (
+                    <FolderKanban size={20} />
+                  ) : (
+                    <BriefcaseBusiness size={20} />
+                  )}
                 </span>
-                <h2>{isBlogs ? "Select an article" : "Select a project"} to edit</h2>
+                <h2>Select an {workspaceNoun} to edit</h2>
                 <p className="github-muted">
-                  Pick a file on the left, or create a new {isBlogs ? "article" : "featured project"}. Saves commit
+                  Pick a file on the left, or create a new {workspaceNoun}. Saves commit
                   Markdown directly to <code>main</code>.
                 </p>
                 <button onClick={newEntry} className="github-btn-primary">
-                  <Plus size={15} /> New {isBlogs ? "article" : "project"}
+                  <Plus size={15} /> New {workspaceNoun}
                 </button>
               </div>
             ) : isBlogs && editingPost ? (
@@ -906,7 +1097,7 @@ export default function Studio() {
                 setPreview={setPreview}
                 remove={() => askDelete("blogs", editingPost)}
               />
-            ) : !isBlogs && editingProject ? (
+            ) : isProjects && editingProject ? (
               <ProjectEditor
                 project={editingProject}
                 setProject={setEditingProject}
@@ -915,6 +1106,16 @@ export default function Studio() {
                 preview={preview}
                 setPreview={setPreview}
                 remove={() => askDelete("projects", editingProject)}
+              />
+            ) : isExperiences && editingExperience ? (
+              <ExperienceEditor
+                experience={editingExperience}
+                setExperience={setEditingExperience}
+                save={saveExperience}
+                busy={busy}
+                preview={preview}
+                setPreview={setPreview}
+                remove={() => askDelete("experiences", editingExperience)}
               />
             ) : null}
           </section>
@@ -945,7 +1146,9 @@ export default function Studio() {
             <span className="studio-modal-icon" aria-hidden="true">
               <Trash2 size={18} />
             </span>
-            <h2 id="studio-delete-title">Delete {pendingDelete.type === "blogs" ? "article" : "project"}?</h2>
+            <h2 id="studio-delete-title">
+              Delete {pendingDelete.type === "blogs" ? "article" : pendingDelete.type === "projects" ? "project" : "experience"}?
+            </h2>
             <p id="studio-delete-desc">
               <strong>{pendingDelete.title}</strong>
               <span className="studio-modal-path">{pendingDelete.slug}.md</span>
@@ -1003,12 +1206,14 @@ export default function Studio() {
             <h2 id="studio-unsaved-title">Unsaved changes</h2>
             <p id="studio-unsaved-desc">
               <strong>
-                {(activeItem?.title ?? "").trim() ||
-                  activeItem?.slug ||
-                  "Untitled"}
+                {activeItem && "title" in activeItem
+                  ? (activeItem.title ?? "").trim() || activeItem.slug || "Untitled"
+                  : activeItem
+                  ? `${activeItem.role || "Role"} at ${activeItem.company || "Company"}`
+                  : "Untitled"}
               </strong>
               <span>
-                Your draft {workspace === "blogs" ? "article" : "project"} is
+                Your draft {workspace === "blogs" ? "article" : workspace === "projects" ? "project" : "experience"} is
                 not saved yet. Do you want to save it as a draft first?
                 Discarding will lose all your temporary changes.
               </span>
@@ -2208,6 +2413,179 @@ function ProjectEditor({
               value={project.body}
               onChange={(e) => update("body", e.target.value)}
               placeholder={"# Case study in Markdown…"}
+              spellCheck={false}
+            />
+          </div>
+        </>
+      )}
+    </EditorChrome>
+  );
+}
+
+/* ── Experience editor ────────────────────────────────────── */
+
+function ExperienceEditor({
+  experience,
+  setExperience,
+  save,
+  busy,
+  preview,
+  setPreview,
+  remove,
+}: {
+  experience: Experience;
+  setExperience: (exp: Experience) => void;
+  save: () => void;
+  busy: boolean;
+  preview: boolean;
+  setPreview: (v: boolean) => void;
+  remove: () => void;
+}) {
+  const update = <K extends keyof Experience>(key: K, value: Experience[K]) =>
+    setExperience({ ...experience, [key]: value });
+
+  const updateRoleOrCompany = (roleVal: string, companyVal: string) => {
+    if (!experience.sha) {
+      const derivedSlug = slugify(`${companyVal}-${roleVal}`);
+      setExperience({ ...experience, role: roleVal, company: companyVal, slug: derivedSlug || experience.slug });
+      return;
+    }
+    setExperience({ ...experience, role: roleVal, company: companyVal });
+  };
+
+  return (
+    <EditorChrome
+      kind={experience.draft ? "drafts" : "experiences"}
+      fileName={experience.slug}
+      title={experience.role ? `${experience.role} @ ${experience.company}` : "(untitled experience)"}
+      isNew={!experience.sha}
+      draft={experience.draft}
+      busy={busy}
+      preview={preview}
+      setPreview={setPreview}
+      save={save}
+      remove={remove}
+    >
+      {preview ? (
+        <div className="studio-preview">
+          <p className="github-muted studio-kicker">Preview · career timeline entry</p>
+          <div className="github-activity-timeline" style={{ padding: "16px 0" }}>
+            <div className="github-activity-event-icon">
+              <BriefcaseBusiness size={19} />
+            </div>
+            <div className="github-experience-list">
+              <article className="github-experience-item">
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+                  <h3>{experience.role || "(untitled role)"}</h3>
+                  <time className="text-xs text-[var(--gh-muted)] shrink-0">{experience.period}</time>
+                </div>
+                <p className="font-medium text-[var(--gh-text)] flex items-center gap-1.5 flex-wrap">
+                  <span>{experience.company || "(company)"}</span>
+                  {experience.location && (
+                    <span className="text-xs text-[var(--gh-muted)] inline-flex items-center gap-1 font-normal">
+                      · <MapPin size={11} /> {experience.location}
+                    </span>
+                  )}
+                </p>
+                <div className="mt-2 text-xs leading-relaxed text-[var(--gh-muted)] github-markdown">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {experience.body || "_No description provided._"}
+                  </ReactMarkdown>
+                </div>
+                {experience.highlights && experience.highlights.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {experience.highlights.map((tag, i) => (
+                      <span key={i} className="github-badge text-[11px] py-0.5 px-2">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </div>
+          </div>
+          <PreviewBackToTop />
+        </div>
+      ) : (
+        <>
+          <div className="studio-section">
+            <h3>
+              <BriefcaseBusiness size={14} /> Frontmatter
+            </h3>
+            <div className="studio-form-grid">
+              <Field label="Role / Title">
+                <input
+                  className={inputCls}
+                  value={experience.role}
+                  onChange={(e) => updateRoleOrCompany(e.target.value, experience.company)}
+                  placeholder="e.g. Product Systems Analyst"
+                />
+              </Field>
+              <Field label="Company / Organization">
+                <input
+                  className={inputCls}
+                  value={experience.company}
+                  onChange={(e) => updateRoleOrCompany(experience.role, e.target.value)}
+                  placeholder="e.g. AdaptiveHub"
+                />
+              </Field>
+              <Field label="Slug" hint={experience.sha ? "renames the file on save" : "auto from company & role"}>
+                <input
+                  className={`${inputCls} studio-mono-input`}
+                  value={experience.slug}
+                  onChange={(e) => update("slug", slugify(e.target.value))}
+                  placeholder="company-role"
+                  spellCheck={false}
+                />
+              </Field>
+              <Field label="Display order" hint="lower numbers appear first">
+                <input
+                  className={inputCls}
+                  type="number"
+                  value={experience.order}
+                  onChange={(e) => update("order", Number(e.target.value))}
+                />
+              </Field>
+              <Field label="Period">
+                <input
+                  className={inputCls}
+                  value={experience.period}
+                  onChange={(e) => update("period", e.target.value)}
+                  placeholder="e.g. Jan 2024 — Present"
+                />
+              </Field>
+              <Field label="Location">
+                <input
+                  className={inputCls}
+                  value={experience.location}
+                  onChange={(e) => update("location", e.target.value)}
+                  placeholder="e.g. Cagayan de Oro, PH"
+                />
+              </Field>
+              <Field label="Highlights" hint="type, then Enter" span>
+                <TokenInput
+                  values={experience.highlights}
+                  onChange={(highlights) => update("highlights", highlights)}
+                  placeholder="React, Process Optimization, QA Automation"
+                  ariaLabel="Experience highlights"
+                />
+              </Field>
+            </div>
+          </div>
+
+          <VisibilityControl draft={experience.draft} onChange={(draft) => update("draft", draft)} />
+
+          <div className="studio-section">
+            <h3>
+              <FileCode2 size={14} /> Role description
+              <span className="github-muted">{experience.body.length} chars</span>
+            </h3>
+            <textarea
+              className={monoCls}
+              rows={12}
+              value={experience.body}
+              onChange={(e) => update("body", e.target.value)}
+              placeholder={"Describe your core contributions, systems designed, and outcomes achieved…"}
               spellCheck={false}
             />
           </div>

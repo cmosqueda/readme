@@ -71,9 +71,19 @@ for (const entry of projects) {
   if (present(data.order) && (!Number.isInteger(data.order) || data.order < 0)) errors.push(`${label}: order must be a whole number greater than or equal to zero.`);
 }
 
+const experiences = await getEntries("experiences");
+for (const entry of experiences) {
+  const { data } = entry;
+  const label = validateCommon(entry);
+  requireFields(data, ["company", "role", "period", "order", "highlights"], label);
+
+  if (present(data.highlights) && !validTextList(data.highlights)) errors.push(`${label}: highlights must be a non-empty list of text values.`);
+  if (present(data.order) && (!Number.isInteger(data.order) || data.order < 0)) errors.push(`${label}: order must be a whole number greater than or equal to zero.`);
+}
+
 if (errors.length) {
   console.error("Content validation failed:\n- " + errors.join("\n- "));
   process.exit(1);
 }
 
-console.log(`Validated ${blogs.length} blog post${blogs.length === 1 ? "" : "s"} and ${projects.length} featured project${projects.length === 1 ? "" : "s"}.`);
+console.log(`Validated ${blogs.length} blog post${blogs.length === 1 ? "" : "s"}, ${projects.length} featured project${projects.length === 1 ? "" : "s"}, and ${experiences.length} career experience${experiences.length === 1 ? "" : "s"}.`);
