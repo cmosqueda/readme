@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Save,
   Search,
+  Smile,
   Trash2,
   TriangleAlert,
   UserRound,
@@ -30,6 +31,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ThemeToggle from "../components/ThemeToggle";
 import { setPageSeo } from "../lib/seo";
+import { useProfileStatus, type ProfileStatus } from "../data/status";
+import ProfileStatusBadge from "../components/StatusBadge";
+import profilePic from "../assets/glorious-goat.jpg";
+import { statusIconList, renderStatusIcon } from "../lib/statusIcons";
 
 type Post = {
   slug: string;
@@ -149,6 +154,8 @@ export default function Studio() {
   const [workspace, setWorkspace] = useState<Workspace>("blogs");
   const [posts, setPosts] = useState<Post[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [profileStatus, updateProfileStatus] = useProfileStatus();
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [error, setError] = useState("");
@@ -178,12 +185,19 @@ export default function Studio() {
     try {
       const user = await request("/api/studio/session");
       setLogin(user.login);
-      const [nextPosts, nextProjects] = await Promise.all([
+      const [nextPosts, nextProjects, statusData] = await Promise.all([
         request("/api/studio/blogs"),
         request("/api/studio/projects"),
+        request("/api/studio/profile-status").catch(() => null),
       ]);
       setPosts(nextPosts);
       setProjects(nextProjects);
+      if (statusData && (typeof statusData.emoji === "string" || typeof statusData.message === "string")) {
+        updateProfileStatus({
+          emoji: statusData.emoji ?? "",
+          message: statusData.message ?? "",
+        });
+      }
     } catch {
       setLogin(null);
     } finally {
@@ -678,6 +692,8 @@ export default function Studio() {
           <div className="studio-topbar-actions">
             <ProfileMenu
               login={login}
+              status={profileStatus}
+              onEditStatus={() => setStatusModalOpen(true)}
               onSignOut={async () => {
                 guardNav(async () => {
                   await request("/api/studio/session", { method: "DELETE" });
@@ -714,6 +730,17 @@ export default function Studio() {
                 void refreshDeploy();
               }}
             />
+            <button
+              type="button"
+              onClick={() => setStatusModalOpen(true)}
+              className="github-button flex items-center gap-2"
+              title="Edit public profile status"
+            >
+              {renderStatusIcon(profileStatus.emoji, 13, "text-[var(--gh-muted)]")}
+              <span className="max-w-[120px] truncate text-xs font-medium">
+                {profileStatus.message || "Set status"}
+              </span>
+            </button>
             <span className="github-badge">
               <span className="studio-dot" /> main
             </span>
@@ -1019,13 +1046,299 @@ export default function Studio() {
           </div>
         </div>
       )}
+
+      <StatusModal
+        open={statusModalOpen}
+        onClose={() => setStatusModalOpen(false)}
+        currentStatus={profileStatus}
+        onSaved={(updated) => updateProfileStatus(updated)}
+        onRefreshDeploy={() => {
+          void refreshDeploy();
+        }}
+      />
     </main>
   );
 }
 
 /* ── Bits ─────────────────────────────────────────────────── */
 
-function ProfileMenu({ login, onSignOut }: { login: string; onSignOut: () => Promise<void> }) {
+function StatusModal({
+  open,
+  onClose,
+  currentStatus,
+  onSaved,
+  onRefreshDeploy,
+}: {
+  open: boolean;
+  onClose: () => void;
+  currentStatus: ProfileStatus;
+  onSaved: (next: ProfileStatus) => void;
+  onRefreshDeploy?: () => void;
+}) {
+  const [emoji, setEmoji] = useState(currentStatus.emoji);
+  const [message, setMessage] = useState(currentStatus.message);
+  const [sha, setSha] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setEmoji(currentStatus.emoji);
+      setMessage(currentStatus.message);
+      setError("");
+      setSuccess(false);
+
+      void request("/api/studio/profile-status")
+        .then((data) => {
+          if (data) {
+            if (typeof data.emoji === "string") setEmoji(data.emoji);
+            if (typeof data.message === "string") setMessage(data.message);
+            if (typeof data.sha === "string") setSha(data.sha);
+          }
+        })
+        .catch(() => {
+          // offline/local dev fallback
+        });
+    }
+  }, [open, currentStatus]);
+
+  if (!open) return null;
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError("");
+    setSuccess(false);
+    try {
+      const res = await request("/api/studio/profile-status", {
+        method: "PUT",
+        body: JSON.stringify({ emoji, message, sha }),
+      });
+      const updatedStatus: ProfileStatus = { emoji, message };
+      if (res?.sha) setSha(res.sha);
+      onSaved(updatedStatus);
+      setSuccess(true);
+      if (onRefreshDeploy) onRefreshDeploy();
+      setTimeout(() => {
+        onClose();
+      }, 500);
+    } catch (err: any) {
+      setError(err?.message || "Could not save status.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleClear = () => {
+    setEmoji("");
+    setMessage("");
+  };
+
+  return (
+    <div
+      className="studio-modal-overlay"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget && !saving) onClose();
+      }}
+    >
+      <div
+        className="studio-modal !max-w-md"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="studio-status-title"
+      >
+        <div className="flex items-center justify-between border-b border-[var(--gh-border)] pb-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--gh-subtle)] text-[var(--gh-text)]">
+              <Smile size={18} />
+            </span>
+            <div>
+              <h2 id="studio-status-title" className="text-base font-semibold leading-tight">
+                Edit profile status
+              </h2>
+              <p className="text-xs text-[var(--gh-muted)]">
+                Shows on desktop avatar & mobile header.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="github-icon-button"
+            aria-label="Close"
+            disabled={saving}
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="space-y-4 py-4">
+          {error && (
+            <div className="studio-alert" role="alert">
+              <TriangleAlert size={14} />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {success && (
+            <div className="flex items-center gap-2 rounded-md border border-[var(--gh-success)] bg-emerald-500/10 px-3 py-2 text-xs text-[var(--gh-success)]">
+              <Check size={14} />
+              <span>Status saved and committed to main!</span>
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[var(--gh-text)]">Status Icon & Message</label>
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-12 items-center justify-center rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] text-[var(--gh-text)]">
+                {renderStatusIcon(emoji, 16)}
+              </div>
+              <input
+                type="text"
+                value={emoji}
+                onChange={(e) => setEmoji(e.target.value)}
+                placeholder="coffee"
+                className="w-24 rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--gh-link)] font-mono"
+                title="Icon name or key (e.g. coffee, code, rocket)"
+              />
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value.slice(0, 80))}
+                  placeholder="What's happening? (e.g. nabubuang)"
+                  maxLength={80}
+                  className="w-full rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] px-3 py-1.5 text-sm outline-none focus:border-[var(--gh-link)]"
+                />
+                <span className="absolute right-2 top-2 text-[10px] text-[var(--gh-muted)]">
+                  {message.length}/80
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <span className="text-[11px] font-medium text-[var(--gh-muted)]">Icon pack presets:</span>
+            <div className="flex flex-wrap gap-1.5">
+              {statusIconList.map((preset) => {
+                const Icon = preset.icon;
+                const isSelected = emoji.toLowerCase() === preset.key.toLowerCase();
+                return (
+                  <button
+                    key={preset.key}
+                    type="button"
+                    onClick={() => {
+                      setEmoji(preset.key);
+                      if (!message) setMessage(preset.label.toLowerCase());
+                    }}
+                    className={`flex items-center gap-1.5 rounded-md border border-[var(--gh-border)] px-2 py-1 text-xs transition-colors hover:bg-[var(--gh-subtle)] ${
+                      isSelected
+                        ? "border-[var(--gh-link)] bg-[var(--gh-subtle)] text-[var(--gh-link)] font-medium"
+                        : "bg-[var(--gh-canvas)] text-[var(--gh-text)]"
+                    }`}
+                  >
+                    <Icon size={13} />
+                    <span className="text-[11px]">{preset.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-[var(--gh-border)] bg-[var(--gh-subtle)] p-3">
+            <div className="mb-2 flex items-center justify-between text-[11px] font-medium text-[var(--gh-muted)]">
+              <span>Live preview</span>
+              <span>Desktop & Mobile</span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="flex flex-col items-center justify-center rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] p-3">
+                <span className="mb-2 text-[10px] font-medium text-[var(--gh-muted)]">Desktop Side Panel</span>
+                <div className="relative inline-block">
+                  <div className="h-16 w-16 overflow-hidden rounded-full border border-[var(--gh-border)] bg-[var(--gh-subtle)]">
+                    <img
+                      src={profilePic}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <ProfileStatusBadge
+                    variant="desktop-corner"
+                    customStatus={{ emoji, message }}
+                    expandAlways={true}
+                    disableModal={true}
+                    className="!max-w-[130px] !text-[10px]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-center rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] p-3">
+                <span className="mb-2 text-[10px] font-medium text-[var(--gh-muted)]">Mobile Banner</span>
+                <ProfileStatusBadge
+                  variant="mobile-banner"
+                  customStatus={{ emoji, message }}
+                  disableModal={true}
+                  className="!text-[11px]"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="studio-modal-actions flex items-center justify-between border-t border-[var(--gh-border)] pt-3">
+          <button
+            type="button"
+            className="github-button text-xs text-[var(--gh-danger)] hover:bg-rose-500/10"
+            onClick={handleClear}
+            disabled={saving || (!emoji && !message)}
+          >
+            Clear status
+          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="github-button"
+              onClick={onClose}
+              disabled={saving}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="github-btn-primary"
+              onClick={() => void handleSave()}
+              disabled={saving}
+            >
+              {saving ? (
+                <>
+                  <Loader2 size={13} className="animate-spin" />
+                  Saving…
+                </>
+              ) : (
+                <>
+                  <Save size={13} />
+                  Save status
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProfileMenu({
+  login,
+  status,
+  onEditStatus,
+  onSignOut,
+}: {
+  login: string;
+  status: ProfileStatus;
+  onEditStatus: () => void;
+  onSignOut: () => Promise<void>;
+}) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -1072,6 +1385,21 @@ function ProfileMenu({ login, onSignOut }: { login: string; onSignOut: () => Pro
               <span className="github-muted">Signed in</span>
             </span>
           </div>
+          <button
+            type="button"
+            role="menuitem"
+            className="studio-menu-row studio-menu-action"
+            onClick={() => {
+              setOpen(false);
+              onEditStatus();
+            }}
+          >
+            {renderStatusIcon(status.emoji, 14, "text-[var(--gh-muted)]")}
+            <span className="flex-1 text-left truncate">
+              {status.message || "Set status"}
+            </span>
+            <Pencil size={11} className="github-muted" />
+          </button>
           <div className="studio-menu-row">
             <span className="studio-menu-label">Appearance</span>
             <ThemeToggle className="github-theme-toggle studio-menu-theme" />

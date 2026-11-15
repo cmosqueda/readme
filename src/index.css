@@ -86,6 +86,10 @@
     --md-shadow: 0 0 0;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     min-width: 320px;
     background: var(--md-surface);
@@ -548,7 +552,6 @@
 .github-side-heading { color: var(--gh-text); font-size: .75rem; font-weight: 600; border-bottom: 1px solid var(--gh-border); padding-bottom: .5rem; }
 .github-button, .github-icon-button, .github-theme-toggle { color: var(--gh-text); background: var(--gh-subtle); border: 1px solid var(--gh-border); border-radius: 6px; box-shadow: 0 1px 0 rgb(31 35 40 / .04); }
 .github-button:hover, .github-icon-button:hover, .github-theme-toggle:hover { background: color-mix(in srgb, var(--gh-subtle) 82%, var(--gh-border)); }
-.github-resume-icon { color: var(--gh-link); background: color-mix(in srgb, var(--gh-link) 10%, transparent); }
 .github-theme-toggle { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; }
 
 .github-topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--gh-canvas) 92%, transparent); border-bottom: 1px solid var(--gh-border); backdrop-filter: blur(10px); }

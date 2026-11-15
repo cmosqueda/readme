@@ -1,4 +1,3 @@
-import { FileText } from "lucide-react";
 import { contactLinks } from "../data/contact";
 import { iconRegistry } from "../lib/iconRegistry";
 import favicon from "../assets/favicon.png";
@@ -25,16 +24,6 @@ export default function ContactSection() {
               </a>
             );
           })}
-          <a
-            href="/docu/Christine-Mosqueda_resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Résumé"
-            title="Résumé"
-          >
-            <FileText size={16} aria-hidden="true" />
-            <span className="github-footer-link-label">Résumé</span>
-          </a>
         </nav>
       </div>
     </footer>

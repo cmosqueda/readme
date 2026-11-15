@@ -97,8 +97,11 @@ function hashStr(s: string) {
  * lays out its decor from a year-seeded PRNG, so revisiting a year shows
  * the same reef it had.
  */
+type SceneryTheme = "shipwreck" | "aquarium" | "temple" | "abyss" | "kelp";
+
 type Scenery = {
   name: string;
+  theme: SceneryTheme;
   water: string[];
   surface: string;
   glint: string;
@@ -116,49 +119,55 @@ type Scenery = {
 
 const SCENERIES: Scenery[] = [
   {
-    name: "Lagoon",
-    water: ["#6fe3c1", "#4ed6b6", "#35c0c8", "#2aa8c4", "#1f8ab8", "#1a6fa8", "#155a94", "#10467e", "#0d3a6e"],
-    surface: "#a7f3d0", glint: "#ecfdf5", ray: "#a7f3d0", plankton: "#d1fae5",
+    name: "Coral Galleon",
+    theme: "shipwreck",
+    water: ["#5eead4", "#2dd4bf", "#14b8a6", "#0d9488", "#0f766e", "#115e59", "#134e4a", "#0f3835", "#0a2624"],
+    surface: "#a7f3d0", glint: "#ecfdf5", ray: "#5eead4", plankton: "#ccfbf1",
     sand: "#e8d49a", sandDark: "#fff7d6", sandLine: "#d9b96a",
     speckleLight: "#fff7d6", speckleDark: "#c49a52",
-    kelp: "#22c55e", kelpDark: "#2e7d32", rock: "#8d7b68",
+    kelp: "#22c55e", kelpDark: "#15803d", rock: "#1e293b",
   },
   {
-    name: "Ember Reef",
-    water: ["#ffd6a5", "#ffb4a2", "#ff8fa3", "#e07a9a", "#c86b98", "#a8558f", "#7e3f7d", "#5e2f63", "#43204a"],
-    surface: "#ffe5d9", glint: "#fff1e6", ray: "#ffd6a5", plankton: "#ffe5d9",
-    sand: "#e9c46a", sandDark: "#fff3d6", sandLine: "#c98f3d",
-    speckleLight: "#fff3d6", speckleDark: "#b07a3a",
-    kelp: "#84cc16", kelpDark: "#4d7c0f", rock: "#7c4a21",
+    name: "Sunken Temple",
+    theme: "temple",
+    water: ["#67e8f9", "#22d3ee", "#06b6d4", "#0891b2", "#0e7490", "#155e75", "#164e63", "#083344", "#04202c"],
+    surface: "#a5f3fc", glint: "#cffafe", ray: "#67e8f9", plankton: "#cffafe",
+    sand: "#cbd5e1", sandDark: "#f1f5f9", sandLine: "#94a3b8",
+    speckleLight: "#f1f5f9", speckleDark: "#64748b",
+    kelp: "#14b8a6", kelpDark: "#0f766e", rock: "#1e293b",
   },
   {
-    name: "Abyss",
-    water: ["#7dd3fc", "#38bdf8", "#0ea5e9", "#0284c7", "#0369a1", "#075985", "#0c4a6e", "#082f49", "#041e2e"],
-    surface: "#bae6fd", glint: "#e0f2fe", ray: "#7dd3fc", plankton: "#bae6fd",
-    sand: "#9db4c0", sandDark: "#e0eef5", sandLine: "#5c6b73",
-    speckleLight: "#e0eef5", speckleDark: "#4a5a63",
-    kelp: "#2dd4bf", kelpDark: "#0f766e", rock: "#475569",
+    name: "Abyssal Reef",
+    theme: "abyss",
+    water: ["#c084fc", "#a855f7", "#9333ea", "#7e22ce", "#6b21a8", "#581c87", "#3b0764", "#240046", "#10002b"],
+    surface: "#f3e8ff", glint: "#faf5ff", ray: "#c084fc", plankton: "#e9d5ff",
+    sand: "#334155", sandDark: "#475569", sandLine: "#1e293b",
+    speckleLight: "#67e8f9", speckleDark: "#0f172a",
+    kelp: "#a855f7", kelpDark: "#6b21a8", rock: "#0f172a",
   },
   {
     name: "Kelp Forest",
+    theme: "kelp",
     water: ["#bef264", "#a3e635", "#84cc16", "#65a30d", "#4d7c0f", "#3f6212", "#33520f", "#27420c", "#1a2e05"],
     surface: "#ecfccb", glint: "#f7fee7", ray: "#d9f99d", plankton: "#ecfccb",
     sand: "#d6c48f", sandDark: "#fff7d6", sandLine: "#a8894a",
     speckleLight: "#fff7d6", speckleDark: "#8a7440",
-    kelp: "#16a34a", kelpDark: "#14532d", rock: "#6b5d4f",
+    kelp: "#16a34a", kelpDark: "#14532d", rock: "#44403c",
   },
   {
-    name: "Dusk Tide",
-    water: ["#e9d5ff", "#d8b4fe", "#c084fc", "#a855f7", "#9333ea", "#7e22ce", "#6b21a8", "#581c87", "#3b0764"],
-    surface: "#f3e8ff", glint: "#faf5ff", ray: "#d8b4fe", plankton: "#f3e8ff",
-    sand: "#c4b5fd", sandDark: "#f1eaff", sandLine: "#7c6bb0",
-    speckleLight: "#f1eaff", speckleDark: "#6d5fa3",
-    kelp: "#34d399", kelpDark: "#065f46", rock: "#5b536e",
+    name: "Aquarium Park",
+    theme: "aquarium",
+    water: ["#7dd3fc", "#38bdf8", "#0ea5e9", "#0284c7", "#0369a1", "#075985", "#0c4a6e", "#082f49", "#041e2e"],
+    surface: "#bae6fd", glint: "#e0f2fe", ray: "#7dd3fc", plankton: "#e0f2fe",
+    sand: "#fef3c7", sandDark: "#ffffff", sandLine: "#fde68a",
+    speckleLight: "#ffffff", speckleDark: "#d4b46a",
+    kelp: "#10b981", kelpDark: "#047857", rock: "#334155",
   },
 ];
 
 function sceneryFor(year: number): Scenery {
-  const idx = ((year % SCENERIES.length) + SCENERIES.length) % SCENERIES.length;
+  const baseYear = 2026;
+  const idx = (((year - baseYear) % SCENERIES.length) + SCENERIES.length) % SCENERIES.length;
   const found = SCENERIES[idx];
   return found ?? SCENERIES[0]!;
 }
@@ -172,7 +181,19 @@ function yearFromCalendar(cal: ContributionCalendar): number {
   return Number.isFinite(parsed) ? (parsed as number) : new Date().getFullYear();
 }
 
-type Species = "koi" | "tang" | "clown" | "purple" | "angel" | "puffer" | "turtle";
+type Species =
+  | "clown"
+  | "tang"
+  | "angel"
+  | "lionfish"
+  | "whale"
+  | "betta"
+  | "swordfish"
+  | "sunfish"
+  | "puffer"
+  | "turtle"
+  | "koi"
+  | "goldfish";
 
 type SchoolFish = {
   day: ContributionDay;
@@ -212,32 +233,35 @@ type Ripple = { nx: number; ny: number; r: number; life: number };
 const OUTLINE = "#0b1e2d";
 
 function pickSpecies(rand: number, tier: number): Species {
-  // Big catches get the rare silhouettes; small fry stay common.
   if (tier >= 4) {
-    if (rand < 0.3) return "koi";
-    if (rand < 0.55) return "tang";
-    if (rand < 0.75) return "angel";
-    return "turtle";
+    if (rand < 0.28) return "whale";
+    if (rand < 0.52) return "sunfish";
+    if (rand < 0.74) return "turtle";
+    if (rand < 0.88) return "swordfish";
+    return "lionfish";
   }
-  if (rand < 0.25) return "clown";
-  if (rand < 0.45) return "purple";
-  if (rand < 0.62) return "tang";
-  if (rand < 0.76) return "koi";
-  if (rand < 0.88) return "angel";
-  return "puffer";
-}
-
-function paletteFor(species: Species) {
-  switch (species) {
-    case "koi": return { top: "#ff5a2a", mid: "#ff8c42", belly: "#fff4e0", fin: "#2b50aa", stripe: "#ffffff" };
-    case "tang": return { top: "#123a8f", mid: "#2f7fe0", belly: "#d2ecff", fin: "#ffd23f" };
-    case "clown": return { top: "#e85d04", mid: "#ff9e00", belly: "#ffecd2", fin: "#9d0208", stripe: "#ffffff" };
-    case "purple": return { top: "#5a3fd4", mid: "#8b7bff", belly: "#e9e4ff", fin: "#2d1b8f" };
-    case "angel": return { top: "#e8a100", mid: "#ffd60a", belly: "#fff3b0", fin: "#023e8a", stripe: "#3a0ca3" };
-    case "puffer": return { top: "#d90429", mid: "#ff5d8f", belly: "#ffe5ec", fin: "#6a040f", stripe: "#ffffff" };
-    case "turtle": return { top: "#5c4a1e", mid: "#7a6a2e", belly: "#c9e265", fin: "#2e7d32" };
-    default: return { top: "#2f7fe0", mid: "#5fb4ff", belly: "#e8f6ff", fin: "#ffd23f" };
+  if (tier === 3) {
+    if (rand < 0.22) return "angel";
+    if (rand < 0.42) return "lionfish";
+    if (rand < 0.60) return "betta";
+    if (rand < 0.76) return "swordfish";
+    if (rand < 0.90) return "koi";
+    return "tang";
   }
+  if (tier === 2) {
+    if (rand < 0.22) return "clown";
+    if (rand < 0.42) return "tang";
+    if (rand < 0.58) return "goldfish";
+    if (rand < 0.74) return "koi";
+    if (rand < 0.88) return "puffer";
+    return "betta";
+  }
+  // Tier 1 (Small fry)
+  if (rand < 0.30) return "clown";
+  if (rand < 0.55) return "tang";
+  if (rand < 0.75) return "goldfish";
+  if (rand < 0.90) return "puffer";
+  return "koi";
 }
 
 function R(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string) {
@@ -245,9 +269,403 @@ function R(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: nu
   ctx.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
 }
 
+type PlotFn = (lx: number, ly: number, w: number, h: number, color: string) => void;
+
+function makePlotter(ctx: CanvasRenderingContext2D, cx: number, cy: number, dir: 1 | -1): PlotFn {
+  return (lx: number, ly: number, w: number, h: number, color: string) => {
+    const sx = dir === 1 ? cx + lx : cx - lx - w;
+    const sy = cy + ly;
+    R(ctx, sx, sy, w, h, color);
+  };
+}
+
+type FishBounds = {
+  hitR: number;
+  mouthLx: number;
+  mouthLy: number;
+  minLx: number;
+  maxLx: number;
+  minLy: number;
+  maxLy: number;
+};
+
+function getFishBounds(species: Species, tier: 1 | 2 | 3 | 4): FishBounds {
+  switch (species) {
+    case "whale":
+      return { hitR: 16, mouthLx: 12, mouthLy: 0, minLx: -14, maxLx: 12, minLy: -6, maxLy: 6 };
+    case "sunfish":
+      return { hitR: 14, mouthLx: 7, mouthLy: 0, minLx: -7, maxLx: 7, minLy: -11, maxLy: 11 };
+    case "swordfish":
+      return { hitR: 13, mouthLx: 13, mouthLy: 0, minLx: -12, maxLx: 13, minLy: -5, maxLy: 5 };
+    case "turtle":
+      return { hitR: 12, mouthLx: 8, mouthLy: 0, minLx: -7, maxLx: 8, minLy: -4, maxLy: 6 };
+    case "lionfish":
+      return { hitR: 11, mouthLx: 6, mouthLy: 0, minLx: -8, maxLx: 6, minLy: -7, maxLy: 5 };
+    case "angel":
+      return { hitR: 11, mouthLx: 6, mouthLy: 0, minLx: -8, maxLx: 6, minLy: -9, maxLy: 8 };
+    case "betta":
+      return { hitR: 11, mouthLx: 6, mouthLy: 0, minLx: -13, maxLx: 6, minLy: -5, maxLy: 6 };
+    case "koi": {
+      const lg = tier >= 3;
+      return {
+        hitR: lg ? 11 : 8,
+        mouthLx: lg ? 8 : 5,
+        mouthLy: 0,
+        minLx: lg ? -9 : -6,
+        maxLx: lg ? 8 : 5,
+        minLy: lg ? -4 : -3,
+        maxLy: lg ? 4 : 3,
+      };
+    }
+    case "goldfish":
+      return { hitR: 9, mouthLx: 5, mouthLy: 0, minLx: -7, maxLx: 5, minLy: -4, maxLy: 4 };
+    case "puffer": {
+      const sm = tier === 1;
+      return {
+        hitR: sm ? 6 : 9,
+        mouthLx: sm ? 4 : 5,
+        mouthLy: 0,
+        minLx: sm ? -5 : -6,
+        maxLx: sm ? 4 : 5,
+        minLy: sm ? -3 : -4,
+        maxLy: sm ? 3 : 4,
+      };
+    }
+    case "tang": {
+      const sm = tier === 1;
+      return {
+        hitR: sm ? 6 : 9,
+        mouthLx: sm ? 4 : 6,
+        mouthLy: 0,
+        minLx: sm ? -5 : -9,
+        maxLx: sm ? 4 : 6,
+        minLy: sm ? -3 : -4,
+        maxLy: sm ? 3 : 4,
+      };
+    }
+    case "clown":
+    default: {
+      const sm = tier === 1;
+      return {
+        hitR: sm ? 6 : 9,
+        mouthLx: sm ? 4 : 6,
+        mouthLy: 0,
+        minLx: sm ? -5 : -8,
+        maxLx: sm ? 4 : 6,
+        minLy: sm ? -3 : -4,
+        maxLy: sm ? 3 : 4,
+      };
+    }
+  }
+}
+
+function drawClownfish(p: PlotFn, tier: 1 | 2 | 3 | 4, frame: boolean) {
+  const tailWag = frame ? -1 : 1;
+  if (tier === 1) {
+    p(-5, -2 + tailWag, 2, 3, OUTLINE);
+    p(-4, -2, 8, 5, OUTLINE);
+    p(-3, -1, 6, 3, "#ea580c");
+    p(-2, -1, 4, 1, "#fb923c");
+    p(-3, 1, 6, 1, "#fdba74");
+    p(1, -1, 1, 3, "#ffffff");
+    p(-1, -1, 1, 3, "#ffffff");
+    p(-5, -1 + tailWag, 2, 2, "#f97316");
+    p(-4, -1 + tailWag, 1, 2, "#ffffff");
+    p(2, -1, 1, 1, "#ffffff");
+    p(2, -1, 1, 1, OUTLINE);
+  } else {
+    p(-7, -3 + tailWag, 3, 6, OUTLINE);
+    p(-6, -3, 12, 7, OUTLINE);
+    p(6, -1, 1, 3, OUTLINE);
+    p(-5, -2, 10, 5, "#ea580c");
+    p(-4, -2, 8, 1, "#fb923c");
+    p(-5, 2, 10, 1, "#fed7aa");
+    p(3, -2, 1, 5, "#ffffff");
+    p(2, -2, 1, 1, OUTLINE);
+    p(2, 2, 1, 1, OUTLINE);
+    p(-1, -3, 2, 6, "#ffffff");
+    p(-2, -3, 1, 6, OUTLINE);
+    p(1, -3, 1, 6, OUTLINE);
+    p(-5, -1, 1, 3, "#ffffff");
+    p(0, -4, 3, 1, OUTLINE);
+    p(0, -3, 3, 1, "#f97316");
+    p(0, 3, 2, 1, "#f97316");
+    p(-7, -2 + tailWag, 2, 4, "#ea580c");
+    p(-8, -2 + tailWag, 1, 4, "#fb923c");
+    p(-6, -1 + tailWag, 1, 3, "#ffffff");
+    p(4, -1, 2, 2, "#ffffff");
+    p(4, -1, 1, 1, OUTLINE);
+  }
+}
+
+function drawBlueTang(p: PlotFn, tier: 1 | 2 | 3 | 4, frame: boolean) {
+  const tailWag = frame ? -1 : 1;
+  if (tier === 1) {
+    p(-5, -2 + tailWag, 2, 3, OUTLINE);
+    p(-4, -2, 8, 5, OUTLINE);
+    p(-3, -1, 6, 3, "#2563eb");
+    p(-2, -1, 5, 1, "#60a5fa");
+    p(-1, 0, 3, 1, "#0f172a");
+    p(-5, -1 + tailWag, 2, 2, "#facc15");
+    p(2, -1, 1, 1, "#ffffff");
+    p(2, -1, 1, 1, OUTLINE);
+  } else {
+    p(-8, -3 + tailWag, 3, 6, OUTLINE);
+    p(-6, -3, 12, 7, OUTLINE);
+    p(6, -1, 1, 3, OUTLINE);
+    p(-5, -2, 11, 5, "#1d4ed8");
+    p(-4, -2, 9, 1, "#3b82f6");
+    p(-5, 2, 10, 1, "#172554");
+    p(-2, -2, 6, 1, "#0f172a");
+    p(3, -1, 1, 2, "#0f172a");
+    p(-4, -1, 2, 3, "#0f172a");
+    p(-2, 1, 5, 1, "#0f172a");
+    p(-2, -3, 6, 1, "#1e40af");
+    p(-3, 3, 6, 1, "#1e40af");
+    p(1, 1, 2, 1, "#facc15");
+    p(-7, -2 + tailWag, 2, 5, "#facc15");
+    p(-8, -3 + tailWag, 2, 6, "#facc15");
+    p(-9, -2 + tailWag, 1, 4, "#eab308");
+    p(4, -1, 2, 2, "#ffffff");
+    p(4, -1, 1, 1, OUTLINE);
+    p(5, -1, 1, 1, "#ffffff");
+  }
+}
+
+function drawMoorishIdol(p: PlotFn, frame: boolean) {
+  const sWag = frame ? 0 : 1;
+  p(-2, -6, 2, 1, "#ffffff");
+  p(-4, -7, 2, 1, "#ffffff");
+  p(-6 - sWag, -8, 2, 1, "#ffffff");
+  p(-8 - sWag, -9, 2, 1, "#ffffff");
+  p(-6, -4, 11, 9, OUTLINE);
+  p(-2, -6, 4, 3, OUTLINE);
+  p(-1, 4, 3, 4, OUTLINE);
+  p(5, -1, 2, 2, OUTLINE);
+  p(3, -2, 2, 4, "#18181b");
+  p(5, 0, 1, 1, "#fbbf24");
+  p(0, -4, 3, 8, "#facc15");
+  p(1, -3, 2, 6, "#ffffff");
+  p(-3, -3, 3, 7, "#18181b");
+  p(-5, -2, 2, 4, "#ffffff");
+  p(-1, 4, 1, 4, "#18181b");
+  p(0, 4, 1, 3, "#ffffff");
+  p(-7, -2, 2, 4, "#fef08a");
+  p(-8, -2, 1, 4, "#18181b");
+  p(3, -1, 1, 1, "#ffffff");
+  p(4, -1, 1, 1, OUTLINE);
+}
+
+function drawLionfish(p: PlotFn, frame: boolean) {
+  const fWag = frame ? 1 : 0;
+  p(3, -6 - fWag, 1, 3, OUTLINE);
+  p(3, -6 - fWag, 1, 2, "#ffffff");
+  p(1, -7 + fWag, 1, 4, OUTLINE);
+  p(1, -7 + fWag, 1, 3, "#f87171");
+  p(-1, -7 - fWag, 1, 4, OUTLINE);
+  p(-1, -7 - fWag, 1, 3, "#ffffff");
+  p(-3, -6 + fWag, 1, 4, OUTLINE);
+  p(-3, -6 + fWag, 1, 3, "#f87171");
+  p(-5, -5 - fWag, 1, 3, OUTLINE);
+  p(-5, -5 - fWag, 1, 2, "#ffffff");
+  p(-6, -3, 12, 7, OUTLINE);
+  p(-5, -2, 10, 5, "#b91c1c");
+  p(2, -2, 1, 5, "#fef3c7");
+  p(-1, -2, 1, 5, "#fef3c7");
+  p(-4, -2, 1, 5, "#fef3c7");
+  p(0, 1, 4, 4, OUTLINE);
+  p(0, 1, 3, 3, "#fca5a5");
+  p(1, 2, 2, 2, "#b91c1c");
+  p(2, 3, 1, 1, "#fef3c7");
+  p(-7, -2 + fWag, 2, 4, "#fca5a5");
+  p(-8, -3 + fWag, 1, 6, "#b91c1c");
+  p(4, -1, 2, 2, "#ffffff");
+  p(4, -1, 1, 1, OUTLINE);
+}
+
+function drawWhaleShark(p: PlotFn, frame: boolean) {
+  const tWag = frame ? -1 : 1;
+  p(-14, -4 + tWag, 4, 8, OUTLINE);
+  p(-11, -4, 22, 9, OUTLINE);
+  p(11, -2, 2, 5, OUTLINE);
+  p(-1, -6, 4, 3, OUTLINE);
+  p(-1, -5, 3, 2, "#1e293b");
+  p(-6, -4, 2, 2, "#1e293b");
+  p(-10, -3, 20, 4, "#1e293b");
+  p(-9, -3, 18, 1, "#334155");
+  p(-10, 1, 20, 3, "#cbd5e1");
+  p(11, -1, 1, 3, "#1e293b");
+  p(4, -1, 1, 3, "#0f172a");
+  p(6, -1, 1, 3, "#0f172a");
+  p(8, -1, 1, 3, "#0f172a");
+  p(1, -2, 1, 1, "#ffffff");
+  p(3, -1, 1, 1, "#ffffff");
+  p(-1, -1, 1, 1, "#93c5fd");
+  p(-3, -2, 1, 1, "#ffffff");
+  p(-5, -1, 1, 1, "#ffffff");
+  p(-7, -2, 1, 1, "#93c5fd");
+  p(-8, 0, 1, 1, "#ffffff");
+  p(-4, 0, 1, 1, "#ffffff");
+  p(0, 0, 1, 1, "#ffffff");
+  p(3, 4, 4, 2, OUTLINE);
+  p(3, 3, 4, 2, "#1e293b");
+  p(-12, -3 + tWag, 2, 6, "#1e293b");
+  p(-14, -5 + tWag, 2, 4, "#1e293b");
+  p(-14, 1 + tWag, 2, 3, "#1e293b");
+  p(9, -2, 1, 1, "#ffffff");
+  p(10, -2, 1, 1, OUTLINE);
+}
+
+function drawBetta(p: PlotFn, frame: boolean) {
+  const f = frame ? 1 : -1;
+  p(-8, -4 - f, 4, 8, OUTLINE);
+  p(-12, -5 - f * 2, 5, 10, OUTLINE);
+  p(-7, -3 - f, 3, 6, "#dc2626");
+  p(-10, -4 - f * 2, 4, 8, "#b91c1c");
+  p(-12, -3 - f * 2, 3, 6, "#f87171");
+  p(-2, -5, 6, 2, OUTLINE);
+  p(-2, -4, 5, 2, "#dc2626");
+  p(-1, -5, 3, 1, "#fca5a5");
+  p(-5, -2, 10, 5, OUTLINE);
+  p(-4, -1, 9, 3, "#991b1b");
+  p(-3, -1, 7, 1, "#ef4444");
+  p(-4, 1, 8, 1, "#7f1d1d");
+  p(0, 3, 1, 4, OUTLINE);
+  p(0, 3, 1, 3, "#f87171");
+  p(3, -1, 2, 2, "#ffffff");
+  p(3, -1, 1, 1, OUTLINE);
+}
+
+function drawSwordfish(p: PlotFn, frame: boolean) {
+  const tWag = frame ? -1 : 1;
+  p(6, 0, 7, 1, "#334155");
+  p(12, 0, 1, 1, "#94a3b8");
+  p(0, -5, 4, 4, OUTLINE);
+  p(1, -5, 2, 3, "#1e3a8a");
+  p(1, -4, 2, 2, "#38bdf8");
+  p(-9, -2, 15, 5, OUTLINE);
+  p(-8, -1, 13, 2, "#1d4ed8");
+  p(-7, -1, 11, 1, "#60a5fa");
+  p(-8, 1, 13, 2, "#f8fafc");
+  p(-10, -2 + tWag, 2, 5, OUTLINE);
+  p(-12, -4 + tWag, 2, 3, "#1e3a8a");
+  p(-12, 2 + tWag, 2, 3, "#1e3a8a");
+  p(4, -1, 2, 2, "#ffffff");
+  p(4, -1, 1, 1, OUTLINE);
+}
+
+function drawSunfish(p: PlotFn, frame: boolean) {
+  const tilt = frame ? 1 : -1;
+  p(-2 + tilt, -11, 3, 7, OUTLINE);
+  p(-1 + tilt, -10, 2, 6, "#475569");
+  p(0 + tilt, -9, 1, 4, "#94a3b8");
+  p(-2 - tilt, 5, 3, 7, OUTLINE);
+  p(-1 - tilt, 5, 2, 6, "#475569");
+  p(0 - tilt, 6, 1, 4, "#94a3b8");
+  p(-6, -5, 12, 11, OUTLINE);
+  p(6, -1, 1, 3, OUTLINE);
+  p(-5, -4, 10, 9, "#64748b");
+  p(-3, -3, 7, 3, "#94a3b8");
+  p(-4, 2, 8, 2, "#cbd5e1");
+  p(-6, -3, 1, 2, "#334155");
+  p(-7, -1, 1, 3, "#334155");
+  p(-6, 2, 1, 2, "#334155");
+  p(4, -2, 2, 2, "#ffffff");
+  p(4, -2, 1, 1, OUTLINE);
+  p(6, 0, 1, 1, "#fca5a5");
+}
+
+function drawPufferfish(p: PlotFn, tier: 1 | 2 | 3 | 4, frame: boolean) {
+  const f = frame ? 1 : 0;
+  if (tier === 1) {
+    p(-4, -2, 7, 5, OUTLINE);
+    p(-3, -1, 5, 3, "#d97706");
+    p(-2, 1, 4, 1, "#fef3c7");
+    p(0, -3, 1, 1, "#92400e");
+    p(0, 3, 1, 1, "#92400e");
+    p(-5, -1 + f, 1, 2, "#d97706");
+    p(1, -1, 2, 2, "#ffffff");
+    p(2, -1, 1, 1, OUTLINE);
+  } else {
+    p(2, -4, 1, 1, "#b45309");
+    p(-1, -4, 1, 1, "#b45309");
+    p(-3, -3, 1, 1, "#b45309");
+    p(2, 4, 1, 1, "#b45309");
+    p(-1, 4, 1, 1, "#b45309");
+    p(4, 2, 1, 1, "#b45309");
+    p(-5, -3, 10, 7, OUTLINE);
+    p(5, -1, 1, 3, OUTLINE);
+    p(-4, -2, 8, 5, "#d97706");
+    p(-3, -2, 6, 2, "#f59e0b");
+    p(-4, 1, 8, 2, "#fef3c7");
+    p(-2, 2, 4, 1, "#fde68a");
+    p(-2, -4, 2, 1, "#f59e0b");
+    p(-2, 3, 2, 1, "#f59e0b");
+    p(-6, -1 + f, 2, 3, "#d97706");
+    p(2, -2, 2, 2, "#ffffff");
+    p(3, -2, 1, 1, OUTLINE);
+    p(2, -2, 1, 1, "#ffffff");
+  }
+}
+
+function drawSeaTurtle(p: PlotFn, frame: boolean) {
+  const f = frame ? 1 : 0;
+  p(2, 2 + f * 2, 4, 3, OUTLINE);
+  p(2, 2 + f * 2, 3, 2, "#65a30d");
+  p(3, 3 + f * 2, 2, 1, "#84cc16");
+  p(-5, 2, 3, 2, "#4d7c0f");
+  p(-5, -3, 10, 6, OUTLINE);
+  p(-4, -2, 8, 4, "#78350f");
+  p(-2, -2, 3, 2, "#b45309");
+  p(-1, -2, 2, 1, "#f59e0b");
+  p(1, -1, 2, 2, "#d97706");
+  p(-4, -1, 2, 2, "#d97706");
+  p(5, -1, 3, 3, OUTLINE);
+  p(5, 0, 3, 2, "#65a30d");
+  p(6, 0, 1, 1, OUTLINE);
+}
+
+function drawKoi(p: PlotFn, tier: 1 | 2 | 3 | 4, frame: boolean) {
+  const tailWag = frame ? -1 : 1;
+  const len = tier >= 3 ? 14 : 10;
+  const half = Math.floor(len / 2);
+  const h = tier >= 3 ? 5 : 4;
+  const halfH = Math.floor(h / 2);
+  p(-half - 2, -halfH + tailWag, 2, h, OUTLINE);
+  p(-half, -halfH, len, h + 1, OUTLINE);
+  p(half, 0, 1, 1, OUTLINE);
+  p(-half + 1, -halfH + 1, len - 2, h - 1, "#ffffff");
+  p(-half + 1, halfH, len - 2, 1, "#f1f5f9");
+  p(1, -halfH + 1, 2, 2, "#ea580c");
+  p(0, -halfH + 1, 1, 1, "#f97316");
+  p(-half + 2, -halfH + 1, 2, 2, "#ea580c");
+  p(-1, 0, 1, 1, "#1e293b");
+  p(-3, -halfH + 1, 1, 1, "#1e293b");
+  p(-half - 2, -1 + tailWag, 2, 3, "#ffffff");
+  p(-half - 3, 0 + tailWag, 1, 2, "#fed7aa");
+  p(half - 2, -halfH + 1, 1, 1, OUTLINE);
+}
+
+function drawGoldfish(p: PlotFn, tier: 1 | 2 | 3 | 4, frame: boolean) {
+  const tailWag = frame ? -1 : 1;
+  p(2, -3, 3, 2, OUTLINE);
+  p(2, -3, 3, 1, "#dc2626");
+  p(3, -2, 2, 1, "#f87171");
+  p(-4, -2, 8, 5, OUTLINE);
+  p(-3, -1, 6, 3, "#ea580c");
+  p(-2, -1, 4, 1, "#fb923c");
+  p(-3, 1, 6, 1, "#fbbf24");
+  p(-5, -2 + tailWag, 2, 4, OUTLINE);
+  p(-6, -3 + tailWag, 2, 5, "#f97316");
+  p(-7, -2 + tailWag, 1, 4, "#fed7aa");
+  p(-5, 0 - tailWag, 2, 3, "#fb923c");
+  p(3, -1, 2, 2, "#ffffff");
+  p(4, -1, 1, 1, OUTLINE);
+}
+
 /**
- * Blocky 16-bit fish drawn only with squares. Tier sets the footprint,
- * species sets the colorful palette. Tail alternates between 2 frames.
+ * Pixel fish drawn with high-contrast outlines and species-specific silhouettes
+ * inspired by classic retro 16-bit aquarium pixel art.
  */
 function drawFish(
   ctx: CanvasRenderingContext2D,
@@ -259,56 +677,41 @@ function drawFish(
   frame: boolean,
   highlight: boolean,
 ) {
-  const c = paletteFor(species);
-  // Footprint in buffer pixels: small fry vs. big catches.
-  const len = tier === 1 ? 8 : tier === 2 ? 10 : tier === 3 ? 13 : 16;
-  const h = tier === 1 ? 4 : tier === 2 ? 5 : tier === 3 ? 6 : 8;
-  const d = dir;
-  const x0 = d === 1 ? Math.round(x) : Math.round(x) - len;
-  const y0 = Math.round(y);
+  const cx = Math.round(x);
+  const cy = Math.round(y);
+  const p = makePlotter(ctx, cx, cy, dir);
+  const bounds = getFishBounds(species, tier);
 
-  // Dark pixel outline.
-  R(ctx, x0 - 1 - (d === 1 ? 2 : 0), y0 - 1, len + 3, h + 2, OUTLINE);
-  // Tail: 2-frame wag (tail block jumps 1px up/down).
-  const tailY = y0 + 1 + (frame ? -1 : 1);
-  R(ctx, d === 1 ? x0 - 3 : x0 + len + 1, tailY, 2, 2, OUTLINE);
-  R(ctx, d === 1 ? x0 - 2 : x0 + len, tailY, 1, 1, c.fin);
-  // Body bands.
-  R(ctx, x0 + 1, y0, len - 2, 1, c.top);
-  R(ctx, x0, y0 + 1, len, h - 2, c.mid);
-  R(ctx, x0 + 1, y0 + h - 1, len - 2, 1, c.belly);
-  // Dorsal fin.
-  R(ctx, x0 + Math.floor(len / 2) - 1, y0 - 1, 3, 1, c.fin);
-  // Species patterning.
-  if ((species === "koi" || species === "clown" || species === "puffer") && "stripe" in c && c.stripe) {
-    R(ctx, x0 + 3, y0 + 1, 1, h - 2, c.stripe as string);
-    R(ctx, x0 + len - 4, y0 + 1, 1, h - 2, species === "clown" ? OUTLINE : (c.stripe as string));
+  switch (species) {
+    case "clown": drawClownfish(p, tier, frame); break;
+    case "tang": drawBlueTang(p, tier, frame); break;
+    case "angel": drawMoorishIdol(p, frame); break;
+    case "lionfish": drawLionfish(p, frame); break;
+    case "whale": drawWhaleShark(p, frame); break;
+    case "betta": drawBetta(p, frame); break;
+    case "swordfish": drawSwordfish(p, frame); break;
+    case "sunfish": drawSunfish(p, frame); break;
+    case "puffer": drawPufferfish(p, tier, frame); break;
+    case "turtle": drawSeaTurtle(p, frame); break;
+    case "koi": drawKoi(p, tier, frame); break;
+    case "goldfish": drawGoldfish(p, tier, frame); break;
+    default: drawClownfish(p, tier, frame); break;
   }
-  if (species === "angel") {
-    R(ctx, x0 + 2, y0 + 1, 1, h - 2, (c as { stripe: string }).stripe);
-    R(ctx, x0 + 5, y0 + 1, 1, h - 2, (c as { stripe: string }).stripe);
-    R(ctx, x0 + len - 2, y0, 2, 1, c.fin);
-  }
-  if (species === "turtle") {
-    // Flippers.
-    R(ctx, x0 + 2, y0 - 1, 2, 1, c.fin);
-    R(ctx, x0 + len - 4, y0 + h, 2, 1, c.fin);
-    R(ctx, x0 + 3, y0 + 1, len - 6, h - 2, c.top);
-  }
-  // Eye.
-  const ex = d === 1 ? x0 + len - 2 : x0 + 1;
-  R(ctx, ex, y0 + 1, 1, 1, "#ffffff");
-  R(ctx, ex, y0 + 1, 1, 1, OUTLINE);
-  // Hover brackets.
+
+  // Hover brackets: crisp targeting corners that hug this fish's bounds
   if (highlight) {
-    R(ctx, x0 - 3, y0 - 3, 3, 1, "#ffffff");
-    R(ctx, x0 - 3, y0 - 3, 1, 3, "#ffffff");
-    R(ctx, x0 + len, y0 - 3, 3, 1, "#ffffff");
-    R(ctx, x0 + len + 2, y0 - 3, 1, 3, "#ffffff");
-    R(ctx, x0 - 3, y0 + h + 1, 3, 1, "#ffffff");
-    R(ctx, x0 - 3, y0 + h - 1, 1, 3, "#ffffff");
-    R(ctx, x0 + len, y0 + h + 1, 3, 1, "#ffffff");
-    R(ctx, x0 + len + 2, y0 + h - 1, 1, 3, "#ffffff");
+    const x1 = dir === 1 ? cx + bounds.minLx - 2 : cx - bounds.maxLx - 2;
+    const x2 = dir === 1 ? cx + bounds.maxLx + 2 : cx - bounds.minLx + 2;
+    const y1 = cy + bounds.minLy - 2;
+    const y2 = cy + bounds.maxLy + 2;
+    R(ctx, x1, y1, 3, 1, "#ffffff");
+    R(ctx, x1, y1, 1, 3, "#ffffff");
+    R(ctx, x2 - 2, y1, 3, 1, "#ffffff");
+    R(ctx, x2, y1, 1, 3, "#ffffff");
+    R(ctx, x1, y2, 3, 1, "#ffffff");
+    R(ctx, x1, y2 - 2, 1, 3, "#ffffff");
+    R(ctx, x2 - 2, y2, 3, 1, "#ffffff");
+    R(ctx, x2, y2 - 2, 1, 3, "#ffffff");
   }
 }
 
@@ -326,23 +729,370 @@ function drawCrab(ctx: CanvasRenderingContext2D, x: number, y: number, frame: bo
   R(ctx, x0 + 1, y0 - 1, 1, 1, OUTLINE);
 }
 
-function drawKelp(ctx: CanvasRenderingContext2D, x: number, baseY: number, h: number, sway: number, color: string, dark = "#2e7d32") {
+function drawKelp(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  baseY: number,
+  h: number,
+  sway: number,
+  color: string,
+  dark = "#14532d",
+) {
   const x0 = Math.round(x);
   for (let i = 0; i < h; i += 1) {
-    const step = i > h * 0.5 ? sway : 0;
-    R(ctx, x0 + step, baseY - i, 1, 1, i % 3 === 2 ? dark : color);
-    if (i % 3 === 1) R(ctx, x0 + step + (i % 6 === 1 ? 1 : -1), baseY - i, 1, 1, color);
+    const s = Math.round(Math.sin((i / 5) + sway) * 2);
+    R(ctx, x0 + s, baseY - i, 1, 1, i % 3 === 0 ? dark : color);
+    if (i > 3 && i % 4 === 1) {
+      R(ctx, x0 + s + (i % 8 === 1 ? 2 : -2), baseY - i, 2, 1, color);
+      R(ctx, x0 + s + (i % 8 === 1 ? 3 : -3), baseY - i - 1, 1, 1, "#4ade80");
+    }
   }
 }
 
-function drawCoral(ctx: CanvasRenderingContext2D, x: number, baseY: number, color: string, tall: number, sway: number) {
+function drawBranchingCoral(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  baseY: number,
+  color: string,
+  highlight: string,
+  tall: number,
+  sway: number,
+) {
   const x0 = Math.round(x);
-  R(ctx, x0, baseY - tall, 2, tall, OUTLINE);
-  R(ctx, x0, baseY - tall, 1, tall, color);
-  R(ctx, x0 - 3 + sway, baseY - tall + 2, 3, 1, color);
-  R(ctx, x0 + 1 + sway, baseY - tall + 4, 3, 1, color);
-  R(ctx, x0 - 3 + sway, baseY - tall + 1, 1, 2, color);
-  R(ctx, x0 + 3 + sway, baseY - tall + 3, 1, 2, color);
+  const y0 = Math.round(baseY);
+  R(ctx, x0 - 1, y0 - 3, 3, 3, color);
+  R(ctx, x0 - 3 + sway, y0 - tall + 4, 2, tall - 4, color);
+  R(ctx, x0 - 5 + sway, y0 - tall + 2, 2, 4, color);
+  R(ctx, x0 - 5 + sway, y0 - tall + 1, 1, 1, highlight);
+  R(ctx, x0 - 2 + sway, y0 - tall, 1, 3, color);
+  R(ctx, x0 - 2 + sway, y0 - tall, 1, 1, highlight);
+  R(ctx, x0 + 1 + sway, y0 - tall + 3, 2, tall - 3, color);
+  R(ctx, x0 + 3 + sway, y0 - tall + 1, 2, 5, color);
+  R(ctx, x0 + 4 + sway, y0 - tall, 1, 1, highlight);
+  R(ctx, x0 + 1 + sway, y0 - tall - 1, 1, 3, color);
+  R(ctx, x0 + 1 + sway, y0 - tall - 1, 1, 1, highlight);
+}
+
+function drawTubeSponges(ctx: CanvasRenderingContext2D, x: number, baseY: number, _tick: number) {
+  const x0 = Math.round(x);
+  const y0 = Math.round(baseY);
+  R(ctx, x0 - 3, y0 - 10, 3, 10, "#ca8a04");
+  R(ctx, x0 - 2, y0 - 9, 2, 9, "#facc15");
+  R(ctx, x0 - 3, y0 - 10, 3, 1, "#422006");
+  R(ctx, x0, y0 - 15, 4, 15, "#a16207");
+  R(ctx, x0 + 1, y0 - 14, 2, 14, "#fde047");
+  R(ctx, x0, y0 - 15, 4, 1, "#422006");
+  R(ctx, x0 + 4, y0 - 7, 3, 7, "#ca8a04");
+  R(ctx, x0 + 5, y0 - 6, 2, 6, "#facc15");
+  R(ctx, x0 + 4, y0 - 7, 3, 1, "#422006");
+}
+
+function drawCoralShelves(ctx: CanvasRenderingContext2D, BW: number, sandTop: number, tick: number) {
+  const leftW = 34;
+  R(ctx, 0, sandTop - 8, leftW, 14, "#1e293b");
+  R(ctx, 0, sandTop - 8, leftW - 2, 2, "#475569");
+  R(ctx, 2, sandTop - 7, leftW - 6, 1, "#d9b96a");
+  R(ctx, 0, sandTop - 22, leftW - 12, 15, "#1e293b");
+  R(ctx, 0, sandTop - 22, leftW - 14, 2, "#475569");
+  R(ctx, 1, sandTop - 21, leftW - 18, 1, "#d9b96a");
+
+  drawBranchingCoral(ctx, 10, sandTop - 22, "#be185d", "#f472b6", 11, tick % 4 < 2 ? 1 : 0);
+  drawBranchingCoral(ctx, 22, sandTop - 8, "#ea580c", "#fb923c", 9, tick % 4 < 2 ? 0 : 1);
+  drawTubeSponges(ctx, 4, sandTop - 22, tick);
+
+  const rightW = 32;
+  const rightX = BW - rightW;
+  R(ctx, rightX, sandTop - 12, rightW, 18, "#1e293b");
+  R(ctx, rightX + 2, sandTop - 12, rightW - 2, 2, "#475569");
+  R(ctx, rightX + 4, sandTop - 11, rightW - 6, 1, "#d9b96a");
+  R(ctx, rightX + 12, sandTop - 24, rightW - 12, 13, "#1e293b");
+  R(ctx, rightX + 14, sandTop - 24, rightW - 14, 2, "#475569");
+
+  drawBranchingCoral(ctx, BW - 18, sandTop - 24, "#8b5cf6", "#c4b5fd", 10, tick % 4 < 2 ? -1 : 0);
+  drawBranchingCoral(ctx, BW - 8, sandTop - 12, "#e11d48", "#fda4af", 8, tick % 4 < 2 ? 0 : -1);
+  drawTubeSponges(ctx, BW - 24, sandTop - 12, tick);
+}
+
+function drawStarfish(ctx: CanvasRenderingContext2D, x: number, y: number, color = "#ea580c") {
+  const x0 = Math.round(x);
+  const y0 = Math.round(y);
+  R(ctx, x0, y0, 1, 1, "#ffffff");
+  R(ctx, x0 - 1, y0, 3, 1, color);
+  R(ctx, x0, y0 - 1, 1, 3, color);
+  R(ctx, x0 - 2, y0 - 1, 1, 1, color);
+  R(ctx, x0 + 2, y0 - 1, 1, 1, color);
+  R(ctx, x0 - 1, y0 + 2, 1, 1, color);
+  R(ctx, x0 + 1, y0 + 2, 1, 1, color);
+}
+
+function drawShipwreck(ctx: CanvasRenderingContext2D, x: number, y: number, tick: number) {
+  const x0 = Math.round(x);
+  const y0 = Math.round(y);
+
+  // Distant rear yardarm / mast shadows
+  R(ctx, x0 - 18, y0 - 36, 2, 28, "#1a0f0a");
+  R(ctx, x0 - 24, y0 - 30, 16, 2, "#1a0f0a");
+
+  // Stern Castle (Tilted Quarterdeck on the right)
+  R(ctx, x0 + 10, y0 - 22, 16, 12, "#1c110a");
+  R(ctx, x0 + 11, y0 - 21, 14, 10, "#3d2213");
+  R(ctx, x0 + 12, y0 - 20, 12, 2, "#5a341c");
+  R(ctx, x0 + 13, y0 - 17, 3, 3, "#0b1220");
+  R(ctx, x0 + 14, y0 - 16, 1, 1, "#1e3a8a");
+  R(ctx, x0 + 19, y0 - 17, 3, 3, "#0b1220");
+  R(ctx, x0 + 20, y0 - 16, 1, 1, "#1e3a8a");
+  R(ctx, x0 + 10, y0 - 24, 16, 2, "#6e4023");
+  R(ctx, x0 + 11, y0 - 22, 1, 2, "#1c110a");
+  R(ctx, x0 + 17, y0 - 22, 1, 2, "#1c110a");
+  R(ctx, x0 + 24, y0 - 22, 1, 2, "#1c110a");
+
+  // Main deck railing sloping down to the bow
+  R(ctx, x0 - 28, y0 - 12, 38, 2, "#6e4023");
+  for (let rx = x0 - 26; rx < x0 + 10; rx += 6) {
+    R(ctx, rx, y0 - 10, 1, 2, "#1c110a");
+  }
+
+  // Curved Bow (Prow) sweeping up on the left
+  R(ctx, x0 - 34, y0 - 12, 6, 3, "#3d2213");
+  R(ctx, x0 - 32, y0 - 9, 6, 3, "#4d2b17");
+  R(ctx, x0 - 40, y0 - 14, 8, 2, "#4d2b17");
+  R(ctx, x0 - 46, y0 - 17, 7, 2, "#3d2213");
+  R(ctx, x0 - 50, y0 - 19, 5, 1, "#27160c");
+
+  // Curved Hull Planking Rows (Tapered from top to keel - NO rectangular box!)
+  R(ctx, x0 - 28, y0 - 8, 46, 3, "#54331d");
+  R(ctx, x0 - 28, y0 - 8, 46, 1, "#784425");
+  R(ctx, x0 - 26, y0 - 5, 42, 3, "#422514");
+  R(ctx, x0 - 22, y0 - 2, 36, 3, "#331b0e");
+  R(ctx, x0 - 16, y0 + 1, 26, 3, "#26140b");
+  R(ctx, x0 - 10, y0 + 4, 15, 3, "#1a0c06");
+
+  // Plank horizontal seam lines & rivets
+  R(ctx, x0 - 26, y0 - 5, 42, 1, "#1c0f08");
+  R(ctx, x0 - 22, y0 - 2, 36, 1, "#1c0f08");
+  R(ctx, x0 - 16, y0 + 1, 26, 1, "#1c0f08");
+  for (let px = x0 - 22; px < x0 + 14; px += 7) {
+    R(ctx, px, y0 - 3, 1, 1, "#b45309");
+  }
+
+  // Broken Hull Breach & Curved Wooden Ribs
+  R(ctx, x0 - 11, y0 - 5, 10, 6, "#090503");
+  R(ctx, x0 - 9, y0 - 6, 1, 7, "#6e4023");
+  R(ctx, x0 - 5, y0 - 6, 1, 7, "#6e4023");
+  R(ctx, x0 - 1, y0 - 5, 1, 6, "#6e4023");
+
+  // Portholes (Gunports)
+  R(ctx, x0 + 6, y0 - 4, 3, 3, "#090503");
+  R(ctx, x0 + 5, y0 - 5, 5, 1, "#b45309");
+  R(ctx, x0 - 18, y0 - 3, 3, 3, "#090503");
+  R(ctx, x0 - 19, y0 - 4, 5, 1, "#b45309");
+
+  // Mainmast (tall broken mast tilted slightly right)
+  R(ctx, x0 - 3, y0 - 44, 3, 34, "#150d07");
+  R(ctx, x0 - 2, y0 - 43, 2, 33, "#5c341d");
+  R(ctx, x0 - 2, y0 - 43, 1, 33, "#784425");
+  R(ctx, x0 - 3, y0 - 45, 1, 2, "#784425");
+  R(ctx, x0 - 1, y0 - 46, 1, 3, "#784425");
+
+  // Crow's nest platform
+  R(ctx, x0 - 6, y0 - 34, 9, 3, "#150d07");
+  R(ctx, x0 - 5, y0 - 33, 7, 2, "#5c341d");
+  R(ctx, x0 - 6, y0 - 36, 9, 1, "#6e4023");
+  R(ctx, x0 - 5, y0 - 35, 1, 1, "#150d07");
+  R(ctx, x0 + 2, y0 - 35, 1, 1, "#150d07");
+
+  // Mainmast yardarm (crossbar spar)
+  R(ctx, x0 - 15, y0 - 31, 25, 2, "#150d07");
+  R(ctx, x0 - 14, y0 - 30, 23, 1, "#5c341d");
+
+  // Foremast (shorter broken mast)
+  R(ctx, x0 - 22, y0 - 29, 3, 18, "#150d07");
+  R(ctx, x0 - 21, y0 - 28, 2, 17, "#4d2b17");
+  R(ctx, x0 - 27, y0 - 23, 13, 2, "#150d07");
+  R(ctx, x0 - 26, y0 - 22, 11, 1, "#4d2b17");
+
+  // Rigging ropes (dithered lines)
+  for (let s = 0; s < 12; s += 2) {
+    R(ctx, x0 - 14 - Math.floor(s * 1.5), y0 - 30 + s, 1, 1, "#6e594d");
+    R(ctx, x0 + 9 + Math.floor(s * 1.2), y0 - 30 + s, 1, 1, "#6e594d");
+  }
+
+  // Clinging seaweed, moss, and corals
+  R(ctx, x0 - 42, y0 - 12, 2, 6, "#15803d");
+  R(ctx, x0 - 41, y0 - 10, 1, 8, "#22c55e");
+  R(ctx, x0 - 28, y0 - 8, 3, 5, "#15803d");
+  R(ctx, x0 - 14, y0 - 7, 2, 6, "#16a34a");
+  R(ctx, x0 - 6, y0 - 29, 2, 5, "#15803d");
+  R(ctx, x0 + 8, y0 + 1, 4, 3, "#be185d");
+  R(ctx, x0 + 9, y0, 2, 2, "#f43f5e");
+  R(ctx, x0 - 20, y0 + 1, 3, 2, "#ea580c");
+
+  // Soft sandy drift covering the bottom keel so the ship is sunken into the sand
+  R(ctx, x0 - 24, y0 + 2, 44, 2, "#d9b96a");
+  R(ctx, x0 - 20, y0 + 4, 38, 3, "#e8d49a");
+
+  // Bubble vent rising from the hull breach
+  const bPhase = (tick % 24);
+  const b1Y = y0 - 6 - bPhase * 2;
+  const b1X = x0 - 7 + Math.round(Math.sin((bPhase + tick) * 0.4) * 2);
+  if (b1Y > 10) {
+    R(ctx, b1X, b1Y, 2, 2, "#ecfdf5");
+    R(ctx, b1X, b1Y, 1, 1, "#ffffff");
+  }
+}
+
+function drawAquariumPark(ctx: CanvasRenderingContext2D, BW: number, sandTop: number, tick: number) {
+  const tLeft = Math.floor(BW * 0.10);
+  const tRight = Math.floor(BW * 0.90);
+  const tW = tRight - tLeft;
+  const tunnelFloor = sandTop + 3;
+  const tunnelRoof = sandTop - 22;
+  const tunnelH = tunnelFloor - tunnelRoof;
+
+  // 1. Transparent Acrylic Glass Tunnel Canopy
+  R(ctx, tLeft, tunnelRoof, tW, tunnelH, "rgba(8, 47, 73, 0.45)");
+  R(ctx, tLeft, tunnelRoof + 3, tW, tunnelH - 5, "rgba(254, 240, 138, 0.08)");
+
+  // Upper curved glass roofline (continuous arched highlight)
+  R(ctx, tLeft, tunnelRoof, tW, 2, "rgba(186, 230, 253, 0.85)");
+  R(ctx, tLeft + 2, tunnelRoof + 2, tW - 4, 1, "rgba(224, 242, 254, 0.45)");
+  for (let gx = tLeft + 18; gx < tRight; gx += 44) {
+    R(ctx, gx, tunnelRoof + 2, 7, 1, "#ffffff");
+    R(ctx, gx + 5, tunnelRoof + 3, 5, 1, "rgba(255, 255, 255, 0.6)");
+  }
+
+  // 2. Structural Steel Arch Rings
+  const ribSpacing = 24;
+  for (let rx = tLeft; rx <= tRight; rx += ribSpacing) {
+    R(ctx, rx - 1, tunnelRoof, 3, tunnelH, "#0f172a");
+    R(ctx, rx, tunnelRoof, 2, tunnelH, "#334155");
+    R(ctx, rx, tunnelRoof, 1, tunnelH, "#64748b");
+    R(ctx, rx, tunnelRoof + 3, 1, 1, "#94a3b8");
+    R(ctx, rx, tunnelFloor - 3, 1, 1, "#94a3b8");
+  }
+
+  // 3. Walkway Floor & Neon Floor Guide Lighting
+  R(ctx, tLeft, tunnelFloor, tW, 3, "#0f172a");
+  const ledGlow = tick % 4 < 2 ? "#38bdf8" : "#0ea5e9";
+  R(ctx, tLeft, tunnelFloor - 1, tW, 1, ledGlow);
+
+  // 4. Sprites of People Walking & Interacting Inside the Tunnel
+
+  // A. Couple walking together holding hands (left)
+  const cX = tLeft + 24;
+  const walkFrame = tick % 4 < 2;
+  R(ctx, cX, tunnelFloor - 12, 3, 3, "#78350f");
+  R(ctx, cX - 1, tunnelFloor - 9, 5, 5, "#1e3a8a");
+  R(ctx, cX, tunnelFloor - 4, 2, walkFrame ? 4 : 3, "#0f172a");
+  R(ctx, cX + 6, tunnelFloor - 12, 3, 3, "#fde047");
+  R(ctx, cX + 5, tunnelFloor - 9, 5, 5, "#f43f5e");
+  R(ctx, cX + 6, tunnelFloor - 4, 2, walkFrame ? 3 : 4, "#e2e8f0");
+  R(ctx, cX + 3, tunnelFloor - 7, 3, 1, "#fde047");
+
+  // B. Parent and Child watching the fish (mid-left)
+  const pX = tLeft + Math.floor(tW * 0.32);
+  R(ctx, pX, tunnelFloor - 13, 3, 3, "#1f2937");
+  R(ctx, pX - 1, tunnelFloor - 10, 5, 6, "#854d0e");
+  R(ctx, pX, tunnelFloor - 4, 3, 4, "#1e293b");
+  const chX = pX + 8;
+  R(ctx, chX, tunnelFloor - 8, 2, 2, "#ef4444");
+  R(ctx, chX - 1, tunnelFloor - 6, 4, 3, "#facc15");
+  R(ctx, chX + 2, tunnelFloor - 9, 1, 4, "#facc15");
+  R(ctx, chX, tunnelFloor - 3, 2, 3, "#1e293b");
+
+  // C. Photographer taking pictures (center)
+  const phX = tLeft + Math.floor(tW * 0.50);
+  R(ctx, phX, tunnelFloor - 12, 3, 3, "#475569");
+  R(ctx, phX - 1, tunnelFloor - 9, 5, 5, "#15803d");
+  R(ctx, phX + 3, tunnelFloor - 8, 2, 2, "#e2e8f0");
+  if (tick % 16 === 0) {
+    R(ctx, phX + 5, tunnelFloor - 9, 2, 2, "#ffffff");
+  }
+  R(ctx, phX, tunnelFloor - 4, 3, 4, "#0f172a");
+
+  // D. Two friends standing and chatting (center-right)
+  const fX = tLeft + Math.floor(tW * 0.68);
+  R(ctx, fX, tunnelFloor - 12, 3, 3, "#d97706");
+  R(ctx, fX - 1, tunnelFloor - 9, 5, 5, "#7c3aed");
+  R(ctx, fX + 3, tunnelFloor - 7, 2, 2, "#fef08a");
+  R(ctx, fX, tunnelFloor - 4, 3, 4, "#1e293b");
+  R(ctx, fX + 9, tunnelFloor - 12, 3, 3, "#374151");
+  R(ctx, fX + 8, tunnelFloor - 9, 5, 5, "#0d9488");
+  R(ctx, fX + 6, tunnelFloor - 7, 2, 1, "#fde047");
+  R(ctx, fX + 9, tunnelFloor - 4, 3, 4, "#0f172a");
+
+  // E. Solitary Observer in awe (right)
+  const obsX = tRight - 26;
+  R(ctx, obsX, tunnelFloor - 13, 3, 3, "#0f172a");
+  R(ctx, obsX - 1, tunnelFloor - 10, 5, 6, "#64748b");
+  R(ctx, obsX + 1, tunnelFloor - 14, 2, 2, "#fed7aa");
+  R(ctx, obsX, tunnelFloor - 4, 3, 4, "#1e293b");
+
+  // F. Walking visitor moving along the tunnel
+  const walkProgress = ((tick * 0.4) % Math.max(1, tW - 80));
+  const wX = tLeft + 36 + Math.floor(walkProgress);
+  const wLeg = Math.floor(tick / 2) % 2 === 0;
+  R(ctx, wX, tunnelFloor - 12, 3, 3, "#b45309");
+  R(ctx, wX - 1, tunnelFloor - 9, 5, 5, "#ea580c");
+  R(ctx, wX, tunnelFloor - 4, 2, wLeg ? 4 : 3, "#1e293b");
+  R(ctx, wX + 1, tunnelFloor - 4, 2, wLeg ? 3 : 4, "#1e293b");
+}
+
+function drawSunkenTemple(ctx: CanvasRenderingContext2D, x: number, y: number, _tick: number) {
+  const x0 = Math.round(x);
+  const y0 = Math.round(y);
+
+  const dX = x0 + 52;
+  const dY = y0 - 32;
+  R(ctx, dX - 18, dY - 4, 36, 12, "#083344");
+  R(ctx, dX - 3, dY - 26, 2, 22, "#083344");
+  R(ctx, dX - 10, dY - 18, 14, 1, "#083344");
+  R(ctx, dX - 12, dY - 18, 2, 14, "#083344");
+
+  R(ctx, x0 - 36, y0 + 6, 72, 4, "#1e293b");
+  R(ctx, x0 - 34, y0 + 7, 68, 3, "#475569");
+  R(ctx, x0 - 32, y0 + 2, 64, 4, "#334155");
+  R(ctx, x0 - 30, y0 + 3, 60, 3, "#64748b");
+  R(ctx, x0 - 28, y0 - 2, 56, 4, "#475569");
+  R(ctx, x0 - 26, y0 - 1, 52, 3, "#94a3b8");
+
+  const c1X = x0 - 22;
+  R(ctx, c1X - 2, y0 - 28, 6, 26, "#334155");
+  R(ctx, c1X - 1, y0 - 27, 4, 25, "#94a3b8");
+  R(ctx, c1X, y0 - 27, 2, 25, "#e2e8f0");
+  R(ctx, c1X - 3, y0 - 31, 8, 3, "#cbd5e1");
+
+  const c2X = x0 - 8;
+  R(ctx, c2X - 2, y0 - 28, 6, 26, "#334155");
+  R(ctx, c2X - 1, y0 - 27, 4, 25, "#94a3b8");
+  R(ctx, c2X, y0 - 27, 2, 25, "#e2e8f0");
+  R(ctx, c2X - 3, y0 - 31, 8, 3, "#cbd5e1");
+
+  const c3X = x0 + 6;
+  R(ctx, c3X - 2, y0 - 14, 6, 12, "#334155");
+  R(ctx, c3X - 1, y0 - 13, 4, 11, "#94a3b8");
+  R(ctx, c3X, y0 - 13, 2, 11, "#e2e8f0");
+  R(ctx, c3X - 2, y0 - 16, 2, 2, "#94a3b8");
+  R(ctx, c3X + 1, y0 - 15, 2, 2, "#94a3b8");
+
+  const c4X = x0 + 20;
+  R(ctx, c4X - 1, y0 - 26, 6, 24, "#334155");
+  R(ctx, c4X, y0 - 25, 4, 23, "#94a3b8");
+  R(ctx, c4X + 1, y0 - 25, 2, 23, "#e2e8f0");
+  R(ctx, c4X - 2, y0 - 29, 8, 3, "#cbd5e1");
+
+  R(ctx, c1X - 4, y0 - 34, 38, 4, "#334155");
+  R(ctx, c1X - 3, y0 - 33, 36, 3, "#94a3b8");
+  R(ctx, c1X - 3, y0 - 33, 36, 1, "#e2e8f0");
+  R(ctx, c1X + 31, y0 - 34, 3, 2, "#cbd5e1");
+
+  R(ctx, x0 + 8, y0 + 1, 10, 4, "#64748b");
+  R(ctx, x0 + 9, y0 + 2, 8, 2, "#cbd5e1");
+
+  R(ctx, c1X - 2, y0 - 18, 2, 6, "#15803d");
+  R(ctx, c2X + 3, y0 - 12, 4, 4, "#f43f5e");
+  R(ctx, c4X - 3, y0 - 6, 3, 5, "#be185d");
+  R(ctx, x0 - 26, y0 + 1, 5, 3, "#facc15");
 }
 
 /** A pinch of feed: 1px brown crumbs with a dark outline, shrinking as eaten. */
@@ -578,7 +1328,6 @@ export default function ContributionGrass() {
     ];
     const speckles = Array.from({ length: 120 }, () => ({ nx: decorRand(), yFrac: decorRand(), light: decorRand() < 0.4 }));
     const kelpSpots = Array.from({ length: 7 + Math.floor(decorRand() * 5) }, () => ({ nx: decorRand(), h: 8 + Math.floor(decorRand() * 10) }));
-    const hutNx = 0.2 + decorRand() * 0.5;
     const coralPool = [...CORAL_POOL].sort(() => decorRand() - 0.5);
     const coralSpots = [0.06, 0.38, 0.68, 0.84].map((base, i) => ({
       nx: Math.min(0.95, Math.max(0.05, base + (decorRand() - 0.5) * 0.08)),
@@ -643,7 +1392,8 @@ export default function ContributionGrass() {
     const drawSand = (tick: number) => {
       const BW = buf.width;
       const BH = buf.height;
-      // Jagged dune edge + outline, all squares.
+
+      // 1. Jagged dune edge + outline (The seabed foundation)
       for (let x = 0; x < BW; x += 1) {
         const dune = Math.round(Math.sin(x / 18) * 2 + Math.sin(x / 7) * 1);
         const top = sandTop + dune;
@@ -654,29 +1404,52 @@ export default function ContributionGrass() {
       speckles.forEach((s) => {
         R(ctx, s.nx * BW, sandTop + 7 + s.yFrac * (BH - sandTop - 9), 1, 1, s.light ? scenery.speckleLight : scenery.speckleDark);
       });
-      // Seaweed blobs + kelp + corals + a tiny hut, like the reference.
+
+      // 2. Theme Landmark Centerpiece (Drawn on top of the seabed)
+      if (scenery.theme === "shipwreck") {
+        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick);
+      } else if (scenery.theme === "aquarium") {
+        drawAquariumPark(ctx, BW, sandTop, tick);
+      } else if (scenery.theme === "temple") {
+        drawSunkenTemple(ctx, Math.floor(BW * 0.44), sandTop + 4, tick);
+      } else if (scenery.theme === "abyss") {
+        drawShipwreck(ctx, Math.floor(BW * 0.72), sandTop + 4, tick);
+      } else if (scenery.theme === "kelp") {
+        const bx = Math.floor(BW * 0.48);
+        const by = sandTop + 4;
+        R(ctx, bx - 14, by - 16, 28, 20, "#1c1917");
+        R(ctx, bx - 12, by - 14, 24, 16, "#44403c");
+        R(ctx, bx - 5, by - 10, 10, 10, "#0284c7");
+        R(ctx, bx - 4, by - 9, 8, 8, "#38bdf8");
+        R(ctx, bx - 3, by - 8, 6, 6, "#e0f2fe");
+      }
+
+      // 3. Tiered Coral Reef Shelves on Left & Right Flanks
+      if (scenery.theme === "shipwreck" || scenery.theme === "abyss" || scenery.theme === "temple" || scenery.theme === "kelp") {
+        drawCoralShelves(ctx, BW, sandTop, tick);
+      }
+
+      // 4. Kelp ribbons + branching corals on the sand
       kelpSpots.forEach((k, i) => {
         const sway = (tick % 4 < 2 ? 1 : -1) * (i % 2 === 0 ? 1 : 0);
         drawKelp(ctx, k.nx * BW, BH - 4, k.h, sway, scenery.kelp, scenery.kelpDark);
       });
       coralSpots.forEach((c, i) => {
         const sway = tick % 4 < 2 ? 1 : 0;
-        drawCoral(ctx, c.nx * BW, BH - 3, c.color, c.tall, i % 2 === 0 ? sway : -sway);
+        drawBranchingCoral(ctx, c.nx * BW, BH - 3, c.color, "#ffffff", c.tall, i % 2 === 0 ? sway : -sway);
         R(ctx, c.nx * BW - 3, BH - 3, 7, 2, scenery.rock);
       });
-      // Hut ruin (drifts along the sand year to year).
-      const hx = Math.floor(BW * hutNx);
-      const hy = BH - 4;
-      R(ctx, hx - 12, hy - 12, 24, 2, "#7c4a21");
-      R(ctx, hx - 10, hy - 10, 20, 8, "#a9743c");
-      R(ctx, hx - 3, hy - 8, 6, 6, "#2d1c0e");
-      R(ctx, hx - 10, hy - 3, 3, 1, "#5c3a1a");
-      R(ctx, hx + 7, hy - 3, 3, 1, "#5c3a1a");
-      // Crabs shuffling on the sand.
+
+      // 5. Starfish resting on the sand
+      drawStarfish(ctx, Math.floor(BW * 0.2), sandTop + 13, "#ea580c");
+      drawStarfish(ctx, Math.floor(BW * 0.58), sandTop + 17, "#f43f5e");
+
+      // 6. Crabs crawling on the sand
       crabs.forEach((crab) => {
         drawCrab(ctx, crab.nx * BW, BH - 3, tick % 2 === 0);
       });
-      // Foreground silhouette blades at edges.
+
+      // 7. Foreground silhouette blades at edges
       R(ctx, 1, sandTop - 6, 2, 8, "#14532d");
       R(ctx, BW - 3, sandTop - 8, 2, 10, "#14532d");
     };
@@ -814,19 +1587,21 @@ export default function ContributionGrass() {
         // Snap to whole buffer pixels — motion stays on the grid.
         const fx = Math.round(fish.nx * BW);
         const fy = Math.round(6 + fish.yFrac * (sandTop - 22) + Math.round(Math.sin(time / 800 + fish.phase) * 1.5));
-        // Blocky depth shadow.
-        R(ctx, fx - 4, fy + 8, 9, 1, "#0a2e4a");
+        const bounds = getFishBounds(fish.species, fish.tier);
+        // Depth shadow tailored to fish size
+        const shadowW = Math.max(8, Math.round(bounds.hitR * 1.2));
+        R(ctx, fx - Math.floor(shadowW / 2), fy + bounds.maxLy + 3, shadowW, 1, "#0a2e4a");
         const excited = seeking.has(i) || fish.eatT > 0;
         const frame = Math.floor(time / (excited ? 130 : 260) + fish.phase) % 2 === 0;
         drawFish(ctx, fx, fy, fish.tier, fish.species, fish.dir, frame, i === hovered.index);
         if (fish.eatT > 0) {
-          // Munch sparkle at the mouth.
-          const len = fish.tier === 1 ? 8 : fish.tier === 2 ? 10 : fish.tier === 3 ? 13 : 16;
-          const mx = fish.dir === 1 ? fx + Math.floor(len / 2) : fx - Math.floor(len / 2);
-          R(ctx, mx, fy, 1, 1, "#ffffff");
-          R(ctx, mx + (tick % 2 === 0 ? 1 : -1), fy - 1, 1, 1, "#fff8dc");
+          // Munch sparkle right at the mouth of this species
+          const mx = fish.dir === 1 ? fx + bounds.mouthLx : fx - bounds.mouthLx;
+          const my = fy + bounds.mouthLy;
+          R(ctx, mx, my, 1, 1, "#ffffff");
+          R(ctx, mx + (tick % 2 === 0 ? 1 : -1), my - 1, 1, 1, "#fff8dc");
         }
-        hits.push({ x: fx * scale, y: (fy + 3) * scale, r: Math.max(16, (fish.tier * 7 + 8) * scale * 0.6), day: fish.day });
+        hits.push({ x: fx * scale, y: fy * scale, r: Math.max(16, bounds.hitR * scale * 1.1), day: fish.day });
       });
       // Bite crumbs drift down and fade.
       crumbs.forEach((c) => {

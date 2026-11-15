@@ -5,7 +5,6 @@ export const identity = {
   alias: "Tine Mosqueda",
   moniker: "Rocket Puncher",
   tagline: "Turning validated workflows into buildable product systems.",
-  cvHref: "/docu/Christine-Mosqueda_resume.pdf",
   systemLabel: "@cmosqueda",
 };
 
