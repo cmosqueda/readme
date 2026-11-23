@@ -183,6 +183,7 @@
    ========================================================================== */
 .app-shell {
   position: relative;
+  isolation: isolate;
   color: var(--orb-text) !important;
   background-color: var(--orb-void) !important;
   background-image:
@@ -198,17 +199,11 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
   background-image: radial-gradient(var(--orb-halftone) 1px, transparent 1px);
   background-size: 8px 8px;
   mask-image: radial-gradient(ellipse at 50% 45%, transparent 35%, black 100%);
   -webkit-mask-image: radial-gradient(ellipse at 50% 45%, transparent 35%, black 100%);
-}
-
-.app-shell > div {
-  position: relative;
-  z-index: 1;
-  background: transparent;
 }
 
 /* ==========================================================================
@@ -1644,7 +1639,7 @@
   position: absolute;
   right: 0;
   top: calc(100% + 0.6rem);
-  z-index: 70;
+  z-index: 80;
   width: max-content;
   min-width: 15.5rem;
   border: 1px solid var(--orb-border);
@@ -1685,6 +1680,17 @@
 .studio-repo-sub { font-size: 0.8rem; margin-top: 0.2rem; }
 .studio-repo-sub strong { color: var(--orb-text); }
 .studio-repohead-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.studio-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.72rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
 .studio-repohead-right .github-badge, .studio-signin .github-badge, .studio-doc-file .github-badge, .studio-file .github-badge { display: inline-flex; align-items: center; justify-content: center; gap: 0.32rem; line-height: 1; }
 .studio-dot { width: 0.52rem; height: 0.52rem; flex-shrink: 0; border-radius: 50%; background: var(--orb-live); display: inline-block; align-self: center; }
 .studio-dot-draft { background: var(--gh-attention); }
@@ -1704,7 +1710,7 @@
   position: absolute;
   right: 0;
   top: calc(100% + 0.6rem);
-  z-index: 70;
+  z-index: 80;
   width: max-content;
   max-width: min(20rem, calc(100vw - 2rem));
   border: 1px solid var(--orb-border);
@@ -1950,7 +1956,7 @@
 .studio-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 120;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1963,6 +1969,8 @@
 .studio-modal {
   width: 100%;
   max-width: 26rem;
+  max-height: 90vh;
+  overflow-y: auto;
   border: 1px solid var(--orb-rim);
   border-radius: 14px;
   background: var(--orb-panel);

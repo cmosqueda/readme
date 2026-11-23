@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, useBlocker, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -997,11 +998,11 @@ export default function Studio() {
             <button
               type="button"
               onClick={() => setStatusModalOpen(true)}
-              className="github-button flex items-center gap-2"
+              className="github-button studio-status-chip"
               title="Edit public profile status"
             >
-              {renderStatusIcon(profileStatus.emoji, 13, "text-[var(--gh-muted)]")}
-              <span className="max-w-[120px] truncate text-xs font-medium">
+              {renderStatusIcon(profileStatus.emoji, 13, "text-[var(--orb-arcade)] shrink-0")}
+              <span className="max-w-[130px] truncate">
                 {profileStatus.message || "Set status"}
               </span>
             </button>
@@ -1344,128 +1345,132 @@ export default function Studio() {
         </footer>
       </div>
 
-      {pendingDelete && (
-        <div
-          className="studio-modal-overlay"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget && !busy) setPendingDelete(null);
-          }}
-        >
+      {pendingDelete &&
+        createPortal(
           <div
-            className="studio-modal"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="studio-delete-title"
-            aria-describedby="studio-delete-desc"
+            className="studio-modal-overlay"
+            onMouseDown={(e) => {
+              if (e.target === e.currentTarget && !busy) setPendingDelete(null);
+            }}
           >
-            <span className="studio-modal-icon" aria-hidden="true">
-              <Trash2 size={18} />
-            </span>
-            <h2 id="studio-delete-title">
-              Delete {pendingDelete.type === "blogs" ? "article" : pendingDelete.type === "projects" ? "project" : "experience"}?
-            </h2>
-            <p id="studio-delete-desc">
-              <strong>{pendingDelete.title}</strong>
-              <span className="studio-modal-path">{pendingDelete.slug}.md</span>
-              <span>
-                This removes the file from <code>main</code> permanently. This
-                action cannot be undone.
-              </span>
-            </p>
-            <div className="studio-modal-actions">
-              <button
-                type="button"
-                className="github-button"
-                onClick={() => setPendingDelete(null)}
-                disabled={busy}
-                autoFocus
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="github-btn-danger"
-                onClick={() => {
-                  void confirmDelete();
-                }}
-                disabled={busy}
-              >
-                <Trash2 size={14} aria-hidden="true" />
-                {busy ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {unsavedOpen && (
-        <div
-          className="studio-modal-overlay"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) cancelUnsaved();
-          }}
-        >
-          <div
-            className="studio-modal"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="studio-unsaved-title"
-            aria-describedby="studio-unsaved-desc"
-          >
-            <span
-              className="studio-modal-icon studio-modal-icon-warn"
-              aria-hidden="true"
+            <div
+              className="studio-modal"
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="studio-delete-title"
+              aria-describedby="studio-delete-desc"
             >
-              <TriangleAlert size={18} />
-            </span>
-            <h2 id="studio-unsaved-title">Unsaved changes</h2>
-            <p id="studio-unsaved-desc">
-              <strong>
-                {activeItem && "title" in activeItem
-                  ? (activeItem.title ?? "").trim() || activeItem.slug || "Untitled"
-                  : activeItem
-                  ? `${activeItem.role || "Role"} at ${activeItem.company || "Company"}`
-                  : "Untitled"}
-              </strong>
-              <span>
-                Your draft {workspace === "blogs" ? "article" : workspace === "projects" ? "project" : "experience"} is
-                not saved yet. Do you want to save it as a draft first?
-                Discarding will lose all your temporary changes.
+              <span className="studio-modal-icon" aria-hidden="true">
+                <Trash2 size={18} />
               </span>
-            </p>
-            <div className="studio-modal-actions">
-              <button
-                type="button"
-                className="github-button"
-                onClick={cancelUnsaved}
-                disabled={busy}
-                autoFocus
-              >
-                Keep editing
-              </button>
-              <button
-                type="button"
-                className="github-btn-danger-outline"
-                onClick={discardUnsaved}
-                disabled={busy}
-              >
-                Discard changes
-              </button>
-              <button
-                type="button"
-                className="github-btn-primary"
-                onClick={() => {
-                  void saveDraftAndContinue();
-                }}
-                disabled={busy}
-              >
-                <Save size={14} aria-hidden="true" />
-                {busy ? "Saving…" : "Save as draft"}
-              </button>
+              <h2 id="studio-delete-title">
+                Delete {pendingDelete.type === "blogs" ? "article" : pendingDelete.type === "projects" ? "project" : "experience"}?
+              </h2>
+              <p id="studio-delete-desc">
+                <strong>{pendingDelete.title}</strong>
+                <span className="studio-modal-path">{pendingDelete.slug}.md</span>
+                <span>
+                  This removes the file from <code>main</code> permanently. This
+                  action cannot be undone.
+                </span>
+              </p>
+              <div className="studio-modal-actions">
+                <button
+                  type="button"
+                  className="github-button"
+                  onClick={() => setPendingDelete(null)}
+                  disabled={busy}
+                  autoFocus
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="github-btn-danger"
+                  onClick={() => {
+                    void confirmDelete();
+                  }}
+                  disabled={busy}
+                >
+                  <Trash2 size={14} aria-hidden="true" />
+                  {busy ? "Deleting…" : "Delete"}
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
+
+      {unsavedOpen &&
+        createPortal(
+          <div
+            className="studio-modal-overlay"
+            onMouseDown={(e) => {
+              if (e.target === e.currentTarget) cancelUnsaved();
+            }}
+          >
+            <div
+              className="studio-modal"
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="studio-unsaved-title"
+              aria-describedby="studio-unsaved-desc"
+            >
+              <span
+                className="studio-modal-icon studio-modal-icon-warn"
+                aria-hidden="true"
+              >
+                <TriangleAlert size={18} />
+              </span>
+              <h2 id="studio-unsaved-title">Unsaved changes</h2>
+              <p id="studio-unsaved-desc">
+                <strong>
+                  {activeItem && "title" in activeItem
+                    ? (activeItem.title ?? "").trim() || activeItem.slug || "Untitled"
+                    : activeItem
+                    ? `${activeItem.role || "Role"} at ${activeItem.company || "Company"}`
+                    : "Untitled"}
+                </strong>
+                <span>
+                  Your draft {workspace === "blogs" ? "article" : workspace === "projects" ? "project" : "experience"} is
+                  not saved yet. Do you want to save it as a draft first?
+                  Discarding will lose all your temporary changes.
+                </span>
+              </p>
+              <div className="studio-modal-actions">
+                <button
+                  type="button"
+                  className="github-button"
+                  onClick={cancelUnsaved}
+                  disabled={busy}
+                  autoFocus
+                >
+                  Keep editing
+                </button>
+                <button
+                  type="button"
+                  className="github-btn-danger-outline"
+                  onClick={discardUnsaved}
+                  disabled={busy}
+                >
+                  Discard changes
+                </button>
+                <button
+                  type="button"
+                  className="github-btn-primary"
+                  onClick={() => {
+                    void saveDraftAndContinue();
+                  }}
+                  disabled={busy}
+                >
+                  <Save size={14} aria-hidden="true" />
+                  {busy ? "Saving…" : "Save as draft"}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       <StatusModal
         open={statusModalOpen}
@@ -1616,7 +1621,7 @@ function StatusModal({
     setMessage("");
   };
 
-  return (
+  return createPortal(
     <div
       className="studio-modal-overlay"
       onMouseDown={(e) => {
@@ -1646,7 +1651,7 @@ function StatusModal({
           <button
             type="button"
             onClick={onClose}
-            className="github-icon-button"
+            className="github-icon-button flex h-8 w-8 items-center justify-center"
             aria-label="Close"
             disabled={saving}
           >
@@ -1749,7 +1754,7 @@ function StatusModal({
                     customStatus={{ emoji, message }}
                     expandAlways={true}
                     disableModal={true}
-                    className="!max-w-[130px] !text-[10px]"
+                    className="!max-w-[155px] !text-[10px]"
                   />
                 </div>
               </div>
@@ -1806,7 +1811,8 @@ function StatusModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
