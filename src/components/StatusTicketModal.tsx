@@ -134,7 +134,7 @@ Sent via ${identity.name}'s Portfolio Status Ticket Portal`;
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#02060e]/75 backdrop-blur-md animate-in fade-in duration-150"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -143,14 +143,14 @@ Sent via ${identity.name}'s Portfolio Status Ticket Portal`;
       aria-labelledby="ticket-modal-title"
     >
       <div
-        className="relative flex w-full max-w-xl flex-col max-h-[90vh] overflow-hidden rounded-xl border border-[var(--gh-border)] bg-[var(--gh-canvas)] text-[var(--gh-text)] shadow-2xl animate-in zoom-in-95 duration-150"
+        className="relative flex w-full max-w-xl flex-col max-h-[90vh] overflow-hidden rounded-2xl border border-[var(--orb-rim)] bg-[var(--gh-canvas)] text-[var(--gh-text)] shadow-[0_24px_64px_rgba(0,0,0,0.65),0_0_36px_-8px_var(--orb-glow)] animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header bar: Clean title with ticket icon, NO redundant emoji circle */}
-        <div className="flex items-center justify-between border-b border-[var(--gh-border)] bg-[var(--gh-subtle)] px-4 py-3">
+        <div className="flex items-center justify-between border-b border-[var(--gh-border)] bg-[var(--gh-subtle)] px-4 py-3.5">
           <div className="flex items-center gap-2">
-            <Ticket size={16} className="text-[var(--gh-muted)]" />
-            <h2 id="ticket-modal-title" className="text-sm font-semibold tracking-tight">
+            <Ticket size={16} className="text-[var(--orb-ice)]" />
+            <h2 id="ticket-modal-title" className="text-sm font-bold tracking-tight">
               Status & Direct Commission Ticket
             </h2>
           </div>
@@ -372,7 +372,7 @@ Sent via ${identity.name}'s Portfolio Status Ticket Portal`;
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-md bg-[var(--gh-btn-green,#238636)] hover:bg-[var(--gh-btn-green-hover,#2ea043)] text-white px-4 py-1.5 text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--orb-cobalt)] hover:brightness-110 text-white px-4 py-1.5 text-xs font-semibold shadow-[0_4px_16px_-4px_rgba(59,130,246,0.55)] transition-all cursor-pointer"
                 >
                   <Send size={13} />
                   <span>Open Email Draft</span>

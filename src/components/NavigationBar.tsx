@@ -1,8 +1,9 @@
 // NavigationBar.tsx
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { sections } from "../data/navigation";
+import BrandMark from "./BrandMark";
 import ThemeToggle from "./ThemeToggle";
 
 type Props = {
@@ -18,41 +19,48 @@ export default function NavigationBar({ active, onNavigate }: Props) {
     setIsMobileMenuOpen(false);
   };
 
+  const navSections = sections.filter((section) => section.showInNav !== false);
   const activeLabel = sections.find((section) => section.id === active)?.label ?? "overview";
 
   return (
     <>
       <header className="github-topbar hidden md:block">
         <div className="github-topbar-inner">
-          <button onClick={() => handleNavigate("profile")} className="github-wordmark w-[9rem]" aria-label="Go to profile overview">
-            <span className="github-mark">◉</span> {activeLabel === "profile" ? "Overview" : "Christine Mosqueda"}
+          <button
+            onClick={() => handleNavigate("profile")}
+            className="github-wordmark w-[10.5rem]"
+            aria-label="Go to profile overview"
+          >
+            <BrandMark size={20} />
+            <span>{activeLabel === "profile" ? "Overview" : "Christine Mosqueda"}</span>
           </button>
           <nav className="github-tabs" aria-label="Portfolio sections">
-        {sections.filter((section) => section.showInNav !== false).map(({ id, label }) => {
-          const isActive = active === id;
+            {navSections.map(({ id, label }, index) => {
+              const isActive = active === id;
 
-          return (
-            <button
-              key={id}
-              onClick={() => handleNavigate(id)}
-              className={`
-                github-tab relative flex-shrink-0 px-4 py-4 text-sm capitalize
-                ${isActive ? "github-tab-active" : ""}
-              `}
-              aria-current={isActive ? "page" : undefined}
-            >
-              <span className="relative">{label}</span>
-            </button>
-          );
-        })}
+              return (
+                <button
+                  key={id}
+                  onClick={() => handleNavigate(id)}
+                  className={`
+                    github-tab relative flex flex-shrink-0 items-center gap-1.5 px-4 py-4 text-sm capitalize
+                    ${isActive ? "github-tab-active" : ""}
+                  `}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <span className="orbital-tab-idx font-mono text-[11px]">0{index + 1}</span>
+                  <span className="relative">{label}</span>
+                </button>
+              );
+            })}
           </nav>
           <ThemeToggle className="github-theme-toggle" />
         </div>
       </header>
 
-      <div className="fixed inset-x-0 top-0 z-[50] flex items-center justify-between px-5 py-4 md:hidden">
+      <div className="fixed inset-x-0 top-0 z-[50] flex items-center justify-between px-4 py-3.5 md:hidden">
         <div className="github-mobile-brand" aria-live="polite">
-          <BookOpen size={16} /> <span>cmosqueda / README</span>
+          <BrandMark size={16} /> <span>cmosqueda / README</span>
         </div>
         <button
           type="button"
@@ -68,7 +76,7 @@ export default function NavigationBar({ active, onNavigate }: Props) {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 z-[80] bg-black/40 p-4 md:hidden"
+            className="fixed inset-0 z-[80] bg-[#02060e]/70 p-4 backdrop-blur-sm md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -102,7 +110,7 @@ export default function NavigationBar({ active, onNavigate }: Props) {
               </div>
 
               <div className="flex flex-col gap-3">
-                {sections.filter((section) => section.showInNav !== false).map(({ id, label }, index) => {
+                {navSections.map(({ id, label }, index) => {
                   const isActive = active === id;
                   return (
                     <button

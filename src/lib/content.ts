@@ -29,6 +29,7 @@ export interface BlogPost {
   readTime: string;
   summary: string;
   tags: string[];
+  order?: number;
   coverImage?: string;
   draft: boolean;
   content: string;
@@ -107,13 +108,20 @@ const blogPosts: BlogPost[] = Object.entries(blogFiles)
       readTime: data.readTime ?? "",
       summary: data.summary ?? "",
       tags: data.tags ?? [],
+      order: typeof data.order === "number" && Number.isFinite(data.order) ? data.order : undefined,
       coverImage: data.coverImage,
       draft: data.draft === true,
       content,
     };
   })
   .filter((post) => !post.draft)
-  .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  .sort((a, b) => {
+    const aHas = typeof a.order === "number";
+    const bHas = typeof b.order === "number";
+    if (aHas && bHas && a.order !== b.order) return a.order! - b.order!;
+    if (aHas !== bHas) return aHas ? -1 : 1;
+    return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
+  });
 
 export function getAllProjects(): ProjectData[] {
   return projects;

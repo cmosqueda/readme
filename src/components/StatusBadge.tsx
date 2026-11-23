@@ -51,20 +51,20 @@ export default memo(function StatusBadge({
           onClick={handleClick}
           title={`${tooltip} · Click for direct contact & commissions`}
           aria-label={`Status: ${tooltip}. Click for direct contact and commission inquiries.`}
-          className={`group absolute bottom-1 -right-1.5 z-20 flex h-7 items-center rounded-full border border-[var(--gh-border)] bg-[var(--gh-canvas)] shadow-md cursor-pointer select-none overflow-hidden transition-all duration-300 ease-out hover:shadow-lg hover:border-[var(--gh-link)] focus-visible:outline-2 focus-visible:outline-[var(--gh-link)] ${
+          className={`group absolute bottom-1 -right-1.5 z-20 flex h-[30px] items-center rounded-full border border-[var(--orb-rim)] bg-[var(--orb-elevated)] shadow-[0_4px_14px_rgba(0,0,0,0.45),0_0_12px_var(--orb-glow)] cursor-pointer select-none overflow-hidden transition-all duration-300 ease-out hover:border-[var(--orb-ice)] focus-visible:outline-2 focus-visible:outline-[var(--orb-cobalt)] ${
             expandAlways
               ? "max-w-[220px] px-2.5"
-              : "min-w-[28px] max-w-[28px] justify-center px-1.5 hover:max-w-[220px] hover:px-2.5"
+              : "min-w-[30px] max-w-[30px] justify-center px-1.5 hover:max-w-[220px] hover:px-2.5"
           } ${className}`}
         >
           {hasEmoji && (
             <span className="flex items-center justify-center shrink-0" aria-hidden="true">
-              {renderStatusIcon(status.emoji, 13, "text-[var(--gh-text)]")}
+              {renderStatusIcon(status.emoji, 13, "text-[var(--orb-arcade)]")}
             </span>
           )}
           {hasMessage && (
             <span
-              className={`whitespace-nowrap text-xs font-normal tracking-tight text-[var(--gh-text)] transition-all duration-300 ease-out ${
+              className={`whitespace-nowrap font-mono text-xs font-medium tracking-tight text-[var(--gh-text)] transition-all duration-300 ease-out ${
                 expandAlways
                   ? "max-w-[180px] opacity-100 ml-1.5"
                   : "max-w-0 opacity-0 overflow-hidden group-hover:max-w-[180px] group-hover:opacity-100 group-hover:ml-1.5"
@@ -92,16 +92,16 @@ export default memo(function StatusBadge({
           type="button"
           onClick={handleClick}
           title={`${tooltip} · Tap to submit direct contact / commission ticket`}
-          className={`w-full flex items-center justify-between gap-2.5 rounded-md border border-[var(--gh-border)] bg-[var(--gh-canvas)] px-3 py-1.5 text-xs text-[var(--gh-text)] shadow-xs select-none transition-colors hover:border-[var(--gh-link)] cursor-pointer text-left group ${className}`}
+          className={`w-full flex items-center justify-between gap-2.5 rounded-lg border border-[var(--gh-border)] bg-[var(--gh-subtle)] px-3 py-2 text-xs text-[var(--gh-text)] select-none transition-colors hover:border-[var(--orb-rim)] cursor-pointer text-left group ${className}`}
         >
           <div className="flex items-center gap-2 min-w-0">
             {hasEmoji && (
               <span className="flex items-center justify-center shrink-0" aria-hidden="true">
-                {renderStatusIcon(status.emoji, 14, "text-[var(--gh-text)]")}
+                {renderStatusIcon(status.emoji, 14, "text-[var(--orb-arcade)]")}
               </span>
             )}
             {hasMessage && (
-              <span className="truncate text-xs font-normal text-[var(--gh-text)]">
+              <span className="truncate font-mono text-xs font-medium text-[var(--gh-text)]">
                 {status.message}
               </span>
             )}

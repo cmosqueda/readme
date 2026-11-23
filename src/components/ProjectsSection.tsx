@@ -16,6 +16,7 @@ export default function ProjectsSection() {
             <h2>Projects</h2>
             <p>Pinboard of systems I researched, mapped, validated, and built.</p>
           </div>
+          <span className="orbital-section-tag">02 // PINNED_SYSTEMS</span>
         </div>
         <motion.div className="grid grid-cols-1 gap-4 md:grid-cols-2" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
           {projects.map((project) => <ProjectCard key={project.slug} project={project} />)}
@@ -26,6 +27,8 @@ export default function ProjectsSection() {
 }
 
 function ProjectCard({ project }: { project: ProjectData }) {
+  const isLive = project.status.toLowerCase() === "live";
+
   return (
     <motion.div variants={fadeInUp}>
       <Link to={`/projects/${project.slug}`} className="github-repo-card group relative block h-full p-5 text-left outline-none">
@@ -35,22 +38,35 @@ function ProjectCard({ project }: { project: ProjectData }) {
               <img
                 src={project.coverImage}
                 alt=""
-                className="aspect-[2/1] w-full rounded-lg border border-[color:var(--md-outline-variant)] object-cover"
+                className="aspect-[2/1] w-full rounded-lg border border-[color:var(--gh-border)] object-cover"
               />
             )}
             <div className="flex items-center justify-between gap-3">
               <span className="github-repo-name">⌘ {project.title}</span>
-              <span className="github-badge">{project.status}</span>
+              <span className={`orbital-status-pill ${isLive ? "orbital-status-pill--live" : "orbital-status-pill--stable"}`}>
+                {isLive && <span className="orbital-live-dot" aria-hidden="true" />}
+                {project.status}
+              </span>
             </div>
             <p className="text-sm leading-relaxed github-muted">{project.description}</p>
             <div className="flex flex-wrap gap-2">
               {project.workflow.slice(0, 3).map((step) => <span key={step} className="github-topic">{step}</span>)}
             </div>
+            {project.details.length > 0 && (
+              <div className="orbital-metric-grid">
+                {project.details.slice(0, 2).map((detail) => (
+                  <div key={detail.label} className="orbital-metric-cell">
+                    <span className="orbital-metric-label">{detail.label}</span>
+                    <span className="orbital-metric-value">{detail.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="mt-6 flex items-center gap-4 text-xs github-muted">
-            <span className="flex items-center gap-1"><span className="github-language-dot" /> {project.category}</span>
+          <div className="mt-5 flex items-center gap-4 border-t border-[color:var(--gh-border)] pt-3.5 text-xs github-muted">
+            <span className="flex items-center gap-1.5"><span className="github-language-dot" /> {project.category}</span>
             <span className="flex items-center gap-1"><Star size={13} /> case study</span>
-            <span className="ml-auto flex items-center gap-1 github-link">Open <ExternalLink size={13} /></span>
+            <span className="ml-auto flex items-center gap-1 font-mono font-semibold github-link">Open <ExternalLink size={13} /></span>
           </div>
         </div>
       </Link>

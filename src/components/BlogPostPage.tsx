@@ -1,38 +1,27 @@
 // BlogPostPage.tsx
-import { isValidElement, useEffect, useId, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowUp, Calendar, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ArrowLeft, ArrowUp, BookOpen, Calendar, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { getBlogBySlug, getBlogPosition } from "../lib/content";
 import { fadeInUp } from "../lib/motion";
 import { setPageSeo } from "../lib/seo";
+import { MarkdownPre } from "./MermaidDiagram";
+import ThemeToggle from "./ThemeToggle";
 
 const blogMarkdownComponents = {
-  h1: ({ children }: { children?: ReactNode }) => (
-    <h1 className="mb-6 border-b border-[color:var(--md-outline-variant)] pb-2 font-sans text-2xl font-bold text-[color:var(--md-on-surface)]">{children}</h1>
-  ),
-  h2: ({ children }: { children?: ReactNode }) => (
-    <h2 className="mb-4 mt-10 font-sans text-xl font-bold text-[color:var(--md-on-surface)]">{children}</h2>
-  ),
-  p: ({ children }: { children?: ReactNode }) => (
-    <p className="mb-6 text-sm leading-relaxed text-[color:var(--md-on-surface-variant)] sm:text-base">{children}</p>
-  ),
-  li: ({ children }: { children?: ReactNode }) => <li className="mb-2 list-inside list-disc text-sm text-[color:var(--md-on-surface-variant)]">{children}</li>,
-  pre: ({ children }: { children?: ReactNode }) => {
-    if (isValidElement<{ className?: string; children?: ReactNode }>(children)) {
-      const language = children.props.className?.match(/language-(\w+)/)?.[1];
-
-      if (language === "mermaid") {
-        return <MermaidDiagram chart={String(children.props.children).replace(/\n$/, "")} />;
-      }
-    }
-
-    return <pre className="neo-pressed my-6 overflow-x-auto rounded-xl p-4">{children}</pre>;
-  },
-  code: ({ children }: { children?: ReactNode }) => (
-    <code className="neo-pressed rounded px-1.5 py-0.5 text-sm text-[color:var(--md-primary)]">{children}</code>
-  ),
+  h1: ({ children }: { children?: ReactNode }) => <h1>{children}</h1>,
+  h2: ({ children }: { children?: ReactNode }) => <h2>{children}</h2>,
+  h3: ({ children }: { children?: ReactNode }) => <h3>{children}</h3>,
+  p: ({ children }: { children?: ReactNode }) => <p>{children}</p>,
+  ul: ({ children }: { children?: ReactNode }) => <ul>{children}</ul>,
+  ol: ({ children }: { children?: ReactNode }) => <ol>{children}</ol>,
+  li: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
+  blockquote: ({ children }: { children?: ReactNode }) => <blockquote>{children}</blockquote>,
+  strong: ({ children }: { children?: ReactNode }) => <strong>{children}</strong>,
+  pre: MarkdownPre,
+  code: ({ children }: { children?: ReactNode }) => <code>{children}</code>,
 };
 
 export default function BlogPostPage() {
@@ -44,7 +33,6 @@ export default function BlogPostPage() {
   const { previousSlug, nextSlug } = useMemo(() => getBlogPosition(slug), [slug]);
 
   useEffect(() => {
-    // When moving between blog posts through Previous/Next, reset the reader position.
     window.scrollTo({ top: 0, behavior: "auto" });
     setReadingProgress(0);
   }, [slug]);
@@ -98,10 +86,10 @@ export default function BlogPostPage() {
 
   if (!blog) {
     return (
-      <div className="app-shell flex min-h-screen w-full items-center justify-center text-xs text-[color:var(--md-on-surface-variant)]">
-        <div className="flex flex-col items-center gap-2">
+      <div className="app-shell flex min-h-screen w-full items-center justify-center font-mono text-xs github-muted">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-[color:var(--gh-border)] bg-[color:var(--gh-canvas)] px-8 py-6">
           <span>Article not found</span>
-          <Link to="/" className="text-[color:var(--md-primary)] transition-colors hover:text-[color:var(--md-on-surface)]">
+          <Link to="/" className="github-link hover:underline">
             Return to portfolio
           </Link>
         </div>
@@ -113,7 +101,7 @@ export default function BlogPostPage() {
     <main className="app-shell github-detail relative min-h-screen w-full px-4 py-8 md:py-12">
       {/* READING PROGRESS BAR */}
       <div
-        className="fixed top-0 left-0 right-0 z-[80] h-1 bg-[color:var(--gh-subtle)]"
+        className="orbital-progress-track fixed top-0 left-0 right-0 z-[80] h-1"
         role="progressbar"
         aria-label="Reading progress"
         aria-valuemin={0}
@@ -121,7 +109,7 @@ export default function BlogPostPage() {
         aria-valuenow={Math.round(readingProgress)}
       >
         <div
-          className="h-full bg-[color:var(--gh-link)] transition-[width] duration-150 ease-out"
+          className="orbital-progress-fill h-full transition-[width] duration-150 ease-out"
           style={{ width: `${readingProgress}%` }}
         />
       </div>
@@ -133,25 +121,29 @@ export default function BlogPostPage() {
         animate="visible"
         className="mx-auto w-full max-w-4xl"
       >
-        {/* BACK TO HOME NAVIGATION */}
-        <Link
-          to="/#blogs"
-          className="github-detail-back group mb-6 inline-flex items-center gap-2 text-sm"
-        >
-          <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-          Back to portfolio
-        </Link>
+        {/* TOP NAVIGATION ROW */}
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <Link
+            to="/#blogs"
+            className="github-detail-back group inline-flex items-center gap-2"
+          >
+            <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" />
+            Back to portfolio
+          </Link>
+          <ThemeToggle className="github-theme-toggle" />
+        </div>
 
         {/* METADATA HEADER BLOCK */}
-        <header className="github-detail-header mb-8">
-          <div className="github-file-bar"><span>⌘</span><span>articles / {blog.slug}.md</span></div>
-          <span className="github-badge mt-5">
-            {blog.category}
-          </span>
-          <h1 className="github-detail-title mt-4">
+        <header className="github-detail-header mb-6">
+          <div className="github-file-bar">
+            <BookOpen size={15} />
+            <span>cmosqueda / articles / {blog.slug}.md</span>
+            <span className="github-badge">{blog.category}</span>
+          </div>
+          <h1 className="github-detail-title mt-5">
             {blog.title}
           </h1>
-          <div className="github-detail-meta mt-4 flex items-center gap-4 text-xs">
+          <div className="github-detail-meta mt-4 flex flex-wrap items-center gap-4 text-xs">
             <span className="flex items-center gap-1.5">
               By Christine Mosqueda
             </span>
@@ -162,21 +154,36 @@ export default function BlogPostPage() {
               <Clock size={13} /> {blog.readTime}
             </span>
           </div>
+          {blog.tags.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {blog.tags.map((tag) => (
+                <span key={tag} className="github-topic">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
 
         {blog.coverImage && (
           <img
             src={blog.coverImage}
             alt=""
-            className="mb-8 aspect-[2/1] w-full rounded-xl border border-[color:var(--md-outline-variant)] object-cover"
+            className="mb-6 aspect-[2/1] w-full rounded-xl border border-[color:var(--gh-border)] object-cover"
           />
         )}
 
         {/* EXTRACTED MARKDOWN TEXT MARKUP */}
-        <article className="github-markdown max-w-none pb-16">
-          <ReactMarkdown components={blogMarkdownComponents}>
-            {blog.content}
-          </ReactMarkdown>
+        <article className="github-markdown github-file-content mb-12">
+          <div className="github-file-bar">
+            <span>▤</span>
+            <span>FIELD_LOG.md</span>
+          </div>
+          <div className="p-5 sm:p-8 md:p-10">
+            <ReactMarkdown components={blogMarkdownComponents}>
+              {blog.content}
+            </ReactMarkdown>
+          </div>
         </article>
 
         {/* LINKED BLOG PAGING */}
@@ -188,84 +195,12 @@ export default function BlogPostPage() {
         type="button"
         onClick={handleBackToStart}
         aria-label="Back to start"
-        className={`github-back-to-top fixed bottom-6 right-6 z-[70] flex items-center gap-2 px-3 py-2 text-xs font-medium transition-all duration-300 ${readingProgress > 8 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}
+        className={`github-back-to-top fixed bottom-6 right-6 z-[70] flex items-center gap-2 px-3.5 py-2 font-mono text-xs font-medium transition-all duration-300 ${readingProgress > 8 ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}
       >
         <ArrowUp size={14} />
         <span className="hidden sm:inline">Back to top</span>
       </button>
     </main>
-  );
-}
-
-function MermaidDiagram({ chart }: { chart: string }) {
-  const diagramId = useId().replace(/:/g, "");
-  const [svg, setSvg] = useState<string | null>(null);
-  const [error, setError] = useState(false);
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === "dark" ? "dark" : "light");
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"));
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const renderDiagram = async () => {
-      try {
-        const { default: mermaid } = await import("mermaid");
-
-        const dark = theme === "dark";
-        mermaid.initialize({
-          startOnLoad: false,
-          securityLevel: "strict",
-          theme: "base",
-          themeVariables: {
-            background: dark ? "#0d1117" : "#ffffff",
-            primaryColor: dark ? "#161b22" : "#f6f8fa",
-            primaryBorderColor: dark ? "#30363d" : "#d0d7de",
-            primaryTextColor: dark ? "#f0f6fc" : "#1f2328",
-            secondaryColor: dark ? "#0d1117" : "#ffffff",
-            tertiaryColor: dark ? "#161b22" : "#f6f8fa",
-            lineColor: dark ? "#8b949e" : "#57606a",
-            textColor: dark ? "#f0f6fc" : "#1f2328",
-            mainBkg: dark ? "#161b22" : "#f6f8fa",
-            nodeBorder: dark ? "#30363d" : "#d0d7de",
-          },
-        });
-        const { svg: renderedSvg } = await mermaid.render(`mermaid-${diagramId}-${theme}`, chart);
-
-        if (!cancelled) setSvg(renderedSvg);
-      } catch (renderError) {
-        console.error("Unable to render Mermaid diagram:", renderError);
-        if (!cancelled) setError(true);
-      }
-    };
-
-    void renderDiagram();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [chart, diagramId, theme]);
-
-  if (error) {
-    return (
-      <pre className="my-6 overflow-x-auto rounded-xl border border-[color:var(--md-outline-variant)] bg-[color:var(--md-surface-container-high)] p-4 text-sm text-[color:var(--md-on-surface-variant)]">
-        <code>{chart}</code>
-      </pre>
-    );
-  }
-
-  return (
-    <div className="my-8 overflow-x-auto rounded-xl border border-[color:var(--md-outline-variant)] bg-[color:var(--md-surface-container-lowest)] p-4 shadow-sm" aria-label="Mermaid diagram">
-      {svg ? (
-        <div className="mermaid-diagram min-w-max" role="img" dangerouslySetInnerHTML={{ __html: svg }} />
-      ) : (
-        <p className="m-0 text-sm text-[color:var(--md-on-surface-variant)]">Loading diagram…</p>
-      )}
-    </div>
   );
 }
 
@@ -275,7 +210,7 @@ function BlogPagination({ previousSlug, nextSlug }: { previousSlug: string | nul
   return (
     <nav
       aria-label="Blog post navigation"
-      className="grid grid-cols-1 gap-4 border-t border-[color:var(--md-outline-variant)] pb-24 pt-8 md:grid-cols-2"
+      className="grid grid-cols-1 gap-4 border-t border-[color:var(--gh-border)] pb-24 pt-8 md:grid-cols-2"
     >
       {previousSlug ? (
         <BlogPaginationCard direction="previous" slug={previousSlug} />
@@ -299,17 +234,17 @@ function BlogPaginationCard({ direction, slug }: { direction: "previous" | "next
   return (
     <Link
       to={`/blogs/${slug}`}
-      className={`github-pagination-card group p-4 ${isPrevious ? "text-left" : "text-left md:text-right"}`}
+      className={`github-pagination-card group p-5 ${isPrevious ? "text-left" : "text-left md:text-right"}`}
     >
       <div
-        className={`flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.1em] github-muted ${isPrevious ? "justify-start" : "justify-start md:justify-end"}`}
+        className={`flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] github-muted ${isPrevious ? "justify-start" : "justify-start md:justify-end"}`}
       >
         {isPrevious && <ChevronLeft size={13} className="transition-transform group-hover:-translate-x-0.5" />}
         <span>{isPrevious ? "Previous Note" : "Next Note"}</span>
         {!isPrevious && <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
       </div>
 
-      <h2 className="github-pagination-title mt-3 font-sans text-base font-semibold">
+      <h2 className="github-pagination-title mt-3 font-sans text-base font-bold">
         {blog?.title || formatSlugTitle(slug)}
       </h2>
 

@@ -1,5 +1,6 @@
 import matter from "gray-matter";
 import { github, session } from "../../lib/studio-auth.js";
+import { isReorderValidationError, reorderContent } from "../../lib/studio-reorder.js";
 
 const owner = "cmosqueda";
 const repo = "readme";
@@ -96,6 +97,18 @@ export default async function handler(request, response) {
       }
     }
 
+    if (request.method === "PATCH") {
+      const result = await reorderContent({
+        directory,
+        kind: "experiences",
+        slugs: request.body?.slugs,
+        token: current.token,
+        formatMarkdown: markdown,
+        syncLocal: true,
+      });
+      return response.status(200).json(result);
+    }
+
     const { slug, originalSlug, data, body, sha } = request.body ?? {};
 
     if (request.method === "DELETE") {
@@ -190,6 +203,7 @@ export default async function handler(request, response) {
 
     return response.status(405).end();
   } catch (error) {
+    if (isReorderValidationError(error)) return response.status(400).json({ error: error.message });
     console.error("Studio experiences failed", error);
     return response.status(502).json({ error: "GitHub could not complete that request." });
   }

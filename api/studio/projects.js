@@ -1,5 +1,6 @@
 import matter from "gray-matter";
 import { github, session } from "../../lib/studio-auth.js";
+import { isReorderValidationError, reorderContent } from "../../lib/studio-reorder.js";
 
 const owner = "cmosqueda";
 const repo = "readme";
@@ -45,6 +46,17 @@ export default async function handler(request, response) {
       return response.status(200).json(entries.sort((a, b) => Number(a.order) - Number(b.order)));
     }
 
+    if (request.method === "PATCH") {
+      const result = await reorderContent({
+        directory,
+        kind: "projects",
+        slugs: request.body?.slugs,
+        token: current.token,
+        formatMarkdown: markdown,
+      });
+      return response.status(200).json(result);
+    }
+
     const { slug, originalSlug, data, body, sha } = request.body ?? {};
     // Deletes carry only a file reference — never gate them on content validation.
     if (request.method === "DELETE") {
@@ -73,6 +85,7 @@ export default async function handler(request, response) {
 
     return response.status(405).end();
   } catch (error) {
+    if (isReorderValidationError(error)) return response.status(400).json({ error: error.message });
     console.error("Studio projects failed", error);
     return response.status(502).json({ error: "GitHub could not complete that request." });
   }

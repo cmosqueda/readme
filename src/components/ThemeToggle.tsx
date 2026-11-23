@@ -26,7 +26,7 @@ const M3_DURATION_ICON = 200; // "short4" token
 function getInitialTheme(): Theme {
   const savedTheme = localStorage.getItem("portfolio-theme");
   if (savedTheme === "dark" || savedTheme === "light") return savedTheme;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "dark";
 }
 
 type Props = {

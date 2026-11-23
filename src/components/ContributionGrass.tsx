@@ -1878,6 +1878,10 @@ export default function ContributionGrass() {
         </a>
       </div>
       <div className="contribution-aquarium">
+        <span className="tank-corner tank-corner--tl" aria-hidden="true" />
+        <span className="tank-corner tank-corner--tr" aria-hidden="true" />
+        <span className="tank-corner tank-corner--bl" aria-hidden="true" />
+        <span className="tank-corner tank-corner--br" aria-hidden="true" />
         {years.length > 1 && selectedYear !== null && (
           <div className="aquarium-year" ref={yearBoxRef}>
             <button

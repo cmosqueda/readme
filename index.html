@@ -17,17 +17,21 @@
       content="Christine Mosqueda, Tine Mosqueda, Rocket Puncher, Product Systems Analyst, user research, workflow design, system requirements, QA validation, product delivery, cmosqueda"
     />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
-    <meta name="theme-color" content="#edf1f5" />
+    <meta name="theme-color" content="#03060c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script>
       (() => {
         try {
           const savedTheme = localStorage.getItem("portfolio-theme");
-          const theme = savedTheme === "dark" || savedTheme === "light"
-            ? savedTheme
-            : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          const theme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : "dark";
           document.documentElement.dataset.theme = theme;
         } catch {
-          // Keep the light theme when browser storage is unavailable.
+          document.documentElement.dataset.theme = "dark";
         }
       })();
     </script>

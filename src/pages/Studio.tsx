@@ -12,6 +12,7 @@ import {
   FilePlus2,
   FolderKanban,
   Globe,
+  GripVertical,
   Loader2,
   LogOut,
   MapPin,
@@ -19,6 +20,7 @@ import {
   Pencil,
   Plus,
   RefreshCw,
+  RotateCcw,
   Save,
   Search,
   Smile,
@@ -27,11 +29,18 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import { Reorder, useDragControls } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useBlocker, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import BrandMark from "../components/BrandMark";
+import { MarkdownPre } from "../components/MermaidDiagram";
 import ThemeToggle from "../components/ThemeToggle";
+
+const studioMarkdownComponents = {
+  pre: MarkdownPre,
+};
 import { setPageSeo } from "../lib/seo";
 import { useProfileStatus, type ProfileStatus } from "../data/status";
 import ProfileStatusBadge from "../components/StatusBadge";
@@ -47,6 +56,7 @@ type Post = {
   readTime: string;
   summary: string;
   tags: string[];
+  order?: number;
   body: string;
   draft?: boolean;
   coverImage?: string;
@@ -195,6 +205,17 @@ export default function Studio() {
   const [deploy, setDeploy] = useState<DeployInfo>(null);
   const [deployState, setDeployState] = useState<"idle" | "checking" | "error">("idle");
   const deployBusy = useRef(false);
+  const [orderDirty, setOrderDirty] = useState<Record<Workspace, boolean>>({
+    blogs: false,
+    projects: false,
+    experiences: false,
+  });
+  const [savingOrder, setSavingOrder] = useState(false);
+  const orderSnapshotRef = useRef<{
+    blogs: Post[];
+    projects: Project[];
+    experiences: Experience[];
+  }>({ blogs: [], projects: [], experiences: [] });
 
   const refreshDeploy = async () => {
     if (deployBusy.current) return;
@@ -223,6 +244,12 @@ export default function Studio() {
       setPosts(nextPosts);
       setProjects(nextProjects);
       setExperiences(nextExperiences || []);
+      orderSnapshotRef.current = {
+        blogs: nextPosts,
+        projects: nextProjects,
+        experiences: nextExperiences || [],
+      };
+      setOrderDirty({ blogs: false, projects: false, experiences: false });
       if (statusData && (typeof statusData.emoji === "string" || typeof statusData.message === "string")) {
         updateProfileStatus({
           emoji: statusData.emoji ?? "",
@@ -639,17 +666,17 @@ export default function Studio() {
       setError("");
       setPreview(false);
       if (workspace === "blogs") {
-        const fresh = blankPost();
+        const fresh = { ...blankPost(), order: 0 };
         setEditingPost(fresh);
         baselineRef.current = JSON.stringify(fresh);
         baselineItemRef.current = fresh;
       } else if (workspace === "projects") {
-        const fresh = blankProject();
+        const fresh = { ...blankProject(), order: projects.length };
         setEditingProject(fresh);
         baselineRef.current = JSON.stringify(fresh);
         baselineItemRef.current = fresh;
       } else {
-        const fresh = blankExperience();
+        const fresh = { ...blankExperience(), order: 0 };
         setEditingExperience(fresh);
         baselineRef.current = JSON.stringify(fresh);
         baselineItemRef.current = fresh;
@@ -690,7 +717,13 @@ export default function Studio() {
           post.category.toLowerCase().includes(q)
         );
       })
-      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+      .sort((a, b) => {
+        const aHas = typeof a.order === "number" && Number.isFinite(a.order);
+        const bHas = typeof b.order === "number" && Number.isFinite(b.order);
+        if (aHas && bHas && a.order !== b.order) return a.order! - b.order!;
+        if (aHas !== bHas) return aHas ? -1 : 1;
+        return (b.date || "").localeCompare(a.date || "");
+      });
   }, [posts, query, statusFilter]);
 
   const filteredProjects = useMemo(() => {
@@ -727,6 +760,89 @@ export default function Studio() {
       .sort((a, b) => Number(a.order) - Number(b.order));
   }, [experiences, query, statusFilter]);
 
+  const canReorder = !query.trim() && statusFilter === "all" && !busy && !savingOrder;
+
+  const applyOrderedPosts = (next: Post[]) => {
+    const updated = next.map((item, idx) => ({ ...item, order: idx }));
+    setPosts(updated);
+    setOrderDirty((prev) => ({ ...prev, blogs: true }));
+  };
+
+  const applyOrderedProjects = (next: Project[]) => {
+    const updated = next.map((item, idx) => ({ ...item, order: idx }));
+    setProjects(updated);
+    setOrderDirty((prev) => ({ ...prev, projects: true }));
+  };
+
+  const applyOrderedExperiences = (next: Experience[]) => {
+    const updated = next.map((item, idx) => ({ ...item, order: idx }));
+    setExperiences(updated);
+    setOrderDirty((prev) => ({ ...prev, experiences: true }));
+  };
+
+  const moveItemByDelta = <T,>(list: T[], index: number, delta: number, apply: (next: T[]) => void) => {
+    const target = index + delta;
+    if (target < 0 || target >= list.length) return;
+    const copy = [...list];
+    const [moved] = copy.splice(index, 1);
+    if (!moved) return;
+    copy.splice(target, 0, moved);
+    apply(copy);
+  };
+
+  const resetOrder = () => {
+    if (savingOrder) return;
+    if (workspace === "blogs") setPosts(orderSnapshotRef.current.blogs);
+    else if (workspace === "projects") setProjects(orderSnapshotRef.current.projects);
+    else setExperiences(orderSnapshotRef.current.experiences);
+    setOrderDirty((prev) => ({ ...prev, [workspace]: false }));
+  };
+
+  const saveOrder = async () => {
+    if (savingOrder || busy) return;
+    const slugs =
+      workspace === "blogs"
+        ? filteredPosts.map((p) => p.slug)
+        : workspace === "projects"
+        ? filteredProjects.map((p) => p.slug)
+        : filteredExperiences.map((e) => e.slug);
+    if (slugs.length === 0) return;
+
+    setSavingOrder(true);
+    setError("");
+    try {
+      await request(`/api/studio/${workspace}`, {
+        method: "PATCH",
+        body: JSON.stringify({ slugs }),
+      });
+      const idxMap = new Map(slugs.map((slug, idx) => [slug, idx]));
+      await load();
+      if (!dirtyRef.current) {
+        if (workspace === "blogs" && editingPost && idxMap.has(editingPost.slug)) {
+          const synced = { ...editingPost, order: idxMap.get(editingPost.slug)! };
+          setEditingPost(synced);
+          baselineRef.current = JSON.stringify(synced);
+          baselineItemRef.current = synced;
+        } else if (workspace === "projects" && editingProject && idxMap.has(editingProject.slug)) {
+          const synced = { ...editingProject, order: idxMap.get(editingProject.slug)! };
+          setEditingProject(synced);
+          baselineRef.current = JSON.stringify(synced);
+          baselineItemRef.current = synced;
+        } else if (workspace === "experiences" && editingExperience && idxMap.has(editingExperience.slug)) {
+          const synced = { ...editingExperience, order: idxMap.get(editingExperience.slug)! };
+          setEditingExperience(synced);
+          baselineRef.current = JSON.stringify(synced);
+          baselineItemRef.current = synced;
+        }
+      }
+      void refreshDeploy();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not save arrangement order.");
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
   const draftCount =
     workspace === "blogs"
       ? posts.filter((p) => p.draft).length
@@ -750,7 +866,7 @@ export default function Studio() {
     return (
       <main className="app-shell flex min-h-screen items-center justify-center p-6">
         <div className="studio-loading" aria-label="Loading studio">
-          <span className="github-mark">◉</span>
+          <BrandMark size={28} />
           <p>Connecting to studio…</p>
         </div>
       </main>
@@ -763,7 +879,7 @@ export default function Studio() {
         <div className="github-topbar">
           <div className="github-topbar-inner">
             <span className="github-wordmark">
-              <span className="github-mark">◉</span> cmosqueda / studio
+              <BrandMark size={20} /> cmosqueda / studio
             </span>
             <ThemeToggle className="github-theme-toggle" />
           </div>
@@ -802,7 +918,7 @@ export default function Studio() {
       <div className="github-topbar">
         <div className="github-topbar-inner studio-topbar">
           <Link to="/" className="github-wordmark" aria-label="Back to portfolio">
-            <span className="github-mark">◉</span>
+            <BrandMark size={20} />
             <span className="studio-crumb">
               cmosqueda <span>/</span> <strong>studio</strong>
             </span>
@@ -969,6 +1085,42 @@ export default function Studio() {
               </div>
             </div>
 
+            {orderDirty[workspace] ? (
+              <div className="studio-reorder-bar" role="status">
+                <span>Order modified</span>
+                <div className="studio-reorder-actions">
+                  <button
+                    type="button"
+                    onClick={resetOrder}
+                    disabled={savingOrder}
+                    className="github-button studio-reorder-btn"
+                  >
+                    <RotateCcw size={12} /> Reset
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void saveOrder();
+                    }}
+                    disabled={savingOrder}
+                    className="github-btn-primary studio-reorder-btn"
+                  >
+                    {savingOrder ? <Loader2 size={12} className="studio-spin" /> : <Save size={12} />}
+                    {savingOrder ? "Saving…" : "Save order"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              totalCount > 1 && (
+                <div className="studio-reorder-hint">
+                  <GripVertical size={12} />
+                  <span>
+                    {canReorder ? "Drag handles to arrange order" : "Clear search & filters to drag-reorder"}
+                  </span>
+                </div>
+              )
+            )}
+
             <div className="studio-filelist">
               {isBlogs ? (
                 filteredPosts.length === 0 ? (
@@ -979,8 +1131,29 @@ export default function Studio() {
                     action={newEntry}
                     actionLabel="New article"
                   />
+                ) : canReorder && filteredPosts.length > 1 ? (
+                  <Reorder.Group
+                    axis="y"
+                    values={filteredPosts}
+                    onReorder={applyOrderedPosts}
+                    className="studio-reorder-list"
+                  >
+                    {filteredPosts.map((post, idx) => (
+                      <DraggableFileItem
+                        key={post.slug}
+                        value={post}
+                        active={activeSlug === post.slug}
+                        icon={<FileCode2 size={15} />}
+                        title={post.title || "(untitled)"}
+                        meta={`#${idx + 1} · ${post.slug}.md · ${post.draft ? "draft" : post.date || "published"}`}
+                        draft={post.draft}
+                        onSelect={() => guardNav(() => openPost(post))}
+                        onStep={(delta) => moveItemByDelta(filteredPosts, idx, delta, applyOrderedPosts)}
+                      />
+                    ))}
+                  </Reorder.Group>
                 ) : (
-                  filteredPosts.map((post) => (
+                  filteredPosts.map((post, idx) => (
                     <button
                       key={post.slug}
                       onClick={() => guardNav(() => openPost(post))}
@@ -992,7 +1165,7 @@ export default function Studio() {
                       <span className="studio-file-main">
                         <span className="studio-file-title">{post.title || "(untitled)"}</span>
                         <span className="github-muted studio-file-meta">
-                          {post.slug}.md · {post.draft ? "draft" : post.date || "published"}
+                          #{idx + 1} · {post.slug}.md · {post.draft ? "draft" : post.date || "published"}
                         </span>
                       </span>
                       <StatusBadge draft={post.draft} />
@@ -1008,8 +1181,29 @@ export default function Studio() {
                     action={newEntry}
                     actionLabel="New project"
                   />
+                ) : canReorder && filteredProjects.length > 1 ? (
+                  <Reorder.Group
+                    axis="y"
+                    values={filteredProjects}
+                    onReorder={applyOrderedProjects}
+                    className="studio-reorder-list"
+                  >
+                    {filteredProjects.map((project, idx) => (
+                      <DraggableFileItem
+                        key={project.slug}
+                        value={project}
+                        active={activeSlug === project.slug}
+                        icon={<FileCode2 size={15} />}
+                        title={project.title || "(untitled)"}
+                        meta={`#${idx + 1} · ${project.slug}.md · ${project.draft ? "draft" : project.status}`}
+                        draft={project.draft}
+                        onSelect={() => guardNav(() => openProject(project))}
+                        onStep={(delta) => moveItemByDelta(filteredProjects, idx, delta, applyOrderedProjects)}
+                      />
+                    ))}
+                  </Reorder.Group>
                 ) : (
-                  filteredProjects.map((project) => (
+                  filteredProjects.map((project, idx) => (
                     <button
                       key={project.slug}
                       onClick={() => guardNav(() => openProject(project))}
@@ -1021,7 +1215,7 @@ export default function Studio() {
                       <span className="studio-file-main">
                         <span className="studio-file-title">{project.title || "(untitled)"}</span>
                         <span className="github-muted studio-file-meta">
-                          {project.slug}.md · #{project.order} · {project.draft ? "draft" : project.status}
+                          #{idx + 1} · {project.slug}.md · {project.draft ? "draft" : project.status}
                         </span>
                       </span>
                       <StatusBadge draft={project.draft} />
@@ -1037,8 +1231,29 @@ export default function Studio() {
                     action={newEntry}
                     actionLabel="New experience"
                   />
+                ) : canReorder && filteredExperiences.length > 1 ? (
+                  <Reorder.Group
+                    axis="y"
+                    values={filteredExperiences}
+                    onReorder={applyOrderedExperiences}
+                    className="studio-reorder-list"
+                  >
+                    {filteredExperiences.map((exp, idx) => (
+                      <DraggableFileItem
+                        key={exp.slug}
+                        value={exp}
+                        active={activeSlug === exp.slug}
+                        icon={<BriefcaseBusiness size={15} />}
+                        title={exp.role || "(untitled role)"}
+                        meta={`#${idx + 1} · ${exp.company} · ${exp.period}`}
+                        draft={exp.draft}
+                        onSelect={() => guardNav(() => openExperience(exp))}
+                        onStep={(delta) => moveItemByDelta(filteredExperiences, idx, delta, applyOrderedExperiences)}
+                      />
+                    ))}
+                  </Reorder.Group>
                 ) : (
-                  filteredExperiences.map((exp) => (
+                  filteredExperiences.map((exp, idx) => (
                     <button
                       key={exp.slug}
                       onClick={() => guardNav(() => openExperience(exp))}
@@ -1050,7 +1265,7 @@ export default function Studio() {
                       <span className="studio-file-main">
                         <span className="studio-file-title">{exp.role || "(untitled role)"}</span>
                         <span className="github-muted studio-file-meta">
-                          {exp.company} · #{exp.order} · {exp.period}
+                          #{idx + 1} · {exp.company} · {exp.period}
                         </span>
                       </span>
                       <StatusBadge draft={exp.draft} />
@@ -1266,6 +1481,68 @@ export default function Studio() {
 }
 
 /* ── Bits ─────────────────────────────────────────────────── */
+
+function DraggableFileItem<T>({
+  value,
+  active,
+  icon,
+  title,
+  meta,
+  draft,
+  onSelect,
+  onStep,
+}: {
+  value: T;
+  active: boolean;
+  icon: React.ReactNode;
+  title: string;
+  meta: string;
+  draft?: boolean;
+  onSelect: () => void;
+  onStep: (delta: -1 | 1) => void;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={value}
+      dragListener={false}
+      dragControls={dragControls}
+      className={`studio-file-row ${active ? "studio-file-active" : ""}`}
+    >
+      <button
+        type="button"
+        className="studio-drag-handle"
+        onPointerDown={(e) => {
+          e.preventDefault();
+          dragControls.start(e);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowUp") {
+            e.preventDefault();
+            onStep(-1);
+          } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            onStep(1);
+          }
+        }}
+        title="Drag to reorder (or press ↑ / ↓)"
+        aria-label={`Reorder ${title}`}
+        style={{ touchAction: "none" }}
+      >
+        <GripVertical size={14} />
+      </button>
+      <button type="button" onClick={onSelect} className="studio-file studio-file-in-row">
+        <span className="studio-file-icon">{icon}</span>
+        <span className="studio-file-main">
+          <span className="studio-file-title">{title}</span>
+          <span className="github-muted studio-file-meta">{meta}</span>
+        </span>
+        <StatusBadge draft={draft} />
+      </button>
+    </Reorder.Item>
+  );
+}
 
 function StatusModal({
   open,
@@ -2091,7 +2368,9 @@ function BlogEditor({
           <h3>{post.title || "(untitled)"}</h3>
           {post.summary && <p className="studio-preview-summary">{post.summary}</p>}
           <div className="github-markdown">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body || "_Nothing to preview yet._"}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={studioMarkdownComponents}>
+              {post.body || "_Nothing to preview yet._"}
+            </ReactMarkdown>
           </div>
           <PreviewBackToTop />
         </div>
@@ -2258,7 +2537,9 @@ function ProjectEditor({
             </div>
           </div>
           <div className="github-markdown">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.body || "_Nothing to preview yet._"}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={studioMarkdownComponents}>
+              {project.body || "_Nothing to preview yet._"}
+            </ReactMarkdown>
           </div>
           <PreviewBackToTop />
         </div>
@@ -2286,13 +2567,11 @@ function ProjectEditor({
                   spellCheck={false}
                 />
               </Field>
-              <Field label="Display order">
-                <input
-                  className={inputCls}
-                  type="number"
-                  value={project.order}
-                  onChange={(e) => update("order", Number(e.target.value))}
-                />
+              <Field label="Arrangement" hint="drag items in sidebar to reorder">
+                <div className={`${inputCls} studio-mono-input flex items-center justify-between text-[var(--orb-secondary)]`}>
+                  <span>Position #{Number(project.order) + 1}</span>
+                  <span className="text-[11px] text-[var(--orb-muted)]">UI drag</span>
+                </div>
               </Field>
               <Field label="Category">
                 <input
@@ -2488,7 +2767,7 @@ function ExperienceEditor({
                   )}
                 </p>
                 <div className="mt-2 text-xs leading-relaxed text-[var(--gh-muted)] github-markdown">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={studioMarkdownComponents}>
                     {experience.body || "_No description provided._"}
                   </ReactMarkdown>
                 </div>
@@ -2538,13 +2817,11 @@ function ExperienceEditor({
                   spellCheck={false}
                 />
               </Field>
-              <Field label="Display order" hint="lower numbers appear first">
-                <input
-                  className={inputCls}
-                  type="number"
-                  value={experience.order}
-                  onChange={(e) => update("order", Number(e.target.value))}
-                />
+              <Field label="Arrangement" hint="drag items in sidebar to reorder">
+                <div className={`${inputCls} studio-mono-input flex items-center justify-between text-[var(--orb-secondary)]`}>
+                  <span>Position #{Number(experience.order) + 1}</span>
+                  <span className="text-[11px] text-[var(--orb-muted)]">UI drag</span>
+                </div>
               </Field>
               <Field label="Period">
                 <input

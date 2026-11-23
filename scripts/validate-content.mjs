@@ -54,6 +54,7 @@ for (const entry of blogs) {
 
   if (present(data.date) && (typeof data.date !== "string" || !datePattern.test(data.date))) errors.push(`${label}: date must use YYYY-MM-DD.`);
   if (present(data.updatedAt) && (typeof data.updatedAt !== "string" || !datePattern.test(data.updatedAt))) errors.push(`${label}: updatedAt must use YYYY-MM-DD.`);
+  if (present(data.order) && (!Number.isInteger(data.order) || data.order < 0)) errors.push(`${label}: order must be a whole number greater than or equal to zero.`);
   if (present(data.tags) && !validTextList(data.tags)) errors.push(`${label}: tags must be a non-empty list of text values.`);
 }
 
